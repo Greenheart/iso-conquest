@@ -6,6 +6,8 @@ class Game {
     this.ui = this.getDOMReferences()
     this.players = this.getPlayers(level)
     this.currentLevel = this.loadLevel(level)
+
+    this.turn = 0
   }
 
   start () {
@@ -15,10 +17,14 @@ class Game {
 
   update () {
     Area.updateAll(this.currentLevel.areas)
+    Player.updateAll(this.players)
+
+    ++this.turn
   }
 
   display () {
     Area.displayAll(this.currentLevel.areas)
+    Player.displayAll(this.players)
   }
 
   loadLevel (levelConfig) {
@@ -46,7 +52,7 @@ class Game {
     const players = []
     for (let playerId = 1; playerId <= level.playerCount; playerId++) {
       players.push(
-        new Player({ id: playerId })
+        new Player({ id: playerId, game: this })
       )
     }
 

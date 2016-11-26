@@ -3,10 +3,9 @@
 class Area {
   constructor (config) {
     this.game = config.game
-    this.owner = this.parseTileOwner(config.tileType),
+    this.owner = this.parseTileOwner(config.tileType)
     this.x = config.x
     this.y = config.y
-
     this.viewComponent = this.createViewComponent()
   }
 
@@ -20,6 +19,8 @@ class Area {
 
   parseTileOwner (tileType) {
     switch (tileType) {
+      // NOTE: improve maintainability by adding helper method that finds the tileType keys based on their values
+      // find key in object by object[key] === value.
       case 0:
         return null
       case 1:
