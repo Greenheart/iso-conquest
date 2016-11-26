@@ -70,6 +70,7 @@ main {
 }
 
 .player-info p {
+  width: 100px;
   margin: 0;
   transform: skew(5deg);
 }
@@ -77,23 +78,21 @@ main {
 .player-info.player1 {
   left: 0;
   background-color: var(--player1-secondary-color);
-  box-shadow: 3px 3px 10px var(--player1-secondary-color);
 }
 
 .player-info.player1.active-player {
   background-color: var(--player1-color);
-  box-shadow: 3px 3px 10px var(--player1-color);
+  box-shadow: 0 0 40px 5px var(--player1-color);
 }
 
 .player-info.player2 {
   right: 0;
   background-color: var(--player2-secondary-color);
-  box-shadow: 3px 3px 10px var(--player2-secondary-color);
 }
 
 .player-info.player2.active-player {
   background-color: var(--player2-color);
-  box-shadow: 3px 3px 10px var(--player2-color);
+  box-shadow: 0 0 40px 5px var(--player2-color);
 }
 
 .game {

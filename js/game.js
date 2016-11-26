@@ -8,6 +8,7 @@ class Game {
     this.currentLevel = this.loadLevel(level)
 
     this.turn = 0
+    this.activePlayer = null
   }
 
   start () {
@@ -20,6 +21,20 @@ class Game {
     Player.updateAll(this.players)
 
     ++this.turn
+    this.updateActivePlayer()
+  }
+
+  updateActivePlayer () {
+    if (this.activePlayer === null) {
+      this.activePlayer = this.players[0]
+    } else {
+      const previousPlayerInfo = this.ui.playerInfo['player' + this.activePlayer.id]
+      previousPlayerInfo.classList.remove('active-player')
+
+      this.activePlayer = this.players[this.turn % this.players.length]
+    }
+    const activePlayerInfo = this.ui.playerInfo['player' + this.activePlayer.id]
+    activePlayerInfo.classList.add('active-player')
   }
 
   display () {
