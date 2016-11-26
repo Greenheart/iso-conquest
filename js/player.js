@@ -16,7 +16,7 @@ class Player {
   }
 
   display () {
-
+    this.game.ui.playerInfo['player' + this.id].querySelector('p span').innerText = this.areas.length
   }
 
   getOwnAreas () {

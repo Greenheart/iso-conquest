@@ -4,8 +4,12 @@
   --header-height: 60px;
   --grid-size: calc(var(--tile-size) * 8);  /* 8x8 playboard */
   --gray: hsla(0, 0%, 0%, .1);
-  --white: #fefefe;
+  --light-gray: #fefefe;
   --dark-gray: hsla(0, 0%, 0%, .25);
+  --player1-color: #509eb8;
+  --player1-secondary-color: #7fbfd4;
+  --player2-color: #ff6447;
+  --player2-secondary-color: #ffa595;
 }
 
 body {
@@ -31,7 +35,8 @@ header {
 
 h1,
 h2,
-h3 {
+h3,
+.player-info {
   display: inline-flex;
   font-family: 'Open Sans Condensed', sans-serif;
   text-align: center;
@@ -47,10 +52,48 @@ h1 {
 
 main {
   height: calc(100vh - var(--header-height));
+  width: 900px;
   font-size: 2.5vh;
   align-self: center;
   display: flex;
   justify-content: center;
+  position: relative;
+}
+
+.player-info {
+  position: absolute;
+  font-size: 34px;
+  top: 50px;
+  background: transparent;
+  padding: 0 10px;
+  transform: skew(-5deg);
+}
+
+.player-info p {
+  margin: 0;
+  transform: skew(5deg);
+}
+
+.player-info.player1 {
+  left: 0;
+  background-color: var(--player1-secondary-color);
+  box-shadow: 3px 3px 10px var(--player1-secondary-color);
+}
+
+.player-info.player1.active-player {
+  background-color: var(--player1-color);
+  box-shadow: 3px 3px 10px var(--player1-color);
+}
+
+.player-info.player2 {
+  right: 0;
+  background-color: var(--player2-secondary-color);
+  box-shadow: 3px 3px 10px var(--player2-secondary-color);
+}
+
+.player-info.player2.active-player {
+  background-color: var(--player2-color);
+  box-shadow: 3px 3px 10px var(--player2-color);
 }
 
 .game {
@@ -80,7 +123,7 @@ main {
 .area {
   box-sizing: border-box;
   z-index: 1;
-  background-color: #fcfcfc;
+  background-color: var(--light-gray);
   height: var(--tile-size);
   width: var(--tile-size);
   border: var(--tile-border-size) solid var(--gray);
@@ -103,11 +146,11 @@ main {
 }
 
 .area.player1 {
-  background-color: #509eb8;
+  background-color: var(--player1-color);
 }
 
 .area.player2 {
-  background-color: #ff6447;
+  background-color: var(--player2-color);
 }
 
 .area.conquerable {

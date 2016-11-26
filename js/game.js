@@ -62,7 +62,11 @@ class Game {
   getDOMReferences () {
     return {
       areasContainer: document.querySelector('.areas'),
-      areas: []
+      areas: [],
+      playerInfo: {
+        player1: document.querySelector('.player-info.player1'),
+        player2: document.querySelector('.player-info.player2')
+      }
     }
   }
 }
