@@ -4,6 +4,7 @@
   --header-height: 60px;
   --grid-size: calc(var(--tile-size) * 8);  /* 8x8 playboard */
   --gray: hsla(0, 0%, 0%, .1);
+  --white: #fefefe;
   --dark-gray: hsla(0, 0%, 0%, .25);
 }
 
@@ -25,7 +26,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: skyblue;
+  background-color: #55cc7d;
 }
 
 h1,
@@ -58,6 +59,7 @@ main {
   height: var(--grid-size);
   transform: rotateX(120deg) rotateZ(45deg);
   transform-style: preserve-3d;
+  box-shadow: -10px -10px 10px 0 var(--gray);
 }
 
 .background-grid {
@@ -67,6 +69,7 @@ main {
   background-color: var(--gray);
   width: inherit;
   height: inherit;
+  box-shadow: 0 0 600px 200px var(--gray);
 }
 
 .areas {
@@ -77,28 +80,42 @@ main {
 .area {
   box-sizing: border-box;
   z-index: 1;
+  background-color: #fcfcfc;
   height: var(--tile-size);
   width: var(--tile-size);
-  background-color: tomato;
   border: var(--tile-border-size) solid var(--gray);
 }
 
 .area:focus {
   z-index: 2;
-  background-color: wheat;
   position: relative;
-  border: none;
   outline: none;
   top: 4px;
   left: 4px;
   transform: scale(1.05);
   transition: background, transform .15s ease-in;
-  box-shadow: -7px -7px var(--dark-gray);
+  box-shadow: -7px -7px var(--gray);
   animation-name: grow-shrink;
   animation-duration: .6s;
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-timing-function: cubic-bezier(.42, 0, .58, 1);
+}
+
+.area.player1 {
+  background-color: #509eb8;
+}
+
+.area.player2 {
+  background-color: #ff6447;
+}
+
+.area.conquerable {
+  background-color: #34bb62;
+}
+
+.area.sacrificeable {
+  background-color: #ffa547;
 }
 
 @keyframes grow-shrink {
