@@ -159,16 +159,21 @@ main {
 
 .area.conquerable {
   background-color: #83e0a2;
-  transition: .29s ease-in;
+  transition: background .29s ease-in;
 }
 
 .area.conquerable-by-sacrifice {
   background-color: #ffcb95;
-  transition: .29s ease-in;
+  transition: background .29s ease-in;
 }
 
 .area-selectable {
   cursor: pointer;
+}
+
+.area-selectable:hover {
+  border-width: calc(var(--tile-border-size) * 3);
+  border-color: var(--dark-gray);
 }
 
 @keyframes grow-shrink {
