@@ -133,7 +133,7 @@ main {
   border: var(--tile-border-size) solid var(--gray);
 }
 
-.active-area {
+.area-active {
   z-index: 2;
   position: relative;
   top: 4px;

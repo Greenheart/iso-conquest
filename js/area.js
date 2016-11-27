@@ -86,9 +86,9 @@ class Area {
     if (clickedArea.owner === game.activePlayer) {
       Area.clearHighlighted()
 
-      const previouslySelected = game.ui.areasContainer.querySelectorAll('.active-area')
+      const previouslySelected = game.ui.areasContainer.querySelectorAll('.area-active')
       if (previouslySelected) {
-        previouslySelected.forEach(area => area.classList.remove('active-area'))
+        previouslySelected.forEach(area => area.classList.remove('area-active'))
       }
 
       const areasConquerable = clickedArea.adjacentAreas[1].filter(Area.keepNeutral)
@@ -107,7 +107,7 @@ class Area {
 
       if (anyAdjacentIsConquerable) {
         game.activePlayer.currentlySelectedArea = clickedArea
-        clickedArea.viewComponent.classList.add('active-area')
+        clickedArea.viewComponent.classList.add('area-active')
       }
     } else if (clickedArea.viewComponent.classList.contains('conquerable')) {
       game.activePlayer.conquer(clickedArea, true)
@@ -128,8 +128,8 @@ class Area {
       // reset highlightedAreas
       highlightedAreas.length = 0
 
-      for (let area of document.querySelectorAll('.active-area')) {
-        area.classList.remove('active-area')
+      for (let area of document.querySelectorAll('.area-active')) {
+        area.classList.remove('area-active')
       }
     }
   }
