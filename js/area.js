@@ -12,11 +12,9 @@ class Area {
   }
 
   update () {
-    if (this.game.turn === 0) {
-      this.cacheAdjacentAreas()
-    }
+    const neutralNeighbors = this.adjacentAreas['all'].filter(area => area.isNeutral())
 
-    if (this.isOwnedBy(this.game.activePlayer)) {
+    if (this.isOwnedBy(this.game.activePlayer) && neutralNeighbors.length > 0) {
       this.viewComponent.classList.add('area-selectable')
     } else {
       this.viewComponent.classList.remove('area-selectable')

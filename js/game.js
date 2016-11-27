@@ -6,6 +6,7 @@ class Game {
     this.ui = this.getDOMReferences()
     this.players = this.getPlayers(level)
     this.currentLevel = this.loadLevel(level)
+    this.currentLevel.areas.forEach(a => a.cacheAdjacentAreas())
 
     this.turn = 0
     this.winner = null
@@ -105,7 +106,6 @@ class Game {
         })
       })
     })
-
     level.areas = Object.values(level.areaLookup)
 
     return level
