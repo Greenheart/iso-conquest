@@ -153,11 +153,13 @@ main {
 }
 
 .area.conquerable {
-  background-color: #34bb62;
+  background-color: #83e0a2;
+  transition: .29s ease-in;
 }
 
 .area.conquerable-by-sacrifice {
-  background-color: #ffa547;
+  background-color: #ffcb95;
+  transition: .29s ease-in;
 }
 
 @keyframes grow-shrink {
