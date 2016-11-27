@@ -139,6 +139,7 @@ main {
   top: 4px;
   left: 4px;
   border-width: calc(var(--tile-border-size) * 3);
+  border-color: var(--dark-gray);
   transform: scale(1.05);
   transition: background, transform .15s ease-in;
   box-shadow: -7px -7px var(--dark-gray);
