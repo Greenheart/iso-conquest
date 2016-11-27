@@ -80,6 +80,10 @@ main {
   background-color: var(--player1-secondary-color);
 }
 
+.active-player {
+  transition: .4s ease-in;
+}
+
 .player-info.player1.active-player {
   background-color: var(--player1-color);
   box-shadow: 0 0 40px 5px var(--player1-color);
