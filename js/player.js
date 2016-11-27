@@ -5,18 +5,32 @@ class Player {
     this.game = config.game
     this.id = config.id
     this.tileType = Map.tileTypes[this.id]
-    this.areas = []
+    this.currentlySelectedArea = null
   }
 
   update () {
     if (this.game.turn === 0) {
       this.areas = this.getOwnAreas()
     }
-
   }
 
   display () {
     this.game.ui.playerInfo['player' + this.id].querySelector('p span').innerText = this.areas.length
+  }
+
+  conquer (area) {
+    area.owner = this
+    area.viewComponent.classList.add('player' + this.id)
+    Area.clearHighlighted()
+    this.areas.push(area)
+    this.game.update()
+    this.game.display()
+  }
+
+  conquerBySacrifice (area) {
+    this.currentlySelectedArea.owner = null
+    this.currentlySelectedArea.viewComponent.classList.remove('player' + this.id)
+    this.conquer(area)
   }
 
   getOwnAreas () {

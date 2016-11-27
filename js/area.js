@@ -64,6 +64,11 @@ class Area {
       Area.clearHighlighted()
       Area.highlightAdjacent(area, 1, 'conquerable')
       Area.highlightAdjacent(area, 2, 'conquerable-by-sacrifice')
+      game.activePlayer.currentlySelectedArea = area
+    } else if (area.viewComponent.classList.contains('conquerable')) {
+      game.activePlayer.conquer(area)
+    } else if (area.viewComponent.classList.contains('conquerable-by-sacrifice')) {
+      game.activePlayer.conquerBySacrifice(area)
     }
   }
 
