@@ -44,21 +44,24 @@ class Game {
 
   loadLevel (levelConfig) {
     const level = {
-      areas: []
+      areaLookup: {}
     }
 
     levelConfig.tiles.forEach((row, y) => {
+      ++y
       row.forEach((tileType, x) => {
-        level.areas.push(
-          new Area({
-            game: this,
-            tileType: tileType,
-            x: x + 1,
-            y: y + 1
-          })
-        )
+        // Increment by one to get coords starting at 1, 1
+        ++x
+        level.areaLookup[`${x} ${y}`] = new Area({
+          game: this,
+          tileType: tileType,
+          x: x,
+          y: y
+        })
       })
     })
+
+    level.areas = Object.values(level.areaLookup)
 
     return level
   }
