@@ -137,7 +137,7 @@ class Game {
   addEventHandlers () {
     document.body.addEventListener('click', event => {
       if (!event.target.classList.contains('area')) {
-        Area.clearHighlighted()
+        Area.clearAllHighlighted()
       }
     })
   }

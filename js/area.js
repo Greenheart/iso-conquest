@@ -80,7 +80,7 @@ class Area {
 
     // only let the active player select their own areas
     if (clickedArea.owner === game.activePlayer) {
-      Area.clearHighlighted()
+      Area.clearAllHighlighted()
 
       const previouslySelected = game.ui.areasContainer.querySelectorAll('.area-active')
       if (previouslySelected) {
@@ -110,7 +110,7 @@ class Area {
     } else if (clickedArea.viewComponent.classList.contains('conquerable-by-sacrifice')) {
       game.activePlayer.conquerBySacrifice(clickedArea)
     } else {
-      Area.clearHighlighted()
+      Area.clearAllHighlighted()
     }
   }
 
@@ -120,7 +120,7 @@ class Area {
     return game.currentLevel.areaLookup[`${x} ${y}`]
   }
 
-  static clearHighlighted () {
+  static clearAllHighlighted () {
     const highlightedAreas = Area.currentlyHighlightedAreas
     if (highlightedAreas.length > 0) {
       const game = highlightedAreas[0].game

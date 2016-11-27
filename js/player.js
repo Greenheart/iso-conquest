@@ -30,7 +30,7 @@ class Player {
     area.viewComponent.classList.remove('player' + otherPlayerId)
     area.viewComponent.classList.add('player' + this.id)
     this.areas.push(area)
-    Area.clearHighlighted()
+    Area.clearAllHighlighted()
 
     // This enables recursive conquering in one level.
     // By taking an area, you automatically get the other player's adjacent areas.
