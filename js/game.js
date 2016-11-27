@@ -8,6 +8,7 @@ class Game {
     this.currentLevel = this.loadLevel(level)
 
     this.turn = 0
+    this.winner = null
     this.activePlayer = null
   }
 
@@ -22,6 +23,7 @@ class Game {
     Area.updateAll(this.currentLevel.areas)
     Player.updateAll(this.players)
 
+    this.checkEndGameConditions()
     ++this.turn
   }
 
@@ -39,8 +41,50 @@ class Game {
   }
 
   display () {
-    Area.displayAll(this.currentLevel.areas)
-    Player.displayAll(this.players)
+    if (this.winner !== null) {
+      this.endGame()
+    } else {
+      Area.displayAll(this.currentLevel.areas)
+      Player.displayAll(this.players)
+    }
+  }
+
+  checkEndGameConditions () {
+    this.players.forEach(player => {
+      if (player.areas.length === 0) {
+        this.winner = player.getColor()
+      }
+    })
+
+    // No neutral areas left, the winner is the one with the most areas
+    if (!this.currentLevel.areas.some(a => a.isNeutral())) {
+      if (this.players[0].areas.length === this.players[1].areas.length) {
+        this.winner = 'tie'
+      } else {
+        // Find the player with the most area points
+        const player = this.players.reduce((player, previousPlayer) => {
+          if (player.areas.length > previousPlayer.areas.length) {
+            return player
+          } else {
+            return previousPlayer
+          }
+        })
+        this.winner = player.getColor()
+      }
+    }
+  }
+
+  endGame () {
+    let message
+    if (this.winner === 'tie') {
+      message = 'The game was a tie!\n\nPlay again?'
+    } else {
+      message = `The ${this.winner} player won!\n\nPlay again?`
+    }
+
+    if (window.confirm(message)) {
+      window.location.reload()
+    }
   }
 
   loadLevel (levelConfig) {

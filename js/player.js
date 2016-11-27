@@ -63,6 +63,10 @@ class Player {
     return this.game.currentLevel.areas.filter(area => area.owner === this)
   }
 
+  getColor () {
+    return this.id === 1 ? 'blue' : 'red'
+  }
+
   static updateAll (players) {
     players.forEach(player => player.update())
   }
