@@ -69,6 +69,8 @@ class Area {
       game.activePlayer.conquer(area)
     } else if (area.viewComponent.classList.contains('conquerable-by-sacrifice')) {
       game.activePlayer.conquerBySacrifice(area)
+    } else {
+      Area.clearHighlighted()
     }
   }
 

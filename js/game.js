@@ -12,6 +12,7 @@ class Game {
   }
 
   start () {
+    this.addEventHandlers()
     this.update()
     this.display()
   }
@@ -86,5 +87,13 @@ class Game {
         player2: document.querySelector('.player-info.player2')
       }
     }
+  }
+
+  addEventHandlers () {
+    document.body.addEventListener('click', event => {
+      if (!event.target.classList.contains('area')) {
+        Area.clearHighlighted()
+      }
+    })
   }
 }
