@@ -56,19 +56,41 @@ class Area {
   static handleClick (event, game) {
     const x = event.target.dataset.x
     const y = event.target.dataset.y
-    const area = game.currentLevel.areaLookup[`${x} ${y}`]
+    const clickedArea = game.currentLevel.areaLookup[`${x} ${y}`]
 
     // only let the active player select their own areas
-    if (area.owner === game.activePlayer) {
+    if (clickedArea.owner === game.activePlayer) {
       Area.clearHighlighted()
-      Area.highlightAdjacent(area, 1, 'conquerable')
-      Area.highlightAdjacent(area, 2, 'conquerable-by-sacrifice')
-      game.activePlayer.currentlySelectedArea = area
-      area.viewComponent.classList.add('active-area')
-    } else if (area.viewComponent.classList.contains('conquerable')) {
-      game.activePlayer.conquer(area)
-    } else if (area.viewComponent.classList.contains('conquerable-by-sacrifice')) {
-      game.activePlayer.conquerBySacrifice(area)
+
+      const previouslySelected = game.ui.areasContainer.querySelectorAll('.active-area')
+      if (previouslySelected) {
+        previouslySelected.forEach(area => area.classList.remove('active-area'))
+      }
+
+      const areasConquerable = Area.getAdjacent(clickedArea, 1)
+                                   .filter(Area.keepNeutral)
+      const areasConquerableBySacrifice = Area.getAdjacent(clickedArea, 2)
+                                              .filter(Area.keepNeutral)
+
+      if (areasConquerable.length > 0) {
+        Area.highlightAdjacent(clickedArea, areasConquerable, 'conquerable')
+      }
+
+      if (areasConquerableBySacrifice.length > 0) {
+        Area.highlightAdjacent(clickedArea, areasConquerableBySacrifice, 'conquerable-by-sacrifice')
+      }
+
+      const anyAdjacentIsConquerable = (areasConquerableBySacrifice.length > 0 ||
+                                        areasConquerable.length > 0)
+
+      if (anyAdjacentIsConquerable) {
+        game.activePlayer.currentlySelectedArea = clickedArea
+        clickedArea.viewComponent.classList.add('active-area')
+      }
+    } else if (clickedArea.viewComponent.classList.contains('conquerable')) {
+      game.activePlayer.conquer(clickedArea, true)
+    } else if (clickedArea.viewComponent.classList.contains('conquerable-by-sacrifice')) {
+      game.activePlayer.conquerBySacrifice(clickedArea)
     } else {
       Area.clearHighlighted()
     }
@@ -77,20 +99,20 @@ class Area {
   static clearHighlighted () {
     const highlightedAreas = Area.currentlyHighlightedAreas
     if (highlightedAreas.length > 0) {
-      const selectedArea = highlightedAreas[0].game.activePlayer.currentlySelectedArea
-
-      if (selectedArea !== null) {
-        selectedArea.viewComponent.classList.remove('active-area')
-      }
-
       highlightedAreas.forEach(area => {
         area.viewComponent.classList.remove('conquerable', 'conquerable-by-sacrifice')
       })
+
+      // reset highlightedAreas
+      highlightedAreas.length = 0
+
+      for (let area of document.querySelectorAll('.active-area')) {
+        area.classList.remove('active-area')
+      }
     }
   }
 
-  static highlightAdjacent (area, distance, highlightClass) {
-    const adjacent = Area.getAdjacent(area, distance)
+  static highlightAdjacent (centerArea, adjacent, highlightClass) {
     Area.currentlyHighlightedAreas = Area.currentlyHighlightedAreas.concat(adjacent)
     adjacent.forEach(area => area.viewComponent.classList.add(highlightClass))
   }
@@ -106,9 +128,7 @@ class Area {
         // 2. Only get adjacentAreas on a given distance
         if (!(x === area.x && y === area.y) && actualDistance >= distance) {
           const adjacentArea = area.game.currentLevel.areaLookup[`${x} ${y}`]
-          // 1. Only add valid areas
-          // 2. Areas have to be neutral
-          if (adjacentArea !== undefined && Map.tileTypes[adjacentArea.tileType] === 'neutral') {
+          if (adjacentArea !== undefined) {
             adjacentAreas.push(adjacentArea)
           }
         }
@@ -116,6 +136,20 @@ class Area {
     }
 
     return adjacentAreas
+  }
+
+  static removeSpecific (areaToTest, areaToRemove) {
+    const xEqual = areaToTest.x === areaToRemove.x
+    const yEqual = areaToTest.y === areaToRemove.y
+    return !(xEqual && yEqual)
+  }
+
+  static keepNeutral (adjacentArea) {
+    return Map.tileTypes[adjacentArea.tileType] === 'neutral'
+  }
+
+  static keepHostile (adjacentArea, otherPlayerId) {
+    return Map.tileTypes[adjacentArea.tileType] === 'player' + otherPlayerId
   }
 
   static updateAll (areas) {
