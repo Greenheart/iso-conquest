@@ -136,12 +136,12 @@ main {
 .active-area {
   z-index: 2;
   position: relative;
-  outline: none;
   top: 4px;
   left: 4px;
+  border-width: calc(var(--tile-border-size) * 3);
   transform: scale(1.05);
   transition: background, transform .15s ease-in;
-  box-shadow: -7px -7px var(--gray);
+  box-shadow: -7px -7px var(--dark-gray);
   animation-name: grow-shrink;
   animation-duration: .6s;
   animation-iteration-count: infinite;
