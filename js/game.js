@@ -18,10 +18,10 @@ class Game {
   }
 
   update () {
+    this.updateActivePlayer()
     Area.updateAll(this.currentLevel.areas)
     Player.updateAll(this.players)
 
-    this.updateActivePlayer()
     ++this.turn
   }
 

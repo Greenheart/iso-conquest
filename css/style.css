@@ -167,6 +167,10 @@ main {
   transition: .29s ease-in;
 }
 
+.area-selectable {
+  cursor: pointer;
+}
+
 @keyframes grow-shrink {
   100% {
     transform: scale(1.15);

@@ -8,14 +8,23 @@ class Area {
     this.y = config.y
     this.tileType = config.tileType
     this.viewComponent = this.createViewComponent()
+    this.adjacentAreas = {}
   }
 
   update () {
+    if (this.game.turn === 0) {
+      this.cacheAdjacentAreas()
+    }
 
+    if (this.isOwnedBy(this.game.activePlayer)) {
+      this.viewComponent.classList.add('area-selectable')
+    } else {
+      this.viewComponent.classList.remove('area-selectable')
+    }
   }
 
   display () {
-    // display color according to who's the owner
+
   }
 
   parseTileOwner (tileType) {
@@ -53,6 +62,21 @@ class Area {
     return area
   }
 
+  cacheAdjacentAreas () {
+    // The numbers represent the distance different areas have to this area-instance.
+    this.adjacentAreas[1] = Area.getAdjacent(this, 1)
+    this.adjacentAreas[2] = Area.getAdjacent(this, 2)
+    this.adjacentAreas['all'] = this.adjacentAreas[1].concat(this.adjacentAreas[2])
+  }
+
+  isNeutral () {
+    return Map.tileTypes[this.tileType] === 'neutral'
+  }
+
+  isOwnedBy (player) {
+    return Map.tileTypes[this.tileType] === 'player' + player.id
+  }
+
   static handleClick (event, game) {
     const x = event.target.dataset.x
     const y = event.target.dataset.y
@@ -67,10 +91,8 @@ class Area {
         previouslySelected.forEach(area => area.classList.remove('active-area'))
       }
 
-      const areasConquerable = Area.getAdjacent(clickedArea, 1)
-                                   .filter(Area.keepNeutral)
-      const areasConquerableBySacrifice = Area.getAdjacent(clickedArea, 2)
-                                              .filter(Area.keepNeutral)
+      const areasConquerable = clickedArea.adjacentAreas[1].filter(Area.keepNeutral)
+      const areasConquerableBySacrifice = clickedArea.adjacentAreas[2].filter(Area.keepNeutral)
 
       if (areasConquerable.length > 0) {
         Area.highlightAdjacent(clickedArea, areasConquerable, 'conquerable')
@@ -100,7 +122,7 @@ class Area {
     const highlightedAreas = Area.currentlyHighlightedAreas
     if (highlightedAreas.length > 0) {
       highlightedAreas.forEach(area => {
-        area.viewComponent.classList.remove('conquerable', 'conquerable-by-sacrifice')
+        area.viewComponent.classList.remove('conquerable', 'conquerable-by-sacrifice', 'area-selectable')
       })
 
       // reset highlightedAreas
@@ -114,7 +136,9 @@ class Area {
 
   static highlightAdjacent (centerArea, adjacent, highlightClass) {
     Area.currentlyHighlightedAreas = Area.currentlyHighlightedAreas.concat(adjacent)
-    adjacent.forEach(area => area.viewComponent.classList.add(highlightClass))
+    adjacent.forEach(area => {
+      area.viewComponent.classList.add(highlightClass, 'area-selectable')
+    })
   }
 
   static getAdjacent (area, distance) {
@@ -138,14 +162,17 @@ class Area {
     return adjacentAreas
   }
 
+  static isSame (area1, area2) {
+    return area1.x === area2.x &&
+           area1.y === area2.y
+  }
+
   static removeSpecific (areaToTest, areaToRemove) {
-    const xEqual = areaToTest.x === areaToRemove.x
-    const yEqual = areaToTest.y === areaToRemove.y
-    return !(xEqual && yEqual)
+    return !Area.isSame(areaToTest, areaToRemove)
   }
 
   static keepNeutral (adjacentArea) {
-    return Map.tileTypes[adjacentArea.tileType] === 'neutral'
+    return adjacentArea.isNeutral()
   }
 
   static keepHostile (adjacentArea, otherPlayerId) {
