@@ -20,6 +20,7 @@ class Player {
 
   conquer (area) {
     area.owner = this
+    area.tileType = this.id
     area.viewComponent.classList.add('player' + this.id)
     Area.clearHighlighted()
     this.areas.push(area)
@@ -30,7 +31,9 @@ class Player {
   conquerBySacrifice (area) {
     this.currentlySelectedArea.owner = null
     this.currentlySelectedArea.viewComponent.classList.remove('player' + this.id)
+    this.currentlySelectedArea.tileType = 0
     this.conquer(area)
+    this.areas = this.areas.filter(a => (a.x !== area.x && a.y !== area.y))
   }
 
   getOwnAreas () {
