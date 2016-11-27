@@ -127,6 +127,7 @@ main {
   box-sizing: border-box;
   z-index: 1;
   background-color: var(--light-gray);
+  transition: .2s ease-in;
   height: var(--tile-size);
   width: var(--tile-size);
   border: var(--tile-border-size) solid var(--gray);
