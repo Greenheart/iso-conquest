@@ -12,12 +12,8 @@ class Area {
   }
 
   update () {
-    const neutralNeighbors = this.adjacentAreas['all'].filter(area => area.isNeutral())
-
-    if (this.isOwnedBy(this.game.activePlayer) && neutralNeighbors.length > 0) {
+    if (this.isOwnedBy(this.game.activePlayer) && this.getNeutralNeighbors().length > 0) {
       this.viewComponent.classList.add('area-selectable')
-    } else {
-      this.viewComponent.classList.remove('area-selectable')
     }
   }
 
@@ -75,10 +71,12 @@ class Area {
     return Map.tileTypes[this.tileType] === 'player' + player.id
   }
 
+  getNeutralNeighbors () {
+    return this.adjacentAreas['all'].filter(area => area.isNeutral())
+  }
+
   static handleClick (event, game) {
-    const x = event.target.dataset.x
-    const y = event.target.dataset.y
-    const clickedArea = game.currentLevel.areaLookup[`${x} ${y}`]
+    const clickedArea = Area.findAreaForViewComponent(event.target, game)
 
     // only let the active player select their own areas
     if (clickedArea.owner === game.activePlayer) {
@@ -116,11 +114,18 @@ class Area {
     }
   }
 
+  static findAreaForViewComponent (viewComponent, game) {
+    const x = viewComponent.dataset.x
+    const y = viewComponent.dataset.y
+    return game.currentLevel.areaLookup[`${x} ${y}`]
+  }
+
   static clearHighlighted () {
     const highlightedAreas = Area.currentlyHighlightedAreas
     if (highlightedAreas.length > 0) {
+      const game = highlightedAreas[0].game
       highlightedAreas.forEach(area => {
-        area.viewComponent.classList.remove('conquerable', 'conquerable-by-sacrifice', 'area-selectable')
+        area.viewComponent.classList.remove('conquerable', 'conquerable-by-sacrifice')
       })
 
       // reset highlightedAreas
@@ -128,6 +133,16 @@ class Area {
 
       for (let area of document.querySelectorAll('.area-active')) {
         area.classList.remove('area-active')
+      }
+
+      for (let viewComponent of document.querySelectorAll('.area-selectable')) {
+        const area = Area.findAreaForViewComponent(viewComponent, game)
+
+        if (area.isNeutral() ||
+            area.isOwnedBy(game.activePlayer) ||
+            area.getNeutralNeighbors().length === 0) {
+          viewComponent.classList.remove('area-selectable')
+        }
       }
     }
   }
