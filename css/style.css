@@ -132,7 +132,7 @@ main {
   border: var(--tile-border-size) solid var(--gray);
 }
 
-.area:focus {
+.active-area {
   z-index: 2;
   position: relative;
   outline: none;

@@ -42,7 +42,6 @@ class Area {
     }
     area.dataset.x = this.x
     area.dataset.y = this.y
-    area.setAttribute('tabindex', this.game.ui.areas.length)
 
     area.addEventListener('click', event => {
       Area.handleClick(event, this.game)
@@ -65,6 +64,7 @@ class Area {
       Area.highlightAdjacent(area, 1, 'conquerable')
       Area.highlightAdjacent(area, 2, 'conquerable-by-sacrifice')
       game.activePlayer.currentlySelectedArea = area
+      area.viewComponent.classList.add('active-area')
     } else if (area.viewComponent.classList.contains('conquerable')) {
       game.activePlayer.conquer(area)
     } else if (area.viewComponent.classList.contains('conquerable-by-sacrifice')) {
@@ -75,8 +75,15 @@ class Area {
   }
 
   static clearHighlighted () {
-    if (Area.currentlyHighlightedAreas.length > 0) {
-      Area.currentlyHighlightedAreas.forEach(area => {
+    const highlightedAreas = Area.currentlyHighlightedAreas
+    if (highlightedAreas.length > 0) {
+      const selectedArea = highlightedAreas[0].game.activePlayer.currentlySelectedArea
+
+      if (selectedArea !== null) {
+        selectedArea.viewComponent.classList.remove('active-area')
+      }
+
+      highlightedAreas.forEach(area => {
         area.viewComponent.classList.remove('conquerable', 'conquerable-by-sacrifice')
       })
     }
