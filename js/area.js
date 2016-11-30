@@ -80,17 +80,22 @@ class Area {
     return this.adjacentAreas['all'].filter(area => area.isNeutral())
   }
 
+  clearAllAdjacentSelected () {
+    this.adjacentAreas['all'].forEach(area => area.clearSelection())
+  }
+
+  clearSelection () {
+    if (!this.isOwnedBy(this.game.activePlayer)) {
+      this.viewComponent.classList.remove('area-selectable')
+    }
+  }
+
   static handleClick (event, game) {
     const clickedArea = Area.findAreaForViewComponent(event.target, game)
 
     // only let the active player select their own areas
     if (clickedArea.owner === game.activePlayer) {
       Area.clearAllHighlighted()
-
-      const previouslySelected = game.ui.areasContainer.querySelectorAll('.area-active')
-      if (previouslySelected) {
-        previouslySelected.forEach(area => area.classList.remove('area-active'))
-      }
 
       const areasConquerable = clickedArea.adjacentAreas[1].filter(Area.keepNeutral)
       const areasConquerableBySacrifice = clickedArea.adjacentAreas[2].filter(Area.keepNeutral)
@@ -116,6 +121,7 @@ class Area {
       game.activePlayer.conquerBySacrifice(clickedArea)
     } else {
       Area.clearAllHighlighted()
+      clickedArea.clearAllAdjacentSelected()
     }
   }
 
@@ -129,26 +135,26 @@ class Area {
     const highlightedAreas = Area.currentlyHighlightedAreas
     if (highlightedAreas.length > 0) {
       const game = highlightedAreas[0].game
+
       highlightedAreas.forEach(area => {
         area.viewComponent.classList.remove('conquerable', 'conquerable-by-sacrifice')
       })
 
+      const viewComponent = game.ui.areasContainer.querySelector('.area-active')
+      if (viewComponent !== null) {
+        viewComponent.classList.remove('area-active')
+        const area = Area.findAreaForViewComponent(viewComponent, game)
+        area.clearAllAdjacentSelected()
+      }
+
       // reset highlightedAreas
       highlightedAreas.length = 0
+    }
+  }
 
-      for (let area of document.querySelectorAll('.area-active')) {
-        area.classList.remove('area-active')
-      }
-
-      for (let viewComponent of document.querySelectorAll('.area-selectable')) {
-        const area = Area.findAreaForViewComponent(viewComponent, game)
-
-        if (area.isNeutral() ||
-            area.isOwnedBy(game.activePlayer) ||
-            area.getNeutralNeighbors().length === 0) {
-          viewComponent.classList.remove('area-selectable')
-        }
-      }
+  static removeAllAreaSelections (game) {
+    for (let viewComponent of game.ui.areasContainer.querySelectorAll('.area-selectable')) {
+      viewComponent.classList.remove('area-selectable')
     }
   }
 
