@@ -6,11 +6,12 @@ class Game {
     this.ui = this.getDOMReferences()
     this.players = this.getPlayers(level)
     this.currentLevel = this.loadLevel(level)
-    this.currentLevel.areas.forEach(a => a.cacheAdjacentAreas())
+    this.currentLevel.areas.forEach(a => a.init())
+    this.players.forEach(player => player.init())
 
     this.turn = 0
     this.winner = null
-    this.activePlayer = null
+    this.activePlayer = this.players[0]
   }
 
   start () {
@@ -20,57 +21,50 @@ class Game {
   }
 
   update () {
+    this.checkEndGameConditions()
     this.updateActivePlayer()
     Area.updateAll(this.currentLevel.areas)
     Player.updateAll(this.players)
 
-    this.checkEndGameConditions()
     ++this.turn
   }
 
   updateActivePlayer () {
-    if (this.activePlayer === null) {
-      this.activePlayer = this.players[0]
-    } else {
-      const previousPlayerInfo = this.ui.playerInfo['player' + this.activePlayer.id]
-      previousPlayerInfo.classList.remove('active-player')
+    const previousPlayerInfo = this.ui.playerInfo['player' + this.activePlayer.id]
+    previousPlayerInfo.classList.remove('active-player')
 
-      this.activePlayer = this.players[this.turn % this.players.length]
-    }
+    this.activePlayer = this.players[this.turn % this.players.length]
     const activePlayerInfo = this.ui.playerInfo['player' + this.activePlayer.id]
     activePlayerInfo.classList.add('active-player')
   }
 
   display () {
+    Area.displayAll(this.currentLevel.areas)
+    Player.displayAll(this.players)
+
     if (this.winner !== null) {
       this.endGame()
-    } else {
-      Area.displayAll(this.currentLevel.areas)
-      Player.displayAll(this.players)
     }
   }
 
   checkEndGameConditions () {
-    this.players.forEach(player => {
-      if (player.areas.length === 0) {
-        this.winner = player.getColor()
-      }
-    })
+    const playerOne = this.players[0]
+    const playerTwo = this.players[1]
+    const playerOneAreas = playerOne.areas.length
+    const playerTwoAreas = playerTwo.areas.length
+
+    if (playerOneAreas === 0) {
+      this.winner = playerTwo.color
+    } else if (playerTwoAreas === 0) {
+      this.winner = playerOne.color
+    }
 
     // No neutral areas left, the winner is the one with the most areas
     if (!this.currentLevel.areas.some(a => a.isNeutral())) {
-      if (this.players[0].areas.length === this.players[1].areas.length) {
+      if (playerOneAreas === playerTwoAreas) {
         this.winner = 'tie'
       } else {
-        // Find the player with the most area points
-        const player = this.players.reduce((player, previousPlayer) => {
-          if (player.areas.length > previousPlayer.areas.length) {
-            return player
-          } else {
-            return previousPlayer
-          }
-        })
-        this.winner = player.getColor()
+        this.winner = playerOneAreas > playerTwoAreas ? playerOne.color : playerTwo.color
       }
     }
   }

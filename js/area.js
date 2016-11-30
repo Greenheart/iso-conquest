@@ -11,6 +11,10 @@ class Area {
     this.adjacentAreas = {}
   }
 
+  init () {
+    this.cacheAdjacentAreas()
+  }
+
   update () {
     if (this.isOwnedBy(this.game.activePlayer) && this.getNeutralNeighbors().length > 0) {
       this.viewComponent.classList.add('area-selectable')
@@ -58,6 +62,7 @@ class Area {
 
   cacheAdjacentAreas () {
     // The numbers represent the distance different areas have to this area-instance.
+    // 'all' is a combined collection
     this.adjacentAreas[1] = Area.getAdjacent(this, 1)
     this.adjacentAreas[2] = Area.getAdjacent(this, 2)
     this.adjacentAreas['all'] = this.adjacentAreas[1].concat(this.adjacentAreas[2])

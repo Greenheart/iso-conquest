@@ -6,12 +6,16 @@ class Player {
     this.id = config.id
     this.tileType = Map.tileTypes[this.id]
     this.currentlySelectedArea = null
+    this.color = this.id === 1 ? 'blue' : 'red'
+    this.areas = null
+  }
+
+  init () {
+    this.areas = this.getOwnAreas()
   }
 
   update () {
-    if (this.game.turn === 0) {
-      this.areas = this.getOwnAreas()
-    }
+
   }
 
   display () {
@@ -61,10 +65,6 @@ class Player {
 
   getOwnAreas () {
     return this.game.currentLevel.areas.filter(area => area.owner === this)
-  }
-
-  getColor () {
-    return this.id === 1 ? 'blue' : 'red'
   }
 
   static updateAll (players) {
