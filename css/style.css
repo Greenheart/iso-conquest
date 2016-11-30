@@ -130,8 +130,7 @@ main {
   z-index: 3;
   background-color: var(--light-gray);
   transition: all .2s ease-in,
-              background .27s ease-in,
-              border 0;
+              background .27s ease-in;
   height: var(--tile-size);
   width: var(--tile-size);
   border: var(--tile-border-size) solid var(--gray);
@@ -174,6 +173,7 @@ main {
 
 .area-selectable {
   cursor: pointer;
+  transition: border 0s;
 }
 
 .area-selectable:hover {
