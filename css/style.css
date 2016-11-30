@@ -104,11 +104,12 @@ main {
   width: var(--grid-size);
   height: var(--grid-size);
   transform: rotateX(120deg) rotateZ(45deg);
-  transform-style: preserve-3d;
+  transform-style: flat;
   box-shadow: -10px -10px 10px 0 var(--gray);
 }
 
 .background-grid {
+  z-index: 1;
   position: absolute;
   top: -10px;
   left: -10px;
@@ -119,13 +120,14 @@ main {
 }
 
 .areas {
+  z-index: 2;
   display: flex;
   flex-flow: row wrap-reverse;
 }
 
 .area {
   box-sizing: border-box;
-  z-index: 1;
+  z-index: 3;
   background-color: var(--light-gray);
   transition: all .2s ease-in,
               background .27s ease-in;
@@ -135,7 +137,7 @@ main {
 }
 
 .area-active {
-  z-index: 2;
+  z-index: 4;
   position: relative;
   top: 4px;
   left: 4px;
