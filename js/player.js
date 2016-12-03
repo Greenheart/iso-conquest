@@ -8,14 +8,11 @@ class Player {
     this.currentlySelectedArea = null
     this.color = this.id === 1 ? 'blue' : 'red'
     this.areas = null
+    this.isAI = config.isAI || false
   }
 
   init () {
     this.areas = this.getOwnAreas()
-  }
-
-  update () {
-
   }
 
   display () {
@@ -45,11 +42,9 @@ class Player {
         adjacentHostileAreas.forEach(a => this.conquer(a, false))
       }
 
-      // Only update and display game once per move
-      // doing it at this time prevents the game from skipping turns
-        // (and letting the activePlayer keep playing more than 1 turn)
       this.game.update()
       this.game.display()
+      this.game.nextTurn()
     }
   }
 
@@ -65,10 +60,6 @@ class Player {
 
   getOwnAreas () {
     return this.game.currentLevel.areas.filter(area => area.owner === this)
-  }
-
-  static updateAll (players) {
-    players.forEach(player => player.update())
   }
 
   static displayAll (players) {

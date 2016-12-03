@@ -24,9 +24,14 @@ class Game {
     this.checkEndGameConditions()
     this.updateActivePlayer()
     Area.updateAll(this.currentLevel.areas)
-    Player.updateAll(this.players)
 
     ++this.turn
+  }
+
+  nextTurn () {
+    if (this.turn % this.players.length === 0 && this.activePlayer.isAI) {
+      this.activePlayer.takeTurn()
+    }
   }
 
   updateActivePlayer () {
@@ -45,7 +50,7 @@ class Game {
     Player.displayAll(this.players)
 
     if (this.winner !== null) {
-      this.endGame()
+      window.setTimeout(() => this.endGame(), 1000)
     }
   }
 
@@ -109,10 +114,18 @@ class Game {
 
   getPlayers (level) {
     const players = []
-    for (let playerId = 1; playerId <= level.playerCount; playerId++) {
-      players.push(
-        new Player({ id: playerId, game: this })
-      )
+    let playerId = 1
+    while (playerId <= level.playerCount) {
+      if (playerId === 1) {
+        players.push(
+          new Player({ id: playerId, game: this })
+        )
+      } else {
+        players.push(
+          new Ai({ id: playerId, game: this, isAI: true })
+        )
+      }
+      ++playerId
     }
 
     return players

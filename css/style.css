@@ -161,12 +161,12 @@ main {
   background-color: var(--player2-color);
 }
 
-.area.conquerable {
+.area.conquerable:not(.ai) {
   background-color: #83e0a2;
   transition: background .35s ease-in;
 }
 
-.area.conquerable-by-sacrifice {
+.area.conquerable-by-sacrifice:not(.ai) {
   background-color: #ffcb95;
   transition: background .35s ease-in;
 }

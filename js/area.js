@@ -16,7 +16,9 @@ class Area {
   }
 
   update () {
-    if (this.isOwnedBy(this.game.activePlayer) && this.getNeutralNeighbors().length > 0) {
+    if (!this.game.activePlayer.isAI &&
+        this.isOwnedBy(this.game.activePlayer) &&
+        this.getNeutralNeighbors().length > 0) {
       this.viewComponent.classList.add('area-selectable')
     }
   }
@@ -49,7 +51,6 @@ class Area {
     }
     area.dataset.x = this.x
     area.dataset.y = this.y
-
     area.addEventListener('click', event => {
       Area.handleClick(event, this.game)
     })
@@ -76,6 +77,10 @@ class Area {
     return Map.tileTypes[this.tileType] === 'player' + player.id
   }
 
+  isConquerableBy (player) {
+    return this.owner === null
+  }
+
   getNeutralNeighbors () {
     return this.adjacentAreas['all'].filter(area => area.isNeutral())
   }
@@ -99,13 +104,20 @@ class Area {
 
       const areasConquerable = clickedArea.adjacentAreas[1].filter(Area.keepNeutral)
       const areasConquerableBySacrifice = clickedArea.adjacentAreas[2].filter(Area.keepNeutral)
+      let conquerableClasses = ['conquerable']
+      let conquerableBySacrificeClasses = ['conquerable-by-sacrifice']
+
+      if (game.activePlayer.isAI) {
+        conquerableClasses.push('ai')
+        conquerableBySacrificeClasses.push('ai')
+      }
 
       if (areasConquerable.length > 0) {
-        Area.highlightAdjacent(clickedArea, areasConquerable, 'conquerable')
+        Area.highlightAdjacent(clickedArea, areasConquerable, conquerableClasses)
       }
 
       if (areasConquerableBySacrifice.length > 0) {
-        Area.highlightAdjacent(clickedArea, areasConquerableBySacrifice, 'conquerable-by-sacrifice')
+        Area.highlightAdjacent(clickedArea, areasConquerableBySacrifice, conquerableBySacrificeClasses)
       }
 
       const anyAdjacentIsConquerable = (areasConquerableBySacrifice.length > 0 ||
@@ -137,7 +149,7 @@ class Area {
       const game = highlightedAreas[0].game
 
       highlightedAreas.forEach(area => {
-        area.viewComponent.classList.remove('conquerable', 'conquerable-by-sacrifice')
+        area.viewComponent.classList.remove('conquerable', 'conquerable-by-sacrifice', 'ai')
       })
 
       const viewComponent = game.ui.areasContainer.querySelector('.area-active')
@@ -158,24 +170,28 @@ class Area {
     }
   }
 
-  static highlightAdjacent (centerArea, adjacent, highlightClass) {
+  static highlightAdjacent (centerArea, adjacent, highlightClasses) {
     Area.currentlyHighlightedAreas = Area.currentlyHighlightedAreas.concat(adjacent)
+    if (!centerArea.game.activePlayer.isAI) {
+      highlightClasses.push('area-selectable')
+    }
     adjacent.forEach(area => {
-      area.viewComponent.classList.add(highlightClass, 'area-selectable')
+      area.viewComponent.classList.add(...highlightClasses)
     })
   }
 
-  static getAdjacent (area, distance) {
+  static getAdjacent (centerArea, distance) {
     const adjacentAreas = []
 
-    for (let y = area.y - distance; y <= area.y + distance; y++) {
-      for (let x = area.x - distance; x <= area.x + distance; x++) {
-        const actualDistance = Math.round(Math.hypot(x - area.x, y - area.y))
+    for (let y = centerArea.y - distance; y <= centerArea.y + distance; y++) {
+      for (let x = centerArea.x - distance; x <= centerArea.x + distance; x++) {
+        const area = { x, y }
+        const actualDistance = Area.getDistance(centerArea, area)
 
         // 1. Don't get the target area
         // 2. Only get adjacentAreas on a given distance
-        if (!(x === area.x && y === area.y) && actualDistance >= distance) {
-          const adjacentArea = area.game.currentLevel.areaLookup[`${x} ${y}`]
+        if (!Area.isSame(centerArea, area) && actualDistance >= distance) {
+          const adjacentArea = centerArea.game.currentLevel.areaLookup[`${x} ${y}`]
           if (adjacentArea !== undefined) {
             adjacentAreas.push(adjacentArea)
           }
@@ -184,6 +200,10 @@ class Area {
     }
 
     return adjacentAreas
+  }
+
+  static getDistance (area1, area2) {
+    return Math.round(Math.hypot(area1.x - area2.x, area1.y - area2.y))
   }
 
   static isSame (area1, area2) {
