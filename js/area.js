@@ -96,6 +96,9 @@ class Area {
   }
 
   static handleClick (event, game) {
+    // Prevent the human player from cheating by interrupting the AI's turn.
+    if (game.activePlayer.isAI && event.isTrusted) return
+
     const clickedArea = Area.findAreaForViewComponent(event.target, game)
 
     // only let the active player select their own areas
