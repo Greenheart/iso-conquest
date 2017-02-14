@@ -153,11 +153,13 @@ main {
   animation-timing-function: cubic-bezier(.42, 0, .58, 1);
 }
 
-.area.player1 {
+.area.player1,
+.modal .player1 {
   background-color: var(--player1-color);
 }
 
-.area.player2 {
+.area.player2,
+.modal .player2 {
   background-color: var(--player2-color);
 }
 
@@ -185,4 +187,58 @@ main {
   100% {
     transform: scale(1.15);
   }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.modal-overlay {
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, .75);
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.modal {
+  max-width: 600px;
+  width: 80vw;
+  max-height: 275px;
+  height: 90vh;
+  margin-top: 10vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: white;
+}
+
+/* IDEA: change background color of the player who won depending on winner. (change .area.playerX rules above to also select .modal .playerX)*/
+
+.modal h2 {
+  font-size: 34px;
+  display: block;
+}
+
+.modal .message {
+  padding: 5%;
+  font-size: 18px;
+  text-align: center;
+}
+
+.modal .actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal button {
+  margin: 20px 0;
+  padding: 10px 20px;
+  font: 30px 'Open Sans Condensed', sans-serif;
+  min-width: 200px;
+  height: 70px;
 }

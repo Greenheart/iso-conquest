@@ -2,8 +2,10 @@
 
 class Game {
   constructor () {
+    // IDEA: possibly show level selection in menu
     const level = Map.levels['intro']
     this.ui = this.getDOMReferences()
+    // TODO: show modal to select PvAI or PVP
     this.players = this.getPlayers(level)
     this.currentLevel = this.loadLevel(level)
     this.currentLevel.areas.forEach(a => a.init())
@@ -50,7 +52,7 @@ class Game {
     Player.displayAll(this.players)
 
     if (this.winner !== null) {
-      window.setTimeout(() => this.endGame(), 1000)
+      window.setTimeout(() => this.endGame(), 400)
     }
   }
 
@@ -77,16 +79,27 @@ class Game {
   }
 
   endGame () {
-    let message
-    if (this.winner === 'tie') {
-      message = 'The game was a tie!\n\nPlay again?'
-    } else {
-      message = `The ${this.winner} player won!\n\nPlay again?`
+    const content = {
+      heading: null,
+      message: null,
+      actions: [
+        {
+          text: 'Play Again',
+          callback: () => window.location.reload()
+        }
+        // IDEA: add action for going back to main menu (to change game mode or map)
+      ]
     }
 
-    if (window.confirm(message)) {
-      window.location.reload()
+    // TODO: improve headings and messages - talk to `you` if players.some(player => player.isAI)
+    if (this.winner === 'tie') {
+      content.heading = 'The game was a tie!'
+      content.message = 'Perhaps you should be more aggressive?'
+    } else {
+      content.heading = `The ${this.winner} player won!`
     }
+
+    Helpers.displayModal(this.ui.modal, content)
   }
 
   loadLevel (levelConfig) {
@@ -136,6 +149,7 @@ class Game {
       gameContainer: document.querySelector('.game'),
       areasContainer: document.querySelector('.areas'),
       areas: [],
+      modal: document.querySelector('.modal'),
       playerInfo: {
         player1: document.querySelector('.player-info.player1'),
         player2: document.querySelector('.player-info.player2')
