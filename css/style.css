@@ -10,6 +10,7 @@
   --player1-secondary-color: #7fbfd4;
   --player2-color: #ff6447;
   --player2-secondary-color: #ffa595;
+  --green: #55cc7d;
 }
 
 body {
@@ -30,7 +31,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #55cc7d;
+  background-color: var(--green);
 }
 
 h1,
@@ -241,4 +242,8 @@ main {
   font: 30px 'Open Sans Condensed', sans-serif;
   min-width: 200px;
   height: 70px;
+}
+
+.green {
+  background-color: var(--green);
 }

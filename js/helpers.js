@@ -9,6 +9,7 @@ class Helpers {
     NOTE: Expected input:
     content: {
       heading: string,
+      backgroundColor: string,
       message: string,
       actions: [
         {
@@ -20,7 +21,9 @@ class Helpers {
     }
   */
   static displayModal (modal, content) {
-    modal.querySelector('h2').innerText = content.heading
+    const h2 = modal.querySelector('h2')
+    h2.innerText = content.heading
+    h2.classList.add(content.backgroundColor)
     // TODO: is message necessary? Maybe if the heading states something and the message asks a question for the user's next action
     // Or maybe, **show strategy tips**?
     if (content.message) {
@@ -36,8 +39,8 @@ class Helpers {
 
       btn.innerText = action.text
       btn.onclick = () => {
-        action.callback()
-        Helpers.resetModal()
+        action.callback() // TODO: Change order once main menu and proper restart is implemented.
+        Helpers.resetModal(modal)
       }
       Helpers.showElement(btn)
     })
@@ -52,7 +55,9 @@ class Helpers {
     // TODO: test this
     Helpers.hideElement(modal.parentElement)
 
-    modal.querySelector('h2').innerText = ''
+    const h2 = modal.querySelector('h2')
+    h2.innerText = ''
+    h2.className = ''
     modal.querySelector('.message').innerText = ''
     modal.querySelectorAll('button').forEach(button => {
       Helpers.hideElement(button)

@@ -82,6 +82,7 @@ class Game {
     const content = {
       heading: null,
       message: null,
+      backgroundColor: 'green',
       actions: [
         {
           text: 'Play Again',
@@ -97,6 +98,10 @@ class Game {
       content.message = 'Perhaps you should be more aggressive?'
     } else {
       content.heading = `The ${this.winner} player won!`
+      content.message = `It took ${this.turn} turns.`
+
+      const playerNumber = this.players.findIndex(p => p.color === this.winner) + 1
+      content.backgroundColor = `player${playerNumber}`
     }
 
     Helpers.displayModal(this.ui.modal, content)
