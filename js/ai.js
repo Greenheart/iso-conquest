@@ -1,6 +1,11 @@
 'use strict'
 
 class Ai extends Player {
+  constructor (config) {
+    config.isAI = true
+    super(config)
+  }
+
   takeTurn () {
     const availableMoves = this.getAvailableMoves()
 
@@ -23,9 +28,9 @@ class Ai extends Player {
   }
 
   getAvailableMoves () {
-    let availableMoves = []
+    const availableMoves = []
 
-    for (let area of this.areas) {
+    for (const area of this.areas) {
       const conquerableNeighbors = area.adjacentAreas['all']
                                    .filter(a => a.isConquerableBy(this))
       if (conquerableNeighbors.length > 0) {

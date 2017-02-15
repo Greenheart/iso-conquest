@@ -140,7 +140,7 @@ class Game {
         )
       } else {
         players.push(
-          new Ai({ id: playerId, game: this, isAI: true })
+          new Ai({ id: playerId, game: this })
         )
       }
       ++playerId
