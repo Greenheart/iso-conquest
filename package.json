@@ -2,6 +2,8 @@
   "name": "iso-conquest",
   "version": "1.0.0",
   "main": "main.js",
+  "private": true,
+  "description": "A minimalistic turn based strategy game with PvP and experimental AI",
   "scripts": {
     "start": "browser-sync start --server --no-open --files 'css/*, js/*, *.html'"
   },
