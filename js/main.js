@@ -1,6 +1,21 @@
 'use strict'
 
 document.addEventListener('DOMContentLoaded', () => {
-  const game = new Game()
-  game.start()
+  const finishSetup = (config) => {
+    const game = new Game(config)
+    game.start()
+  }
+
+  Helpers.displayModal(document.querySelector('.modal'), {
+    heading: 'Iso Conquest',
+    message: 'Select your game mode',
+    backgroundColor: 'green',
+    actions: [{
+      text: 'PvP',
+      callback: () => finishSetup({ mode: 'PvP' })
+    }, {
+      text: 'PvAI',
+      callback: () => finishSetup({ mode: 'PvAI' })
+    }]
+  })
 })

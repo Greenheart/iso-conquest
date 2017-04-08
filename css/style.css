@@ -240,7 +240,7 @@ main {
   margin: 20px 0;
   padding: 10px 20px;
   font: 30px 'Open Sans Condensed', sans-serif;
-  min-width: 200px;
+  flex-basis: 200px;
   height: 70px;
 }
 

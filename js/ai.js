@@ -10,6 +10,9 @@ class Ai extends Player {
     const availableMoves = this.getAvailableMoves()
 
     // Ai.orderMovesByGain(availableMoves)
+
+    // IDEA: Possibly create getBestAvailableMove() that just returns the optimal move
+    // Will result in a short sighted AI but hopefully a fun mechanic
     if (availableMoves.length > 0) {
       const choice = Helpers.randomInt(0, availableMoves.length - 1)
       availableMoves[choice].area.viewComponent.click()
