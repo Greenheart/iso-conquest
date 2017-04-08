@@ -42,10 +42,8 @@ class IntermediateAi extends Player {
 
         // Find the best place to expand
         for (const areaToConquer of conquerableNeighbors) {
-          // TODO: Refactor keepHostile to make use of playerId instead of otherPlayerId
-          const otherPlayerId = this.id === 1 ? 2 : 1
           const conquerableFromOpponent = areaToConquer.area.adjacentAreas[1]
-                                            .filter(a => Area.keepHostile(a, otherPlayerId))
+                                            .filter(a => Area.keepHostile(a, this.id))
 
           const gain = this.calculateGainOfConquer(areaToConquer, conquerableFromOpponent.length)
           // The target is the optimal area to conquer (At least in a short perspective)

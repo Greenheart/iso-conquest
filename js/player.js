@@ -36,7 +36,7 @@ class Player {
     // This enables recursive conquering in one level.
     // By taking an area, you automatically get the other player's adjacent areas.
     if (shouldTryConqueringAdjacent === true) {
-      const adjacentHostileAreas = area.adjacentAreas[1].filter(a => Area.keepHostile(a, otherPlayerId))
+      const adjacentHostileAreas = area.adjacentAreas[1].filter(a => Area.keepHostile(a, this.id))
 
       if (adjacentHostileAreas.length > 0) {
         adjacentHostileAreas.forEach(a => this.conquer(a, false))

@@ -222,8 +222,10 @@ class Area {
     return adjacentArea.isNeutral()
   }
 
-  static keepHostile (adjacentArea, otherPlayerId) {
-    return Map.tileTypes[adjacentArea.tileType] === 'player' + otherPlayerId
+  static keepHostile (adjacentArea, playerId) {
+    const type = Map.tileTypes[adjacentArea.tileType]
+    return type !== 'player' + playerId &&
+           type !== 'neutral'
   }
 
   static updateAll (areas) {
