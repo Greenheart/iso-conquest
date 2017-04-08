@@ -1,6 +1,6 @@
 'use strict'
 
-window.DEBUG = true
+window.DEBUG = false
 
 document.addEventListener('DOMContentLoaded', () => {
   const finishSetup = (config) => {

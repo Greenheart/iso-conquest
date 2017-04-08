@@ -19,6 +19,10 @@ class Game {
     this.addEventHandlers()
     this.update()
     this.display()
+
+    if (this.activePlayer.isAI) {
+      this.activePlayer.takeTurn()
+    }
   }
 
   update () {
@@ -30,7 +34,7 @@ class Game {
   }
 
   nextTurn () {
-    if (this.turn % this.players.length === 0 && this.activePlayer.isAI) {
+    if (this.activePlayer.isAI) {
       this.activePlayer.takeTurn()
     }
   }
