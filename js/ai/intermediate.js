@@ -7,55 +7,65 @@ class IntermediateAi extends Player {
   }
 
   takeTurn () {
-    const availableMoves = this.getAvailableMoves()
+    const best = this.getBestMove()
 
-    // Ai.orderMovesByGain(availableMoves)
-
-    // IDEA: Possibly create getBestAvailableMove() that just returns the optimal move
-    // Will result in a short sighted AI but hopefully a fun mechanic
-    if (availableMoves.length > 0) {
-      const choice = Helpers.randomInt(0, availableMoves.length - 1)
-      availableMoves[choice].area.viewComponent.click()
-      window.setTimeout(() => {
-        this.executeMove(availableMoves[choice])
-      }, 350)
-    }
+    best.area.viewComponent.click()
+    window.setTimeout(() => {
+      this.executeMove(best.target)
+    }, 350)
   }
 
-  executeMove (selectedMove) {
-    const choice = Helpers.randomInt(0, selectedMove.conquerableNeighbors.length - 1)
-    const areaToConquer = selectedMove.conquerableNeighbors[choice]
+  executeMove (areaToConquer) {
     window.setTimeout(() => {
       areaToConquer.viewComponent.click()
     }, 350)
   }
 
-  getAvailableMoves () {
-    const availableMoves = []
+  getBestMove () {
+    return this.areas
+      .reduce((best, area, i) => {
+        const conquerableNeighbors1 = area.adjacentAreas[1]
+                                        .filter(a => a.isConquerableBy(this))
+                                        .map(a => ({
+                                          area: a,
+                                          distance: 1
+                                        }))
 
-    for (const area of this.areas) {
-      const conquerableNeighbors = area.adjacentAreas['all']
-                                   .filter(a => a.isConquerableBy(this))
-      if (conquerableNeighbors.length > 0) {
-        availableMoves.push({
-          area,
-          conquerableNeighbors
-          // gain: this.calculateGainOfConquer(area, conquerableNeighbors)
-        })
-      }
-    }
+        const conquerableNeighbors2 = area.adjacentAreas[2]
+                                        .filter(a => a.isConquerableBy(this))
+                                        .map(a => ({
+                                          area: a,
+                                          distance: 2
+                                        }))
 
-    return availableMoves
+        const conquerableNeighbors = conquerableNeighbors1.concat(conquerableNeighbors2)
+
+        // Find the best place to expand
+        for (const areaToConquer of conquerableNeighbors) {
+          // TODO: Refactor keepHostile to make use of playerId instead of otherPlayerId
+          const otherPlayerId = this.id === 1 ? 2 : 1
+          const conquerableFromOpponent = areaToConquer.area.adjacentAreas[1]
+                                            .filter(a => Area.keepHostile(a, otherPlayerId))
+
+          const gain = this.calculateGainOfConquer(areaToConquer, conquerableFromOpponent.length)
+          // The target is the optimal area to conquer (At least in a short perspective)
+          // The area is the optimal starting point
+          if (best === undefined || gain > best.gain) {
+            best = { target: areaToConquer.area, gain, area }
+          }
+        }
+
+        return best
+      }, undefined)
   }
 
-  // calculateGainOfConquer (areaToConquer, conquerableNeighbors) {
-  //   // for area of conquerableNeighbors
-  //     // simulate this.conquer
-  // }
+  calculateGainOfConquer (areaToConquer, areasConquerableFromOpponent) {
+    let gain = 0
 
-  // orderMovesByGain (availableMoves) {
-  // // TODO: To improve this, store all moves as a move-objects rather
-  // // than all of the ai's areas that can be used to make moves
-  //   return availableMoves.sort((move1, move2) => move1.gain - move2.gain)
-  // }
+    if (areaToConquer.distance === 1) {
+      ++gain
+    }
+
+    return gain + areasConquerableFromOpponent
+  }
 }
