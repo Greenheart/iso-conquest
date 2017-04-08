@@ -164,5 +164,12 @@ class Game {
         Area.clearAllHighlighted()
       }
     })
+
+    this.ui.gameContainer.addEventListener('contextmenu', event => {
+      if (!window.DEBUG) {
+        event.preventDefault()
+        return false
+      }
+    })
   }
 }

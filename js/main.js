@@ -1,14 +1,14 @@
 'use strict'
 
-document.addEventListener('DOMContentLoaded', () => {
-  const DEV = false
+window.DEBUG = true
 
+document.addEventListener('DOMContentLoaded', () => {
   const finishSetup = (config) => {
     const game = new Game(config)
     game.start()
   }
 
-  if (DEV) {
+  if (window.DEBUG) {
     finishSetup({ mode: 'PvAI' })
   } else {
     Helpers.displayModal(document.querySelector('.modal'), {
