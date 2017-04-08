@@ -218,8 +218,6 @@ main {
   background: white;
 }
 
-/* IDEA: change background color of the player who won depending on winner. (change .area.playerX rules above to also select .modal .playerX)*/
-
 .modal h2 {
   font-size: 34px;
   display: block;
