@@ -129,6 +129,7 @@ main {
 .area {
   box-sizing: border-box;
   z-index: 3;
+  position: relative;
   background-color: var(--light-gray);
   transition: all .2s ease-in,
               background .27s ease-in;
@@ -188,6 +189,29 @@ main {
   100% {
     transform: scale(1.15);
   }
+}
+
+.area.bonus::before {
+  content: attr(data-value);
+  font-weight: 300;
+  font-size: 26px;
+  color: #777;
+  display: inline-block;
+  position: absolute;
+  top: 25%;
+  right: 25%;
+  transform: rotateX(180deg) rotateZ(45deg) rotateY(45deg) translateY(0%) translateX(-75%) scale(1, 1.5);
+}
+
+.area-selectable.bonus:hover::before,
+.area-selectable.area-active.bonus:hover::before,
+.area-active.bonus::before {
+  transform: rotateX(180deg) rotateZ(45deg) rotateY(45deg) translateY(0%) translateX(-62%) scale(1, 1.5);
+}
+
+.area.player1.bonus::before,
+.area.player2.bonus::before {
+  color: #fff;
 }
 
 .hidden {

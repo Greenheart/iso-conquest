@@ -7,6 +7,13 @@ class Area {
     this.x = config.x
     this.y = config.y
     this.tileType = config.tileType
+
+    if (Map.tileTypes[this.tileType] === 'bonus') {
+      this.value = 5
+    } else {
+      this.value = 1
+    }
+
     this.viewComponent = this.createViewComponent()
     this.adjacentAreas = {}
   }
@@ -28,23 +35,29 @@ class Area {
   }
 
   parseTileOwner (tileType) {
-    switch (tileType) {
-      // NOTE: improve maintainability by adding helper method that finds the tileType keys based on their values
-      // find key in object by object[key] === value.
-      case 0:
-        return null
-      case 1:
-        return this.game.players[0]
-      case 2:
-        return this.game.players[1]
-      default:
-        console.error('tileType: ' + tileType + ' is not yet implemented')
+    const owners = {
+      0: null,
+      1: this.game.players[0],
+      2: this.game.players[1],
+      8: null,
+      9: null
     }
+
+    if (tileType in owners) {
+      return owners[tileType]
+    }
+
+    console.error('tileType: ' + tileType + ' is not yet implemented')
   }
 
   createViewComponent () {
     const area = document.createElement('div')
     area.classList.add('area')
+
+    if (Map.tileTypes[this.tileType] === 'bonus') {
+      area.classList.add('bonus')
+      area.dataset.value = this.value
+    }
 
     if (this.owner !== null) {
       area.classList.add(this.owner.tileType)
@@ -70,7 +83,9 @@ class Area {
   }
 
   isNeutral () {
-    return Map.tileTypes[this.tileType] === 'neutral'
+    const type = Map.tileTypes[this.tileType]
+    return type === 'neutral' ||
+           type === 'bonus' && this.owner === null
   }
 
   isOwnedBy (player) {
@@ -225,7 +240,8 @@ class Area {
   static keepHostile (adjacentArea, playerId) {
     const type = Map.tileTypes[adjacentArea.tileType]
     return type !== 'player' + playerId &&
-           type !== 'neutral'
+           type !== 'neutral' &&
+           type !== 'bonus'
   }
 
   static updateAll (areas) {

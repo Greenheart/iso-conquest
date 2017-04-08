@@ -7,12 +7,14 @@ class IntermediateAi extends Player {
   }
 
   takeTurn () {
-    const best = this.getBestMove()
+    const move = this.getBestMove()
 
-    best.area.viewComponent.click()
-    window.setTimeout(() => {
-      this.executeMove(best.target)
-    }, 350)
+    if (move) {
+      move.area.viewComponent.click()
+      window.setTimeout(() => {
+        this.executeMove(move.target)
+      }, 350)
+    }
   }
 
   executeMove (areaToConquer) {
@@ -45,7 +47,7 @@ class IntermediateAi extends Player {
           const conquerableFromOpponent = areaToConquer.area.adjacentAreas[1]
                                             .filter(a => Area.keepHostile(a, this.id))
 
-          const gain = this.calculateGainOfConquer(areaToConquer, conquerableFromOpponent.length)
+          const gain = this.calculateGainOfConquer(areaToConquer, conquerableFromOpponent.length, area.value)
           // The target is the optimal area to conquer (At least in a short perspective)
           // The area is the optimal starting point
           if (best === undefined || gain > best.gain) {
@@ -57,11 +59,13 @@ class IntermediateAi extends Player {
       }, undefined)
   }
 
-  calculateGainOfConquer (areaToConquer, areasConquerableFromOpponent) {
+  calculateGainOfConquer (areaToConquer, areasConquerableFromOpponent, sacrifice) {
     let gain = 0
 
     if (areaToConquer.distance === 1) {
-      ++gain
+      gain += areaToConquer.area.value
+    } else {
+      gain += areaToConquer.area.value - sacrifice
     }
 
     return gain + areasConquerableFromOpponent

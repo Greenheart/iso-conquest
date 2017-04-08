@@ -3,7 +3,7 @@
 class Game {
   constructor (config) {
     // IDEA: possibly show level selection in menu
-    const level = Map.levels['intro']
+    const level = Map.levels['bonus']
     this.ui = this.getDOMReferences()
     this.players = this.getPlayers(level, config.mode)
     this.currentLevel = this.loadLevel(level)
@@ -64,6 +64,8 @@ class Game {
     const playerTwo = this.players[1]
     const playerOneAreas = playerOne.areas.length
     const playerTwoAreas = playerTwo.areas.length
+    const playerOneScore = this.players[0].score
+    const playerTwoScore = this.players[1].score
 
     if (playerOneAreas === 0) {
       this.winner = playerTwo.color
@@ -73,10 +75,10 @@ class Game {
 
     // No neutral areas left, the winner is the one with the most areas
     if (!this.currentLevel.areas.some(a => a.isNeutral())) {
-      if (playerOneAreas === playerTwoAreas) {
+      if (playerOneScore === playerTwoScore) {
         this.winner = 'tie'
       } else {
-        this.winner = playerOneAreas > playerTwoAreas ? playerOne.color : playerTwo.color
+        this.winner = playerOneScore > playerTwoScore ? playerOne.color : playerTwo.color
       }
     }
   }

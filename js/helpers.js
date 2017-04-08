@@ -24,8 +24,6 @@ class Helpers {
     const h2 = modal.querySelector('h2')
     h2.innerText = content.heading
     h2.classList.add(content.backgroundColor)
-    // TODO: is message necessary? Maybe if the heading states something and the message asks a question for the user's next action
-    // Or maybe, **show strategy tips**?
     if (content.message) {
       modal.querySelector('.message').innerText = content.message
     }
