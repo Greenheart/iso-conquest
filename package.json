@@ -17,7 +17,8 @@
       "Player",
       "Area",
       "Map",
-      "Ai"
+      "SimpleAi",
+      "IntermediateAi"
     ]
   },
   "devDependencies": {

@@ -136,7 +136,7 @@ class Game {
       const config = { id: playerId, game: this }
 
       if (playerId === level.playerCount && gameMode === 'PvAI') {
-        players.push(new Ai(config))
+        players.push(new IntermediateAi(config))
       } else {
         players.push(new Player(config))
       }
