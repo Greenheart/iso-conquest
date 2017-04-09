@@ -27,14 +27,14 @@ class IntermediateAi extends Player {
     return this.areas
       .reduce((best, area, i) => {
         const conquerableNeighbors1 = area.adjacentAreas[1]
-                                        .filter(a => a.isConquerableBy(this))
+                                        .filter(a => a.isConquerable())
                                         .map(a => ({
                                           area: a,
                                           distance: 1
                                         }))
 
         const conquerableNeighbors2 = area.adjacentAreas[2]
-                                        .filter(a => a.isConquerableBy(this))
+                                        .filter(a => a.isConquerable())
                                         .map(a => ({
                                           area: a,
                                           distance: 2

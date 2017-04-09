@@ -94,8 +94,53 @@ class Area {
     return Map.tileTypes[this.tileType] === 'player' + player.id
   }
 
-  isConquerableBy (player) {
+  isConquerable () {
     return this.owner === null
+  }
+
+  isConquerableBy (player) {
+    // Does the player own any neighboring areas?
+    if (this.adjacentAreas[1].some(a => a.isOwnedBy(player))) {
+      return true
+    }
+
+    // Are there any adjacent neutral areas?
+    const adjacentNeutral = this.adjacentAreas[1].filter(a => a.isNeutral())
+    if (adjacentNeutral.length === 0) {
+      return false
+    }
+
+    // #1
+    // Can the player reach any of the adjacent neutral areas?
+    // NOTE: Maybe remove this array if not needed
+    // const adjacentPlayerAreas = player.areas
+    //                               .filter(area => adjacentNeutral.some(a => Area.getDistance(a, area) <= 2))
+    // if (adjacentPlayerAreas.length === 0) {
+    //   return true
+    // }
+
+    // #2
+    // Can the player reach any of the adjacent neutral areas?
+    // const playerHaveAreasInRange = player.areas.some(area => adjacentNeutral.some(a => Area.getDistance(a, area) <= 2))
+    // if (playerHaveAreasInRange) {
+    //   return true
+    // }
+    //
+    // debugger
+    // window.alert('didn\'t find an answer!')
+
+    // Can the player reach any of the adjacent neutral areas?
+    return player.areas.some(area => adjacentNeutral.some(a => Area.getDistance(a, area) <= 2))
+
+    // IDEA #2
+
+    // if the current area does not have any adjacent neutral areas
+      // return false
+
+    // if all adjacent areas around are owned by the other player (not the one sent in)
+      // return false
+
+    // if
   }
 
   getNeutralNeighbors () {
@@ -235,8 +280,8 @@ class Area {
     return !Area.isSame(areaToTest, areaToRemove)
   }
 
-  static keepNeutral (adjacentArea) {
-    return adjacentArea.isNeutral()
+  static keepNeutral (area) {
+    return area.isNeutral()
   }
 
   static keepHostile (adjacentArea, playerId) {

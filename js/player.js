@@ -40,7 +40,7 @@ class Player {
     }
   }
 
-  conquer (area, shouldTryConqueringAdjacent) {
+  conquer (area, shouldTryConqueringAdjacent = false) {
     // if conquerng from other player, remove area from their collection of areas they own
     if (area.owner !== null && area.owner !== this) {
       if (area.bonus) {
@@ -71,12 +71,30 @@ class Player {
       const adjacentHostileAreas = area.adjacentAreas[1].filter(a => Area.keepHostile(a, this.id))
 
       if (adjacentHostileAreas.length > 0) {
-        adjacentHostileAreas.forEach(a => this.conquer(a, false))
+        adjacentHostileAreas.forEach(a => this.conquer(a))
       }
+
+      // this.tryConquerSiegedAreas(otherPlayerId)
 
       this.game.update()
       this.game.display()
       this.game.nextTurn()
+    }
+  }
+
+  tryConquerSiegedAreas (otherPlayerId) {
+    // Find sieged areas that cant be taken by the other player
+    const otherPlayer = this.game.players
+                          .find(player => player.id === otherPlayerId)
+    const remainingNeutral = this.game.currentLevel.areas
+                              .filter(Area.keepNeutral)
+
+    for (const neutral of remainingNeutral) {
+      debugger
+      if (!neutral.isConquerableBy(otherPlayer)) {
+        this.conquer(neutral)
+        neutral.viewComponent.classList.add('sieged')
+      }
     }
   }
 
