@@ -31,7 +31,7 @@ class SimpleAi extends Player {
 
     for (const area of this.areas) {
       const conquerableNeighbors = area.adjacentAreas['all']
-                                   .filter(a => a.isConquerableBy(this))
+                                   .filter(a => a.isConquerable())
       if (conquerableNeighbors.length > 0) {
         availableMoves.push({
           area,
