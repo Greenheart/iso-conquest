@@ -21,12 +21,23 @@ class Player {
     const playerId = 'player' + this.id
     this.game.ui.playerInfo[playerId].querySelector('p span').innerText = this.score
 
-    let bonuses = ''
+    const bonusUI = this.game.ui.playerBonuses[playerId].children
 
-    for (const area of this.bonusAreas) {
-      bonuses += `<span>+${area.value}</span>`
+    for (let i = 0; i < bonusUI.length; i++) {
+      const area = this.bonusAreas[i]
+
+      if (area !== undefined) {
+        bonusUI[i].innerText = '+' + area.value
+      } else if (bonusUI[i].innerText.length > 0) {
+        bonusUI[i].classList.add('lost')
+        window.setTimeout(() => {
+          bonusUI[i].innerText = ''
+          bonusUI[i].classList.remove('lost')
+        }, 310)
+      } else {
+        break
+      }
     }
-    this.game.ui.playerBonuses[playerId].innerHTML = bonuses
   }
 
   conquer (area, shouldTryConqueringAdjacent) {

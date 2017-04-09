@@ -117,6 +117,19 @@ main {
   display: inline-block;
   padding: 4.5px 5px 4.5px 3px;
   border: 1px solid var(--gray);
+  opacity: 1;
+  transition: opacity .3s ease-in;
+}
+
+.player-bonuses span:empty {
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.player-bonuses span.lost {
+  opacity: 0;
+  transition: opacity .3s ease-in;
 }
 
 .player-bonuses.player1 {
