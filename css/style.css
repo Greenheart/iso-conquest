@@ -11,7 +11,7 @@
   --player2-color: #ff6447;
   --player2-secondary-color: #ffa595;
   --green: #55cc7d;
-  --yellow: #FDD835;
+  --yellow: #FFF176;
 }
 
 body {
@@ -104,8 +104,8 @@ main {
 .player-bonuses {
   position: absolute;
   z-index: 10;
-  top: 64px;
-  width: 120px;
+  top: 58px;
+  width: 200px;
   font-weight: 300;
   letter-spacing: -0.109px;
 }
@@ -113,8 +113,10 @@ main {
 .player-bonuses span {
   background: var(--yellow);
   border-radius: 50%;
+  transform: scale(.8);
+  display: inline-block;
   padding: 4.5px 5px 4.5px 3px;
-  margin: 0 4px;
+  border: 1px solid var(--gray);
 }
 
 .player-bonuses.player1 {
