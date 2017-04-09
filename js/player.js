@@ -83,6 +83,10 @@ class Player {
   conquerBySacrifice (area) {
     // Remove the area that is to be sacrificed
     this.areas = this.areas.filter(areaToTest => Area.removeSpecific(areaToTest, this.currentlySelectedArea))
+    if (this.currentlySelectedArea.bonus) {
+      this.bonusAreas = this.bonusAreas
+                            .filter(bonus => Area.removeSpecific(bonus, this.currentlySelectedArea))
+    }
     this.currentlySelectedArea.owner = null
     this.currentlySelectedArea.viewComponent.classList.remove('player' + this.id)
     this.currentlySelectedArea.tileType = 0
