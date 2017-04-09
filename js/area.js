@@ -10,8 +10,10 @@ class Area {
 
     if (Map.tileTypes[this.tileType] === 'bonus') {
       this.value = 5
+      this.bonus = true
     } else {
       this.value = 1
+      this.bonus = false
     }
 
     this.viewComponent = this.createViewComponent()

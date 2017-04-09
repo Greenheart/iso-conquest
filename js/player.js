@@ -9,6 +9,7 @@ class Player {
     this.color = this.id === 1 ? 'blue' : 'red'
     this.areas = null
     this.isAI = config.isAI || false
+    this.bonusAreas = []
   }
 
   init () {
@@ -17,17 +18,34 @@ class Player {
   }
 
   display () {
-    this.game.ui.playerInfo['player' + this.id].querySelector('p span').innerText = this.score
+    const playerId = 'player' + this.id
+    this.game.ui.playerInfo[playerId].querySelector('p span').innerText = this.score
+
+    let bonuses = ''
+
+    for (const area of this.bonusAreas) {
+      bonuses += `<span>+${area.value}</span>`
+    }
+    this.game.ui.playerBonuses[playerId].innerHTML = bonuses
   }
 
   conquer (area, shouldTryConqueringAdjacent) {
     // if conquerng from other player, remove area from their collection of areas they own
     if (area.owner !== null && area.owner !== this) {
+      if (area.bonus) {
+        area.owner.bonusAreas = area.owner.bonusAreas
+                              .filter(bonus => Area.removeSpecific(bonus, area))
+      }
       area.owner.score -= area.value
-      area.owner.areas = area.owner.areas.filter(areaToTest => Area.removeSpecific(areaToTest, area))
+      area.owner.areas = area.owner.areas
+                          .filter(areaToTest => Area.removeSpecific(areaToTest, area))
     }
     area.owner = this
     area.tileType = this.id
+
+    if (area.bonus) {
+      this.bonusAreas.push(area)
+    }
 
     const otherPlayerId = this.id === 1 ? 2 : 1
     area.viewComponent.classList.remove('player' + otherPlayerId)
@@ -57,9 +75,7 @@ class Player {
     this.currentlySelectedArea.owner = null
     this.currentlySelectedArea.viewComponent.classList.remove('player' + this.id)
     this.currentlySelectedArea.tileType = 0
-    console.log(this.score)
     this.score -= this.currentlySelectedArea.value
-    console.log(this.score)
 
     this.conquer(area, true)
   }

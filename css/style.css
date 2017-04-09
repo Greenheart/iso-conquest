@@ -11,6 +11,7 @@
   --player2-color: #ff6447;
   --player2-secondary-color: #ffa595;
   --green: #55cc7d;
+  --yellow: #FDD835;
 }
 
 body {
@@ -98,6 +99,31 @@ main {
 .player-info.player2.active-player {
   background-color: var(--player2-color);
   box-shadow: 0 0 40px 5px var(--player2-color);
+}
+
+.player-bonuses {
+  position: absolute;
+  z-index: 10;
+  top: 64px;
+  width: 120px;
+  font-weight: 300;
+  letter-spacing: -0.109px;
+}
+
+.player-bonuses span {
+  background: var(--yellow);
+  border-radius: 50%;
+  padding: 4.5px 5px 4.5px 3px;
+  margin: 0 4px;
+}
+
+.player-bonuses.player1 {
+  left: 135px;
+}
+
+.player-bonuses.player2 {
+  text-align: right;
+  right: 135px;
 }
 
 .game {

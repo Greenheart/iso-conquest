@@ -152,14 +152,19 @@ class Game {
   }
 
   getDOMReferences () {
+    const find = document.querySelector.bind(document)
     return {
-      gameContainer: document.querySelector('.game'),
-      areasContainer: document.querySelector('.areas'),
+      gameContainer: find('.game'),
+      areasContainer: find('.areas'),
       areas: [],
-      modal: document.querySelector('.modal'),
+      modal: find('.modal'),
       playerInfo: {
-        player1: document.querySelector('.player-info.player1'),
-        player2: document.querySelector('.player-info.player2')
+        player1: find('.player-info.player1'),
+        player2: find('.player-info.player2')
+      },
+      playerBonuses: {
+        player1: find('.player-bonuses.player1'),
+        player2: find('.player-bonuses.player2')
       }
     }
   }
