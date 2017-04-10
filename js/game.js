@@ -3,7 +3,7 @@
 class Game {
   constructor (config) {
     // IDEA: possibly show level selection in menu
-    const level = Map.levels['bonus']
+    const level = Map.levels['sieged']
     this.ui = this.getDOMReferences()
     this.players = this.getPlayers(level, config.mode)
     this.currentLevel = this.loadLevel(level)
