@@ -103,6 +103,7 @@ main {
 
 .player-bonuses {
   position: absolute;
+  display: flex;
   z-index: 10;
   top: 58px;
   width: 200px;
@@ -114,7 +115,6 @@ main {
   background: var(--yellow);
   border-radius: 50%;
   transform: scale(.8);
-  display: inline-block;
   padding: 4.5px 5px 4.5px 3px;
   border: 1px solid var(--gray);
   opacity: 1;
@@ -125,6 +125,7 @@ main {
   opacity: 0;
   margin: 0;
   padding: 0;
+  border: 0;
 }
 
 .player-bonuses span.lost {
@@ -137,7 +138,7 @@ main {
 }
 
 .player-bonuses.player2 {
-  text-align: right;
+  justify-content: flex-end;
   right: 135px;
 }
 
