@@ -16,6 +16,7 @@ Map.tileTypes = {
 Map.levels = {
   'intro': {
     playerCount: 2,
+    description: 'Initial level',
     tiles: [
       [1, 0, 0, 0, 0, 0, 0, 1],
       [0, 0, 0, 0, 0, 0, 0, 0],
@@ -29,6 +30,7 @@ Map.levels = {
   },
   'bonus': {
     playerCount: 2,
+    description: 'Introducing bonus areas that give extra score.',
     tiles: [
       [1, 0, 0, 0, 0, 0, 0, 1],
       [0, 0, 0, 0, 0, 0, 0, 0],
@@ -42,6 +44,7 @@ Map.levels = {
   },
   'debug': {
     playerCount: 2,
+    description: 'Test that the correct winner and endgame stats are displayed.',
     tiles: [
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1],
@@ -51,6 +54,20 @@ Map.levels = {
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1],
       [2, 1, 1, 1, 1, 1, 0, 2]
+    ]
+  },
+  'siege': {
+    playerCount: 2,
+    description: 'Test that the game ends when a player can\'t make further moves.',
+    tiles: [
+      [1, 0, 2, 2, 2, 2, 2, 1],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 1, 1, 2],
+      [2, 2, 2, 2, 2, 1, 1, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 0, 0, 0, 0, 0, 0, 2]
     ]
   }
 }

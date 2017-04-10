@@ -26,8 +26,8 @@ class Game {
   }
 
   update () {
-    this.checkEndGameConditions()
     this.updateActivePlayer()
+    this.checkEndGameConditions()
     Area.updateAll(this.currentLevel.areas)
 
     ++this.turn
@@ -66,6 +66,7 @@ class Game {
     const playerTwoAreas = playerTwo.areas.length
     const playerOneScore = this.players[0].score
     const playerTwoScore = this.players[1].score
+    const leader = playerOneScore > playerTwoScore ? playerOne.color : playerTwo.color
 
     if (playerOneAreas === 0) {
       this.winner = playerTwo.color
@@ -78,8 +79,13 @@ class Game {
       if (playerOneScore === playerTwoScore) {
         this.winner = 'tie'
       } else {
-        this.winner = playerOneScore > playerTwoScore ? playerOne.color : playerTwo.color
+        this.winner = leader
       }
+    }
+
+    // If a player can't make any move, the game is over
+    if (!this.activePlayer.areas.some(a => a.getNeutralNeighbors().length > 0)) {
+      this.winner = leader
     }
   }
 
