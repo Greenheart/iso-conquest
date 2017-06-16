@@ -3,7 +3,7 @@
 class Game {
   constructor (config) {
     // IDEA: possibly show level selection in menu
-    const level = Map.levels['bonus']
+    const level = Map.levels['siege']
     this.ui = this.getDOMReferences()
     this.players = this.getPlayers(level, config.mode)
     this.currentLevel = this.loadLevel(level)
@@ -64,9 +64,9 @@ class Game {
     const playerTwo = this.players[1]
     const playerOneAreas = playerOne.areas.length
     const playerTwoAreas = playerTwo.areas.length
-    const playerOneScore = this.players[0].score
-    const playerTwoScore = this.players[1].score
-    const leader = playerOneScore > playerTwoScore ? playerOne.color : playerTwo.color
+    const leaderColor = playerOne.score > playerTwo.score ? playerOne.color : playerTwo.color
+
+    const remainingNeutral = this.currentLevel.areas.filter(a => a.isNeutral()).length
 
     if (playerOneAreas === 0) {
       this.winner = playerTwo.color
@@ -75,17 +75,21 @@ class Game {
     }
 
     // No neutral areas left, the winner is the one with the most areas
-    if (!this.currentLevel.areas.some(a => a.isNeutral())) {
-      if (playerOneScore === playerTwoScore) {
+    if (remainingNeutral === 0) {
+      if (playerOne.score === playerTwo.score) {
         this.winner = 'tie'
       } else {
-        this.winner = leader
+        this.winner = leaderColor
       }
     }
 
-    // If a player can't make any move, the game is over
-    if (!this.activePlayer.areas.some(a => a.getNeutralNeighbors().length > 0)) {
-      this.winner = leader
+    // If a player can't make any move, they lose.
+    // This allows the losing player to make a comeback by blocking the leader's expansion.
+    // TODO: find a good limit to not make this condition unfair in the endgame.
+    // remainingNeutral > 1 might be a good option.
+    if (!this.activePlayer.areas.some(a => a.getNeutralNeighbors().length > 0) && remainingNeutral > 1) {
+      const otherPlayerColor = this.activePlayer.id === 1 ? this.players[1].color : this.players[0].color
+      this.winner = otherPlayerColor
     }
   }
 
