@@ -1,8 +1,6 @@
 'use strict'
 
-class Map {
-
-}
+class Map {}
 
 Map.tileTypes = {
   0: 'neutral',
@@ -72,15 +70,16 @@ Map.levels = {
   },
   'mid-game-siege': {
     playerCount: 2,
+    description: 'Test that a player who runs out of available moves lose.',
     tiles: [
       [1, 0, 0, 0, 0, 0, 0, 1],
       [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [2, 2, 2, 2, 2, 2, 2, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
       [2, 2, 2, 2, 2, 2, 2, 2],
       [2, 2, 2, 2, 2, 2, 2, 2],
-      [0, 0, 0, 0, 2, 2, 2, 2],
-      [2, 0, 0, 0, 2, 2, 2, 0]
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 0, 0, 2, 2, 2, 2, 2]
     ]
   }
 }

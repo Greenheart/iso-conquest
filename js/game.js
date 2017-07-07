@@ -26,8 +26,8 @@ class Game {
   }
 
   update () {
-    this.updateActivePlayer()
     this.checkEndGameConditions()
+    this.updateActivePlayer()
     Area.updateAll(this.currentLevel.areas)
 
     ++this.turn
@@ -85,7 +85,7 @@ class Game {
 
     // If a player can't make any move, the game is over
     if (!this.activePlayer.areas.some(a => a.getNeutralNeighbors().length > 0)) {
-      this.winner = leader
+      this.winner = this.players.find(p => p.id !== this.activePlayer.id).color
     }
   }
 
