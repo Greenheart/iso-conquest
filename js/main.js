@@ -2,7 +2,7 @@
 
 window.DEBUG = false
 
-document.addEventListener('DOMContentLoaded', () => {
+window.onload = () => {
   const finishSetup = (config) => {
     const game = new Game(config)
     game.start()
@@ -24,4 +24,4 @@ document.addEventListener('DOMContentLoaded', () => {
       }]
     })
   }
-})
+}
