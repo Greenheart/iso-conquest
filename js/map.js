@@ -81,5 +81,33 @@ Map.levels = {
       [2, 2, 2, 2, 2, 2, 2, 2],
       [2, 0, 0, 2, 2, 2, 2, 2]
     ]
+  },
+  'end-game-siege': {
+    playerCount: 2,
+    description: 'Test that a player who runs out of available moves lose despite their score.',
+    tiles: [
+      [1, 1, 1, 1, 1, 1, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [2, 0, 1, 1, 1, 1, 1, 1],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 0, 0, 2, 2, 2, 2, 2]
+    ]
+  },
+  'last-area-siege': {
+    playerCount: 2,
+    description: 'Test that a player who runs out of available moves lose despite their score.',
+    tiles: [
+      [1, 1, 1, 0, 1, 1, 1, 1],
+      [1, 1, 0, 1, 1, 1, 1, 1],
+      [2, 1, 1, 1, 1, 1, 1, 1],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2]
+    ]
   }
 }

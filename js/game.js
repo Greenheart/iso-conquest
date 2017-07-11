@@ -3,7 +3,7 @@
 class Game {
   constructor (config) {
     // IDEA: possibly show level selection in menu
-    const level = Map.levels['mid-game-siege']
+    const level = Map.levels['bonus']
     this.ui = this.getDOMReferences()
     this.players = this.getPlayers(level, config.mode)
     this.currentLevel = this.loadLevel(level)
@@ -67,6 +67,7 @@ class Game {
     const playerOneScore = this.players[0].score
     const playerTwoScore = this.players[1].score
     const leader = playerOneScore > playerTwoScore ? playerOne.color : playerTwo.color
+    const remainingNeutral = this.currentLevel.areas.filter(a => a.isNeutral()).length
 
     if (playerOneAreas === 0) {
       this.winner = playerTwo.color
@@ -74,18 +75,20 @@ class Game {
       this.winner = playerOne.color
     }
 
-    // No neutral areas left, the winner is the one with the most areas
-    if (!this.currentLevel.areas.some(a => a.isNeutral())) {
+    // No neutral areas left, the winner is the one with the most areas.
+    if (remainingNeutral === 0) {
       if (playerOneScore === playerTwoScore) {
         this.winner = 'tie'
       } else {
         this.winner = leader
       }
-    }
-
-    // If a player can't make any move, the game is over
-    if (!this.activePlayer.areas.some(a => a.getNeutralNeighbors().length > 0)) {
-      this.winner = this.players.find(p => p.id !== this.activePlayer.id).color
+    // If a player can't make any move, they lose despite their score.
+    } else {
+      for (const player of this.players) {
+        if (!player.areas.some(a => a.getNeutralNeighbors().length > 0)) {
+          this.winner = this.players.find(p => p.id !== player.id).color
+        }
+      }
     }
   }
 
