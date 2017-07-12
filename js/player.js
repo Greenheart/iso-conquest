@@ -74,27 +74,9 @@ class Player {
         adjacentHostileAreas.forEach(a => this.conquer(a))
       }
 
-      // this.tryConquerSiegedAreas(otherPlayerId)
-
       this.game.update()
       this.game.display()
       this.game.nextTurn()
-    }
-  }
-
-  tryConquerSiegedAreas (otherPlayerId) {
-    // Find sieged areas that cant be taken by the other player
-    const otherPlayer = this.game.players
-                          .find(player => player.id === otherPlayerId)
-    const remainingNeutral = this.game.currentLevel.areas
-                              .filter(Area.keepNeutral)
-
-    for (const neutral of remainingNeutral) {
-      debugger
-      if (!neutral.isConquerableBy(otherPlayer)) {
-        this.conquer(neutral)
-        neutral.viewComponent.classList.add('sieged')
-      }
     }
   }
 
