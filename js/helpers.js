@@ -71,6 +71,10 @@ class Helpers {
   static hideElement (element) {
     element.classList.add('hidden')
   }
+
+  static capitalize (str) {
+    return str[0].toUpperCase() + str.slice(1)
+  }
 }
 
 // Polyfills
