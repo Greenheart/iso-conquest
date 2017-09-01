@@ -12,6 +12,7 @@ class Game {
 
     this.turn = 0
     this.winner = null
+    this.winReason = ''
     this.activePlayer = this.players[0]
   }
 
@@ -81,12 +82,16 @@ class Game {
         this.winner = 'tie'
       } else {
         this.winner = leader
+        this.winReason
       }
     // If a player can't make any move, they lose despite their score.
     } else {
       for (const player of this.players) {
         if (!player.areas.some(a => a.getNeutralNeighbors().length > 0)) {
           this.winner = this.players.find(p => p.id !== player.id).color
+          if (remainingNeutral > 1) {
+            this.winReason = `${Helpers.capitalize(player.color)} ran out of moves.`
+          }
         }
       }
     }
@@ -112,7 +117,8 @@ class Game {
       content.message = 'Perhaps you should be more aggressive?'
     } else {
       content.heading = `The ${this.winner} player won!`
-      content.message = `It took ${Math.floor(this.turn / 2)} turns.`
+      const turn = Math.floor(this.turn / 2)
+      content.message = `${this.winReason ? this.winReason + ' ': ``}The game lasted ${turn} ${turn > 1 ? 'turns' : 'turn'}.`
 
       const playerNumber = this.players.findIndex(p => p.color === this.winner) + 1
       content.backgroundColor = `player${playerNumber}`
