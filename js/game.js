@@ -103,9 +103,8 @@ class Game {
       actions: [
         {
           text: 'Play Again',
-          callback: () => window.location.reload()
+          callback: window.startNewGame
         }
-        // IDEA: add action for going back to main menu (to change game mode or map)
       ]
     }
 
