@@ -32,10 +32,6 @@ class Area {
     }
   }
 
-  display () {
-
-  }
-
   parseTileOwner (tileType) {
     const owners = {
       0: null,
@@ -264,10 +260,6 @@ class Area {
 
   static updateAll (areas) {
     areas.forEach(area => area.update())
-  }
-
-  static displayAll (areas) {
-    areas.forEach(area => area.display())
   }
 }
 

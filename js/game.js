@@ -52,7 +52,6 @@ class Game {
   }
 
   display () {
-    Area.displayAll(this.currentLevel.areas)
     Player.displayAll(this.players)
 
     if (this.winner !== null) {
