@@ -74,15 +74,13 @@ class Game {
       this.winner = playerTwo.color
     } else if (playerTwoAreas === 0) {
       this.winner = playerOne.color
-    }
 
     // No neutral areas left, the winner is the one with the most areas.
-    if (remainingNeutral === 0) {
+    } else if (remainingNeutral === 0) {
       if (playerOneScore === playerTwoScore) {
         this.winner = 'tie'
       } else {
         this.winner = leader
-        this.winReason
       }
     // If a player can't make any move, they lose despite their score.
     } else {
