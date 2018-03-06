@@ -1,6 +1,6 @@
 'use strict'
 
-class SimpleAi extends Player {
+class EasyAi extends Player {
   constructor (config) {
     config.isAI = true
     super(config)
