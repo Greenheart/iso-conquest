@@ -5,7 +5,7 @@ class Game {
     // IDEA: possibly show level selection in menu
     const level = Map.levels['bonus']
     this.ui = this.getDOMReferences()
-    this.players = this.getPlayers(level, config.mode)
+    this.players = this.getPlayers(level, config.mode, config.difficulty)
     this.currentLevel = this.loadLevel(level)
     this.currentLevel.areas.forEach(a => a.init())
     this.players.forEach(player => player.init())
@@ -148,14 +148,15 @@ class Game {
     return level
   }
 
-  getPlayers (level, gameMode) {
+  getPlayers (level, gameMode, difficulty) {
     const players = []
 
     for (let playerId = 1; playerId <= level.playerCount; playerId++) {
       const config = { id: playerId, game: this }
 
       if (playerId === level.playerCount && gameMode === 'PvAI') {
-        players.push(new IntermediateAi(config))
+        const Ai = difficulty === 'easy' ? EasyAi : IntermediateAi
+        players.push(new Ai(config))
       } else {
         players.push(new Player(config))
       }

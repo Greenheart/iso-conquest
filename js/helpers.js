@@ -36,10 +36,7 @@ class Helpers {
       if (i === 0) primaryAction = btn
 
       btn.innerText = action.text
-      btn.onclick = () => {
-        action.callback() // TODO: Change order once main menu and proper restart is implemented.
-        Helpers.resetModal(modal)
-      }
+      btn.onclick = () => action.callback()
       Helpers.showElement(btn)
     })
 
@@ -48,9 +45,6 @@ class Helpers {
   }
 
   static resetModal (modal) {
-    // TODO: this won't be useful until it's possible to go back to the main menu
-    // or to dismiss modals
-    // TODO: test this
     Helpers.hideElement(modal.parentElement)
 
     const h2 = modal.querySelector('h2')
