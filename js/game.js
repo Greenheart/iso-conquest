@@ -170,6 +170,10 @@ class Game {
       areasContainer: find('.areas'),
       areas: [],
       modal: find('.modal'),
+      mainMenuContainer: find('.main-menu'),
+      menu: find('.main-menu .menu'),
+      prepareRound: find('main-menu .prepare-round'),
+      strategyInfo: find('.main-menu .strategy-info'),
       playerInfo: {
         player1: find('.player-info.player1'),
         player2: find('.player-info.player2')
@@ -194,5 +198,9 @@ class Game {
         return false
       }
     })
+  }
+
+  clearGameBoard () {
+    this.ui.areasContainer.innerHTML = ''
   }
 }

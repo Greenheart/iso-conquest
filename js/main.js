@@ -2,13 +2,15 @@
   'use strict'
   let game  // Only keep one instance at a time.
   const modal = document.querySelector('.modal')
+  const mainMenu = document.querySelector('.main-menu')
+  const playButton = mainMenu.querySelector('button.play')
 
   window.DEBUG = false
-  window.onload = () => window.startNewGame()
+  playButton.onclick = () => window.startNewGame()
 
   window.startNewGame = () => {
-    // Remove game board of the previous round.
-    if (game) game.ui.areasContainer.innerHTML = ''
+    Helpers.hideElement(mainMenu.parentElement)
+    if (game) game.clearGameBoard()
 
     function finishSetup (config) {
       Helpers.resetModal(modal)
