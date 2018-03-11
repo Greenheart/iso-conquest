@@ -260,7 +260,7 @@ main {
   display: none !important;
 }
 
-.modal-overlay {
+.overlay {
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, .75);
@@ -270,6 +270,10 @@ main {
   left: 0;
   display: flex;
   justify-content: center;
+}
+
+.overlay.menu-overlay {
+  background: white;
 }
 
 .modal {
@@ -308,6 +312,73 @@ main {
   height: 70px;
 }
 
+.main-menu {
+  box-sizing: border-box;
+  max-width: 800px;
+  width: 80vw;
+  max-height: 400px;
+  height: 90vh;
+  margin-top: 10vh;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: white;
+  box-shadow: 0 0 400px 100px var(--gray);
+}
+
+.main-menu h2 {
+  font-size: 34px;
+  display: block;
+}
+
+.main-menu .description {
+  padding: 10px 20px;
+  line-height: 1.6;
+  letter-spacing: 1.2px;
+}
+
+.main-menu .welcome {
+  font-weight: 400;
+  font-size: 20px;
+  font-variant: small-caps;
+}
+
+.main-menu .actions {
+  display: flex;
+  justify-content: center;
+}
+
+.main-menu .actions button {
+  margin: 20px 30px;
+  padding: 10px 20px;
+  font: 30px 'Open Sans Condensed', sans-serif;
+  flex-basis: 200px;
+  height: 70px;
+}
+
+.menu {
+  display: grid;
+  grid-template-rows: min-content auto min-content;
+  height: 100%;
+  align-items: stretch;
+}
+
 .green {
   background-color: var(--green);
+}
+
+.copyright {
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  max-height: 20px;
+}
+
+.copyright a {
+  text-decoration: none;
+}
+
+.copyright a:hover {
+  text-decoration: underline;
 }
