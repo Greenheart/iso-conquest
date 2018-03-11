@@ -335,7 +335,6 @@ main {
 .main-menu .description {
   padding: 10px 20px;
   line-height: 1.6;
-  letter-spacing: 1.2px;
 }
 
 .main-menu .welcome {
@@ -362,6 +361,19 @@ main {
   grid-template-rows: min-content auto min-content;
   height: 100%;
   align-items: stretch;
+}
+
+.strategy-tips .tips ol {
+  margin: 10px 0 5px;
+}
+
+.strategy-tips .tips li {
+  padding: 10px;
+  line-height: 1.6;
+}
+
+.strategy-tips button.back {
+  margin: 0;
 }
 
 .green {
