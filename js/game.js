@@ -82,13 +82,12 @@ class Game {
         this.winner = leader
       }
     // If a player can't make any move, they lose despite their score.
+    // This is harsh, but makes it possible to make sick comebacks.
     } else {
       for (const player of this.players) {
         if (!player.areas.some(a => a.getNeutralNeighbors().length > 0)) {
-          this.winner = this.players.find(p => p.id !== player.id).color
-          if (remainingNeutral > 1) {
-            this.winReason = `${Helpers.capitalize(player.color)} ran out of moves.`
-          }
+            this.winner = this.players.find(p => p.id !== player.id).color
+            this.winReason = `${Helpers.capitalize(player.color)} ran out of moves, with only ${remainingNeutral} area${remainingNeutral > 1 ? 's' : ''} left to capture!\n`
         }
       }
     }

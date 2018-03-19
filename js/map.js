@@ -109,5 +109,19 @@ Map.levels = {
       [2, 2, 2, 2, 2, 2, 2, 2],
       [2, 2, 2, 2, 2, 2, 2, 2]
     ]
+  },
+  'last-area-incorrect-winner-bug': {
+    playerCount: 2,
+    description: 'Reproduce a bug where the AI player clearly lost - but still was marked as winner. At this state, it should be blue\'s turn.',
+    tiles: [
+      [1, 2, 2, 2, 1, 2, 2, 0],
+      [1, 1, 2, 2, 1, 2, 2, 2],
+      [1, 1, 1, 1, 1, 2, 2, 2],
+      [1, 1, 2, 1, 1, 1, 1, 1],
+      [2, 2, 1, 1, 1, 1, 1, 1],
+      [2, 2, 1, 1, 1, 1, 1, 1],
+      [2, 2, 1, 1, 1, 1, 1, 1],
+      [2, 2, 2, 1, 1, 1, 2, 2]
+    ]
   }
 }
