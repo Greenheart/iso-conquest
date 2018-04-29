@@ -402,3 +402,9 @@ button::-moz-focus-inner {
 .copyright a:hover {
   text-decoration: underline;
 }
+
+.copyright.bottom-right {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+}
