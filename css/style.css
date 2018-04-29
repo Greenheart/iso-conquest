@@ -308,6 +308,10 @@ main {
   justify-content: space-around;
 }
 
+button::-moz-focus-inner {
+  border: 0;
+}
+
 .modal button {
   margin: 20px 0;
   padding: 10px 20px;
