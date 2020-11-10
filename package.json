@@ -1,27 +1,23 @@
 {
-  "name": "iso-conquest",
-  "version": "1.0.0",
-  "main": "main.js",
-  "private": true,
-  "description": "A minimalistic turn based strategy game with PvP and experimental AI",
-  "scripts": {
-    "start": "browser-sync start --server --no-open --files 'css/*, js/*, *.html'"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "standard": {
-    "globals": [
-      "Helpers",
-      "Game",
-      "Player",
-      "Area",
-      "Map",
-      "EasyAi",
-      "IntermediateAi"
-    ]
-  },
-  "devDependencies": {
-    "browser-sync": "^2.18.5"
-  }
+    "name": "iso-conquest",
+    "version": "1.0.0",
+    "main": "main.js",
+    "private": true,
+    "description": "A minimalistic turn based strategy game with PvP and experimental AI",
+    "scripts": {
+        "start": "browser-sync start --server --no-open --files 'css/*, js/*, *.html'"
+    },
+    "author": "Samuel Plumppu",
+    "license": "ISC",
+    "standard": {
+        "globals": [
+            "Helpers",
+            "Game",
+            "Player",
+            "Area",
+            "Map",
+            "EasyAi",
+            "IntermediateAi"
+        ]
+    }
 }
