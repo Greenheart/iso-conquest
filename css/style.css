@@ -1,6 +1,6 @@
 :root {
     --tile-border-size: 1px;
-    --tile-size: 4em;
+    --tile-size: 7rem;
     --header-height: 60px;
     --grid-size: calc(var(--tile-size) * 8); /* 8x8 playboard */
     --gray: hsla(0, 0%, 0%, 0.1);
