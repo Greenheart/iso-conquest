@@ -5,25 +5,16 @@
     "private": true,
     "description": "A minimalistic turn based strategy game with PvP and experimental AI",
     "scripts": {
-        "prettify": "npx prettier \".\" --write"
+        "prettify": "npx prettier \".\" --write",
+        "start": "npx serve ."
     },
     "author": "Samuel Plumppu",
     "license": "ISC",
-    "standard": {
-        "globals": [
-            "Helpers",
-            "Game",
-            "Player",
-            "Area",
-            "Map",
-            "EasyAi",
-            "IntermediateAi"
-        ]
-    },
     "devDependencies": {
         "husky": "^4.3.0",
         "prettier": "^2.1.2",
-        "pretty-quick": "^3.1.0"
+        "pretty-quick": "^3.1.0",
+        "serve": "^11.3.2"
     },
     "husky": {
         "hooks": {
