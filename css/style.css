@@ -1,410 +1,411 @@
 :root {
-  --tile-border-size: 1px;
-  --tile-size: 4em;
-  --header-height: 60px;
-  --grid-size: calc(var(--tile-size) * 8);  /* 8x8 playboard */
-  --gray: hsla(0, 0%, 0%, .1);
-  --light-gray: #fefefe;
-  --dark-gray: hsla(0, 0%, 0%, .25);
-  --player1-color: #509eb8;
-  --player1-secondary-color: #7fbfd4;
-  --player2-color: #ff6447;
-  --player2-secondary-color: #ffa595;
-  --green: #55cc7d;
-  --yellow: #FFF176;
+    --tile-border-size: 1px;
+    --tile-size: 4em;
+    --header-height: 60px;
+    --grid-size: calc(var(--tile-size) * 8); /* 8x8 playboard */
+    --gray: hsla(0, 0%, 0%, 0.1);
+    --light-gray: #fefefe;
+    --dark-gray: hsla(0, 0%, 0%, 0.25);
+    --player1-color: #509eb8;
+    --player1-secondary-color: #7fbfd4;
+    --player2-color: #ff6447;
+    --player2-secondary-color: #ffa595;
+    --green: #55cc7d;
+    --yellow: #fff176;
 }
 
 body {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  font-family: sans-serif;
-  font-size: 16px;
-  letter-spacing: 1px;
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  flex-direction: column;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    font-size: 16px;
+    letter-spacing: 1px;
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    flex-direction: column;
 }
 
 header {
-  height: var(--header-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--green);
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--green);
 }
 
 h1,
 h2,
 h3,
 .player-info {
-  display: inline-flex;
-  font-family: 'Open Sans Condensed', sans-serif;
-  text-align: center;
-  color: #fff;
-  text-shadow: 1px 1px #555;
-  margin: 0;
+    display: inline-flex;
+    font-family: 'Open Sans Condensed', sans-serif;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px #555;
+    margin: 0;
 }
 
 h1 {
-  font-size: 40px;
-  margin-bottom: 10px;
+    font-size: 40px;
+    margin-bottom: 10px;
 }
 
 main {
-  height: calc(100vh - var(--header-height));
-  width: 900px;
-  font-size: 2.5vh;
-  align-self: center;
-  display: flex;
-  justify-content: center;
-  position: relative;
+    height: calc(100vh - var(--header-height));
+    width: 900px;
+    font-size: 2.5vh;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    position: relative;
 }
 
 .player-info {
-  position: absolute;
-  font-size: 34px;
-  top: 50px;
-  background: transparent;
-  padding: 0 10px;
-  transform: skew(-5deg);
+    position: absolute;
+    font-size: 34px;
+    top: 50px;
+    background: transparent;
+    padding: 0 10px;
+    transform: skew(-5deg);
 }
 
 .player-info p {
-  width: 100px;
-  margin: 0;
-  transform: skew(5deg);
+    width: 100px;
+    margin: 0;
+    transform: skew(5deg);
 }
 
 .player-info.player1 {
-  left: 0;
-  background-color: var(--player1-secondary-color);
+    left: 0;
+    background-color: var(--player1-secondary-color);
 }
 
 .active-player {
-  transition: .4s ease-in;
+    transition: 0.4s ease-in;
 }
 
 .player-info.player1.active-player {
-  background-color: var(--player1-color);
-  box-shadow: 0 0 40px 5px var(--player1-color);
+    background-color: var(--player1-color);
+    box-shadow: 0 0 40px 5px var(--player1-color);
 }
 
 .player-info.player2 {
-  right: 0;
-  background-color: var(--player2-secondary-color);
+    right: 0;
+    background-color: var(--player2-secondary-color);
 }
 
 .player-info.player2.active-player {
-  background-color: var(--player2-color);
-  box-shadow: 0 0 40px 5px var(--player2-color);
+    background-color: var(--player2-color);
+    box-shadow: 0 0 40px 5px var(--player2-color);
 }
 
 .player-bonuses {
-  position: absolute;
-  display: flex;
-  z-index: 10;
-  top: 58px;
-  width: 200px;
-  font-weight: 300;
-  letter-spacing: -0.109px;
+    position: absolute;
+    display: flex;
+    z-index: 10;
+    top: 58px;
+    width: 200px;
+    font-weight: 300;
+    letter-spacing: -0.109px;
 }
 
 .player-bonuses span {
-  background: var(--yellow);
-  border-radius: 50%;
-  transform: scale(.8);
-  padding: 4.5px 5px 4.5px 3px;
-  border: 1px solid var(--gray);
-  opacity: 1;
-  transition: opacity .3s ease-in;
+    background: var(--yellow);
+    border-radius: 50%;
+    transform: scale(0.8);
+    padding: 4.5px 5px 4.5px 3px;
+    border: 1px solid var(--gray);
+    opacity: 1;
+    transition: opacity 0.3s ease-in;
 }
 
 .player-bonuses span:empty {
-  opacity: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
 }
 
 .player-bonuses span.lost {
-  opacity: 0;
-  transition: opacity .3s ease-in;
+    opacity: 0;
+    transition: opacity 0.3s ease-in;
 }
 
 .player-bonuses.player1 {
-  left: 135px;
+    left: 135px;
 }
 
 .player-bonuses.player2 {
-  justify-content: flex-end;
-  right: 135px;
+    justify-content: flex-end;
+    right: 135px;
 }
 
 .game {
-  position: relative;
-  width: var(--grid-size);
-  height: var(--grid-size);
-  transform: rotateX(120deg) rotateZ(45deg);
-  transform-style: flat;
-  box-shadow: -10px -10px 10px 0 var(--gray);
+    position: relative;
+    width: var(--grid-size);
+    height: var(--grid-size);
+    transform: rotateX(120deg) rotateZ(45deg);
+    transform-style: flat;
+    box-shadow: -10px -10px 10px 0 var(--gray);
 }
 
 .background-grid {
-  z-index: 1;
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  background-color: var(--gray);
-  width: inherit;
-  height: inherit;
-  box-shadow: 0 0 600px 200px var(--gray);
+    z-index: 1;
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background-color: var(--gray);
+    width: inherit;
+    height: inherit;
+    box-shadow: 0 0 600px 200px var(--gray);
 }
 
 .areas {
-  z-index: 2;
-  display: flex;
-  flex-flow: row wrap-reverse;
+    z-index: 2;
+    display: flex;
+    flex-flow: row wrap-reverse;
 }
 
 .area {
-  box-sizing: border-box;
-  z-index: 3;
-  position: relative;
-  background-color: var(--light-gray);
-  transition: all .2s ease-in,
-              background .27s ease-in;
-  height: var(--tile-size);
-  width: var(--tile-size);
-  border: var(--tile-border-size) solid var(--gray);
+    box-sizing: border-box;
+    z-index: 3;
+    position: relative;
+    background-color: var(--light-gray);
+    transition: all 0.2s ease-in, background 0.27s ease-in;
+    height: var(--tile-size);
+    width: var(--tile-size);
+    border: var(--tile-border-size) solid var(--gray);
 }
 
 .area-active {
-  z-index: 4;
-  position: relative;
-  top: 4px;
-  left: 4px;
-  border-width: calc(var(--tile-border-size) * 3);
-  border-color: var(--dark-gray);
-  transform: scale(1.05);
-  transition: background, transform .15s ease-in;
-  box-shadow: -7px -7px var(--dark-gray);
-  animation-name: grow-shrink;
-  animation-duration: .6s;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  animation-timing-function: cubic-bezier(.42, 0, .58, 1);
+    z-index: 4;
+    position: relative;
+    top: 4px;
+    left: 4px;
+    border-width: calc(var(--tile-border-size) * 3);
+    border-color: var(--dark-gray);
+    transform: scale(1.05);
+    transition: background, transform 0.15s ease-in;
+    box-shadow: -7px -7px var(--dark-gray);
+    animation-name: grow-shrink;
+    animation-duration: 0.6s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
 }
 
 .area.player1,
 .modal .player1 {
-  background-color: var(--player1-color);
+    background-color: var(--player1-color);
 }
 
 .area.player2,
 .modal .player2 {
-  background-color: var(--player2-color);
+    background-color: var(--player2-color);
 }
 
 .area.conquerable:not(.ai) {
-  background-color: #83e0a2;
-  transition: background .35s ease-in;
+    background-color: #83e0a2;
+    transition: background 0.35s ease-in;
 }
 
 .area.conquerable-by-sacrifice:not(.ai) {
-  background-color: #ffcb95;
-  transition: background .35s ease-in;
+    background-color: #ffcb95;
+    transition: background 0.35s ease-in;
 }
 
 .area-selectable {
-  cursor: pointer;
-  transition: border 0s;
+    cursor: pointer;
+    transition: border 0s;
 }
 
 .area-selectable:hover {
-  border-width: calc(var(--tile-border-size) * 3);
-  border-color: var(--dark-gray);
+    border-width: calc(var(--tile-border-size) * 3);
+    border-color: var(--dark-gray);
 }
 
 @keyframes grow-shrink {
-  100% {
-    transform: scale(1.15);
-  }
+    100% {
+        transform: scale(1.15);
+    }
 }
 
 .area.bonus {
-  position: relative;
+    position: relative;
 }
 
 .area.bonus::before {
-  content: attr(data-value);
-  font-weight: 300;
-  font-size: 26px;
-  color: #777;
-  display: inline-block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: rotateX(180deg) rotateZ(45deg) rotateY(45deg) translateY(50%) translateX(50%) scale(1, 1.5);
+    content: attr(data-value);
+    font-weight: 300;
+    font-size: 26px;
+    color: #777;
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: rotateX(180deg) rotateZ(45deg) rotateY(45deg) translateY(50%)
+        translateX(50%) scale(1, 1.5);
 }
 
 .area-selectable.bonus:hover::before,
 .area-selectable.area-active.bonus:hover::before,
 .area-active.bonus::before {
-  transform: rotateX(180deg) rotateZ(45deg) rotateY(45deg) translateY(50%) translateX(50%) scale(1, 1.5);
+    transform: rotateX(180deg) rotateZ(45deg) rotateY(45deg) translateY(50%)
+        translateX(50%) scale(1, 1.5);
 }
 
 .area.player1.bonus::before,
 .area.player2.bonus::before {
-  color: #fff;
+    color: #fff;
 }
 
 .hidden {
-  display: none !important;
+    display: none !important;
 }
 
 .overlay {
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, .75);
-  z-index: 100;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
 }
 
 .overlay.menu-overlay {
-  background: white;
+    background: white;
 }
 
 .modal {
-  max-width: 600px;
-  width: 80vw;
-  max-height: 275px;
-  height: 90vh;
-  margin-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background: white;
+    max-width: 600px;
+    width: 80vw;
+    max-height: 275px;
+    height: 90vh;
+    margin-top: 10vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background: white;
 }
 
 .modal h2 {
-  font-size: 34px;
-  display: block;
+    font-size: 34px;
+    display: block;
 }
 
 .modal .message {
-  padding: 5%;
-  font-size: 18px;
-  text-align: center;
+    padding: 5%;
+    font-size: 18px;
+    text-align: center;
 }
 
 .modal .actions {
-  display: flex;
-  justify-content: space-around;
+    display: flex;
+    justify-content: space-around;
 }
 
 button::-moz-focus-inner {
-  border: 0;
+    border: 0;
 }
 
 .modal button {
-  margin: 20px 0;
-  padding: 10px 20px;
-  font: 30px 'Open Sans Condensed', sans-serif;
-  flex-basis: 200px;
-  height: 70px;
+    margin: 20px 0;
+    padding: 10px 20px;
+    font: 30px 'Open Sans Condensed', sans-serif;
+    flex-basis: 200px;
+    height: 70px;
 }
 
 .main-menu {
-  box-sizing: border-box;
-  max-width: 800px;
-  width: 80vw;
-  max-height: 400px;
-  height: 90vh;
-  margin-top: 10vh;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background: white;
-  box-shadow: 0 0 400px 100px var(--gray);
+    box-sizing: border-box;
+    max-width: 800px;
+    width: 80vw;
+    max-height: 400px;
+    height: 90vh;
+    margin-top: 10vh;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background: white;
+    box-shadow: 0 0 400px 100px var(--gray);
 }
 
 .main-menu h2 {
-  font-size: 34px;
-  display: block;
+    font-size: 34px;
+    display: block;
 }
 
 .main-menu .description {
-  padding: 10px 20px;
-  line-height: 1.6;
+    padding: 10px 20px;
+    line-height: 1.6;
 }
 
 .main-menu .welcome {
-  font-weight: 400;
-  font-size: 20px;
-  font-variant: small-caps;
+    font-weight: 400;
+    font-size: 20px;
+    font-variant: small-caps;
 }
 
 .main-menu .actions {
-  display: flex;
-  justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 
 .main-menu .actions button {
-  margin: 20px 30px;
-  padding: 10px 20px;
-  font: 30px 'Open Sans Condensed', sans-serif;
-  flex-basis: 200px;
-  height: 70px;
+    margin: 20px 30px;
+    padding: 10px 20px;
+    font: 30px 'Open Sans Condensed', sans-serif;
+    flex-basis: 200px;
+    height: 70px;
 }
 
 .menu {
-  display: grid;
-  grid-template-rows: min-content auto min-content;
-  height: 100%;
-  align-items: stretch;
+    display: grid;
+    grid-template-rows: min-content auto min-content;
+    height: 100%;
+    align-items: stretch;
 }
 
 .strategy-tips .tips ol {
-  margin: 10px 0 5px;
+    margin: 10px 0 5px;
 }
 
 .strategy-tips .tips li {
-  padding: 10px;
-  line-height: 1.6;
+    padding: 10px;
+    line-height: 1.6;
 }
 
 .strategy-tips button.back {
-  margin: 0;
+    margin: 0;
 }
 
 .green {
-  background-color: var(--green);
+    background-color: var(--green);
 }
 
 .copyright {
-  text-align: center;
-  font-size: 12px;
-  line-height: 1.5;
-  max-height: 20px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.5;
+    max-height: 20px;
 }
 
 .copyright a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .copyright a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .copyright.bottom-right {
-  position: absolute;
-  bottom: 5px;
-  right: 10px;
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
 }
