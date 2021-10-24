@@ -1,0 +1,23 @@
+{
+    "name": "iso-conquest",
+    "version": "1.0.0",
+    "main": "main.js",
+    "private": true,
+    "description": "A minimalistic turn based strategy game with PvP and experimental AI",
+    "scripts": {
+        "prettify": "npx prettier \".\" --write",
+        "start": "npx serve ."
+    },
+    "author": "Samuel Plumppu",
+    "license": "ISC",
+    "devDependencies": {
+        "prettier": "^2.4.1",
+        "serve": "^12.0.1"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": false,
+        "singleQuote": true,
+        "trailingComma": "all"
+    }
+}
