@@ -170,6 +170,8 @@ export function newGame({
 }
 
 // IDEA: Consider splitting validators into small, separate functions that throw specific errors for potential errors.
+// TODO: validate that the action.player === gameState.currentPlayer before letting make them make their move
+// TODO: on successful turn, update the gameState.currentPlayer
 function validateAction(action: Action, gameState: GameState) {
     if (
         action.origin.owner !== action.player.id ||
@@ -181,6 +183,8 @@ function validateAction(action: Action, gameState: GameState) {
 }
 
 export function conquer(gameState: GameState, action: Action): GameState {
+    // TODO: improve validation
+    // action.target must be in range exactly === 1 away from the action.origin
     validateAction(action, gameState)
 
     const zones = gameState.zones.map((zone) => conquerZone(zone, action))
@@ -236,6 +240,7 @@ export function conquerBySacrifice(
     action: Action,
 ): GameState {
     // TODO: improve validation
+    // action.target must be in range exactly === 2 away from the action.origin
     validateAction(action, gameState)
 
     const zones = gameState.zones.map((zone) => {

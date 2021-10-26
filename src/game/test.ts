@@ -12,8 +12,6 @@ import {
     conquerBySacrifice,
 } from "./game.ts"
 
-const initialState = newGame(loadMap(MAPS["bonus"]))
-
 const scores = (gameState: GameState) => {
     log(
         "Scores",
@@ -61,7 +59,15 @@ const pipe =
         fns.reduce((v, f) => f(v), x)
 
 function main() {
-    pipe(scores, take("player1", [1, 1], [1, 2]), scores)(initialState)
+    const initialState = newGame(loadMap(MAPS["bonus"]))
+
+    pipe(
+        scores,
+        sacrifice("player1", [1, 1], [3, 3]),
+        scores,
+        take("player1", [3, 3], [2, 3]),
+        scores,
+    )(initialState)
 }
 
 main()
