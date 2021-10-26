@@ -199,13 +199,13 @@ function conquerZone(zone: Zone, action: Action) {
     } else if (zone === action.target) {
         return {
             ...zone,
-            owner: zone.owner,
+            owner: action.player.id,
         }
     } else if (isNeighbor(action.target, zone)) {
         if (zone.owner !== undefined && zone.owner !== action.player.id) {
             return {
                 ...zone,
-                owner: zone.owner,
+                owner: action.player.id,
             }
         } else {
             return zone
