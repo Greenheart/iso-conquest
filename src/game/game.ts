@@ -22,6 +22,11 @@ interface GameState {
     players: Player[]
 }
 
+const ZoneScore: Record<ZoneType, number> = {
+    default: 1,
+    bonus: 5,
+}
+
 const PlayerTileMap = {
     "1": "player1",
     "2": "player2",
@@ -43,14 +48,12 @@ type Tile = keyof typeof TileMap
 type PlayerTile = keyof typeof PlayerTileMap
 
 interface Map {
-    playerCount: number
     description: string
     tiles: string
 }
 
 export const MAPS = {
     intro: {
-        playerCount: 2,
         description: "Initial level",
         tiles: `
             1 _ _ _ _ _ _ 1
@@ -64,7 +67,6 @@ export const MAPS = {
         `,
     },
     bonus: {
-        playerCount: 2,
         description: "Introducing bonus areas that give extra score.",
         tiles: `
             1 _ _ _ _ _ _ 1
@@ -81,6 +83,10 @@ export const MAPS = {
 
 const parseTiles = (str: string) => str.trim().split(/\n\s+/)
 
+const getPlayerForTile = (players: Player[], tile: Tile) =>
+    players.find((player) => player.id === PlayerTileMap[tile as PlayerTile])
+        ?.id
+
 const loadZone = (
     tile: Tile,
     x: number,
@@ -91,16 +97,16 @@ const loadZone = (
         throw new Error("Unknown Tile type:" + tile)
     }
 
-    const type = TileMap[tile]
-    const owner =
-        tile in PlayerTileMap ? PlayerTileMap[tile as PlayerTile] : undefined
+    const owner = getPlayerForTile(players, tile)
+    const type = owner ? "default" : (TileMap[tile] as ZoneType)
+    const value = ZoneScore[type]
 
     const zone = {
         x,
         y,
         owner,
-        type: owner ? "default" : (type as ZoneType),
-        value: type === "bonus" ? 5 : 1,
+        type,
+        value,
     }
 
     return zone
