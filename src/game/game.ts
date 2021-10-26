@@ -1,8 +1,8 @@
-interface Player {
+export interface Player {
     id: string
 }
 
-interface Zone {
+export interface Zone {
     x: number
     y: number
     owner?: Player["id"]
@@ -10,13 +10,13 @@ interface Zone {
     type: ZoneType
 }
 
-interface Action {
+export interface Action {
     player: Player
     origin: Zone
     target: Zone
 }
 
-interface GameState {
+export interface GameState {
     turn: number
     zones: Zone[]
     players: Player[]
