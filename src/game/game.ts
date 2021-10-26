@@ -10,6 +10,9 @@ export interface Zone {
     type: ZoneType
 }
 
+// TODO: Maybe update types to work without direct references, and instead use player ids and zone coordinates.
+// By separating direct references from the core interfaces, we would make it possible to play over a network.
+// It would also make actions contain less data
 export interface Action {
     player: Player
     origin: Zone
@@ -20,6 +23,7 @@ export interface GameState {
     turn: number
     zones: Zone[]
     players: Player[]
+    currentPlayer: Player
 }
 
 const ZoneScore: Record<ZoneType, number> = {
@@ -161,20 +165,23 @@ export function newGame({
         turn: 1,
         zones,
         players,
+        currentPlayer: players[0],
     }
 }
 
-function validateAction(action: Action) {
+// IDEA: Consider splitting validators into small, separate functions that throw specific errors for potential errors.
+function validateAction(action: Action, gameState: GameState) {
     if (
         action.origin.owner !== action.player.id ||
-        action.target.owner !== undefined
+        action.target.owner !== undefined ||
+        action.player !== gameState.currentPlayer
     ) {
         throw new Error("Impossible action")
     }
 }
 
 export function conquer(gameState: GameState, action: Action): GameState {
-    validateAction(action)
+    validateAction(action, gameState)
 
     const zones = gameState.zones.map((zone) => conquerZone(zone, action))
 
@@ -228,7 +235,8 @@ export function conquerBySacrifice(
     gameState: GameState,
     action: Action,
 ): GameState {
-    validateAction(action)
+    // TODO: improve validation
+    validateAction(action, gameState)
 
     const zones = gameState.zones.map((zone) => {
         if (zone === action.origin) {
