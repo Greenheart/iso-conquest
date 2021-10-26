@@ -58,6 +58,9 @@ const pipe =
     (x: GameState) =>
         fns.reduce((v, f) => f(v), x)
 
+// IDEA: print formatted game board, using the same tiles as in the map config.
+// IDEA: create a turn() helper that executes a move and then prints the game board + score, to simplify scripting the game
+
 function main() {
     const initialState = newGame(loadMap(MAPS["bonus"]))
 
