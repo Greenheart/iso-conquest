@@ -1,10 +1,5 @@
 interface Player {}
 
-enum ZoneType {
-    Default = "default",
-    Bonus = "bonus",
-}
-
 interface Zone {
     x: number
     y: number
@@ -23,6 +18,89 @@ interface GameState {
     turn: number
     zones: Zone[]
     players: Player[]
+}
+
+const TileMap = {
+    _: "neutral",
+    b: "bonus",
+    "1": "player1",
+    "2": "player2",
+} as const
+
+type ValueOf<T> = T[keyof T]
+type ZoneType = ValueOf<typeof TileMap>
+type Tile = keyof typeof TileMap
+
+interface Map {
+    playerCount: number
+    description: string
+    tiles: string
+}
+
+export const MAPS = {
+    intro: {
+        playerCount: 2,
+        description: "Initial level",
+        tiles: `
+        1 _ _ _ _ _ _ 1
+        _ _ _ _ _ _ _ _
+        _ _ _ _ _ _ _ _
+        _ _ _ _ _ _ _ _
+        _ _ _ _ _ _ _ _
+        _ _ _ _ _ _ _ _
+        _ _ _ _ _ _ _ _
+        2 _ _ _ _ _ _ 2
+    `,
+    },
+    bonus: {
+        playerCount: 2,
+        description: "Introducing bonus areas that give extra score.",
+        tiles: `
+            1 _ _ _ _ _ _ 1
+            _ _ _ _ _ _ _ _
+            _ _ b _ _ b _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ b _ _ b _ _
+            _ _ _ _ _ _ _ _
+            2 _ _ _ _ _ _ 2
+        `,
+    },
+}
+
+const unindent = (str: string) => str.trim().split(/\n\s+/)
+
+const parseZone = (tile: Tile, x: number, y: number): Zone => {
+    if (!TileMap.hasOwnProperty(tile)) {
+        throw new Error("Unknown Tile type:" + tile)
+    }
+
+    const type = TileMap[tile]
+
+    const zone = {
+        x,
+        y,
+        type,
+        value: type === "bonus" ? 5 : 1,
+    }
+
+    return zone
+}
+
+export function loadZones(map: Map) {
+    const rawTiles = unindent(map.tiles)
+    const tiles: Zone[] = []
+
+    rawTiles.forEach((row, y) => {
+        ++y
+        row.split(" ").forEach((tile, x: number) => {
+            // Increment by one to get coords starting at 1, 1
+            ++x
+            tiles.push(parseZone(tile as Tile, x, y))
+        })
+    })
+
+    return tiles
 }
 
 export function newGame(players: Player[], zones: Zone[]): GameState {
