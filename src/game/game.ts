@@ -144,7 +144,13 @@ export function loadMap(map: Map) {
     }
 }
 
-export function newGame(players: Player[], zones: Zone[]): GameState {
+export function newGame({
+    players,
+    zones,
+}: {
+    players: Player[]
+    zones: Zone[]
+}): GameState {
     return {
         turn: 1,
         zones,
