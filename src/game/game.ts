@@ -1,9 +1,11 @@
-interface Player {}
+interface Player {
+    id: string
+}
 
 interface Zone {
     x: number
     y: number
-    owner?: Player
+    owner?: Player["id"]
     value: number
     type: ZoneType
 }
@@ -20,16 +22,25 @@ interface GameState {
     players: Player[]
 }
 
-const TileMap = {
-    _: "neutral",
-    b: "bonus",
+const PlayerTileMap = {
     "1": "player1",
     "2": "player2",
 } as const
 
+const ZoneTileMap = {
+    _: "default",
+    b: "bonus",
+} as const
+
+const TileMap = {
+    ...ZoneTileMap,
+    ...PlayerTileMap,
+} as const
+
 type ValueOf<T> = T[keyof T]
-type ZoneType = ValueOf<typeof TileMap>
+type ZoneType = ValueOf<typeof ZoneTileMap>
 type Tile = keyof typeof TileMap
+type PlayerTile = keyof typeof PlayerTileMap
 
 interface Map {
     playerCount: number
@@ -42,15 +53,15 @@ export const MAPS = {
         playerCount: 2,
         description: "Initial level",
         tiles: `
-        1 _ _ _ _ _ _ 1
-        _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _
-        _ _ _ _ _ _ _ _
-        2 _ _ _ _ _ _ 2
-    `,
+            1 _ _ _ _ _ _ 1
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            _ _ _ _ _ _ _ _
+            2 _ _ _ _ _ _ 2
+        `,
     },
     bonus: {
         playerCount: 2,
@@ -68,39 +79,69 @@ export const MAPS = {
     },
 }
 
-const unindent = (str: string) => str.trim().split(/\n\s+/)
+const parseTiles = (str: string) => str.trim().split(/\n\s+/)
 
-const parseZone = (tile: Tile, x: number, y: number): Zone => {
-    if (!TileMap.hasOwnProperty(tile)) {
+const loadZone = (
+    tile: Tile,
+    x: number,
+    y: number,
+    players: Player[],
+): Zone => {
+    if (!(tile in TileMap)) {
         throw new Error("Unknown Tile type:" + tile)
     }
 
     const type = TileMap[tile]
+    const owner =
+        tile in PlayerTileMap ? PlayerTileMap[tile as PlayerTile] : undefined
 
     const zone = {
         x,
         y,
-        type,
+        owner,
+        type: owner ? "default" : (type as ZoneType),
         value: type === "bonus" ? 5 : 1,
     }
 
     return zone
 }
 
-export function loadZones(map: Map) {
-    const rawTiles = unindent(map.tiles)
-    const tiles: Zone[] = []
-
-    rawTiles.forEach((row, y) => {
+export function loadZones(map: Map, players: Player[]) {
+    return parseTiles(map.tiles).flatMap((row, y) => {
         ++y
-        row.split(" ").forEach((tile, x: number) => {
+        return row.split(" ").map((tile, x: number) => {
             // Increment by one to get coords starting at 1, 1
             ++x
-            tiles.push(parseZone(tile as Tile, x, y))
+            return loadZone(tile as Tile, x, y, players)
         })
     })
+}
 
-    return tiles
+export function loadPlayers(map: Map["tiles"]) {
+    return Object.keys(PlayerTileMap).reduce<Player[]>(
+        (players, playerTile) => {
+            return map.includes(playerTile)
+                ? [
+                      ...players,
+                      {
+                          id: PlayerTileMap[
+                              playerTile as keyof typeof PlayerTileMap
+                          ],
+                      },
+                  ]
+                : players
+        },
+        [],
+    )
+}
+
+export function loadMap(map: Map) {
+    const players = loadPlayers(map.tiles)
+    const zones = loadZones(map, players)
+    return {
+        players,
+        zones,
+    }
 }
 
 export function newGame(players: Player[], zones: Zone[]): GameState {
@@ -113,7 +154,7 @@ export function newGame(players: Player[], zones: Zone[]): GameState {
 
 function validateAction(action: Action) {
     if (
-        action.origin.owner !== action.player ||
+        action.origin.owner !== action.player.id ||
         action.target.owner !== undefined
     ) {
         throw new Error("Impossible action")
@@ -142,7 +183,7 @@ function conquerZone(zone: Zone, action: Action) {
             owner: zone.owner,
         }
     } else if (isNeighbor(action.target, zone)) {
-        if (zone.owner !== undefined && zone.owner !== action.player) {
+        if (zone.owner !== undefined && zone.owner !== action.player.id) {
             return {
                 ...zone,
                 owner: zone.owner,
@@ -165,7 +206,8 @@ function isNeighbor(origin: Zone, candidate: Zone): boolean {
 
 export function getScore(player: Player, gameState: GameState) {
     return gameState.zones.reduce(
-        (score, zone) => (zone.owner === player ? score + zone.value : score),
+        (score, zone) =>
+            zone.owner === player.id ? score + zone.value : score,
         0,
     )
 }
