@@ -168,17 +168,31 @@ export function newGame({
     }
 }
 
-type ValidatorFn = (action: Action, gameState: GameState) => boolean
+type ValidatorParams = { action: Action; gameState: GameState }
+type ValidatorFn = (params: ValidatorParams) => boolean
 
-const validators: Record<string, ValidatorFn> = {
-    isValidOriginZone: (action) => action.origin.owner === action.player,
-    isValidTargetZone: (action) => action.target.owner === undefined,
-    isCurrentPlayer: (action, gameState) =>
-        action.player === gameState.currentPlayer,
-    isWithinRange: (action, gameState) => true,
-}
+const isValidOriginZone: ValidatorFn = ({ action }) =>
+    action.origin.owner === action.player
 
-// IDEA: Consider splitting validators into small, separate functions that throw specific errors for potential errors.
+const isValidTargetZone: ValidatorFn = ({ action }) =>
+    action.target.owner === undefined
+
+const isCurrentPlayer: ValidatorFn = ({ action, gameState }) =>
+    action.player === gameState.currentPlayer
+
+const isAtDistance = ({
+    action,
+    distance,
+}: ValidatorParams & { distance: number }) =>
+    distanceBetween(action.origin, action.target).every(
+        (actual) => actual === distance,
+    )
+
+const distanceBetween = (zoneA: Zone, zoneB: Zone) => [
+    Math.abs(zoneA.x - zoneB.x),
+    Math.abs(zoneA.y - zoneB.y),
+]
+
 // TODO: on successful turn, update the gameState.currentPlayer
 function validateAction(action: Action, gameState: GameState) {
     if (false) {
