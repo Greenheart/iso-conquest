@@ -5,7 +5,7 @@ export interface Player {
 export interface Zone {
     x: number
     y: number
-    owner?: Player["id"]
+    owner?: Player
     value: number
     type: ZoneType
 }
@@ -89,7 +89,6 @@ const parseTiles = (str: string) => str.trim().split(/\n\s+/)
 
 const getPlayerForTile = (players: Player[], tile: Tile) =>
     players.find((player) => player.id === PlayerTileMap[tile as PlayerTile])
-        ?.id
 
 const loadZone = (
     tile: Tile,
@@ -169,15 +168,20 @@ export function newGame({
     }
 }
 
+type ValidatorFn = (action: Action, gameState: GameState) => boolean
+
+const validators: Record<string, ValidatorFn> = {
+    isValidOriginZone: (action) => action.origin.owner === action.player,
+    isValidTargetZone: (action) => action.target.owner === undefined,
+    isCurrentPlayer: (action, gameState) =>
+        action.player === gameState.currentPlayer,
+    isWithinRange: (action, gameState) => true,
+}
+
 // IDEA: Consider splitting validators into small, separate functions that throw specific errors for potential errors.
-// TODO: validate that the action.player === gameState.currentPlayer before letting make them make their move
 // TODO: on successful turn, update the gameState.currentPlayer
 function validateAction(action: Action, gameState: GameState) {
-    if (
-        action.origin.owner !== action.player.id ||
-        action.target.owner !== undefined ||
-        action.player !== gameState.currentPlayer
-    ) {
+    if (false) {
         throw new Error("Impossible action")
     }
 }
@@ -203,13 +207,13 @@ function conquerZone(zone: Zone, action: Action) {
     } else if (zone === action.target) {
         return {
             ...zone,
-            owner: action.player.id,
+            owner: action.player,
         }
     } else if (isNeighbor(action.target, zone)) {
-        if (zone.owner !== undefined && zone.owner !== action.player.id) {
+        if (zone.owner && zone.owner !== action.player) {
             return {
                 ...zone,
-                owner: action.player.id,
+                owner: action.player,
             }
         } else {
             return zone
@@ -229,8 +233,7 @@ function isNeighbor(origin: Zone, candidate: Zone): boolean {
 
 export function getScore(player: Player, gameState: GameState) {
     return gameState.zones.reduce(
-        (score, zone) =>
-            zone.owner === player.id ? score + zone.value : score,
+        (score, zone) => (zone.owner === player ? score + zone.value : score),
         0,
     )
 }
