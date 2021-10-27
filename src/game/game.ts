@@ -171,22 +171,48 @@ export function newGame({
 type ValidatorParams = { action: Action; gameState: GameState }
 type ValidatorFn = (params: ValidatorParams) => boolean
 
-const isValidOriginZone: ValidatorFn = ({ action }) =>
-    action.origin.owner === action.player
+const isZoneValidOrigin: ValidatorFn = ({ action }) => {
+    if (action.origin.owner !== action.player) {
+        console.error(`Zone ${coords(action.origin)} is not a valid origin`)
+        return false
+    }
+    return true
+}
 
-const isValidTargetZone: ValidatorFn = ({ action }) =>
-    action.target.owner === undefined
+const isZoneValidTarget: ValidatorFn = ({ action }) => {
+    if (action.target.owner !== undefined) {
+        console.error(`Zone ${coords(action.target)} is not a valid target`)
+        return false
+    }
+    return true
+}
 
-const isCurrentPlayer: ValidatorFn = ({ action, gameState }) =>
-    action.player === gameState.currentPlayer
+const isActionByCurrentPlayer: ValidatorFn = ({ action, gameState }) => {
+    if (action.player !== gameState.currentPlayer) {
+        console.error(`${action.player.id} is not the current player`)
+        return false
+    }
+    return true
+}
 
-const isAtDistance = ({
+const isZoneAtDistance = ({
     action,
     distance,
-}: ValidatorParams & { distance: number }) =>
-    distanceBetween(action.origin, action.target).every(
-        (actual) => actual === distance,
-    )
+}: ValidatorParams & { distance: number }) => {
+    if (
+        !distanceBetween(action.origin, action.target).every(
+            (actual) => actual === distance,
+        )
+    ) {
+        console.error(
+            `Zones ${coords(action.origin)} and ${coords(
+                action.target,
+            )} are not at distance ${distance}`,
+        )
+        return false
+    }
+    return true
+}
 
 const distanceBetween = (zoneA: Zone, zoneB: Zone) => [
     Math.abs(zoneA.x - zoneB.x),
@@ -194,16 +220,19 @@ const distanceBetween = (zoneA: Zone, zoneB: Zone) => [
 ]
 
 // TODO: on successful turn, update the gameState.currentPlayer
-function validateAction(action: Action, gameState: GameState) {
-    if (false) {
-        throw new Error("Impossible action")
-    }
-}
+
+const coords = (zone: Zone) => [zone.x, zone.y]
 
 export function conquer(gameState: GameState, action: Action): GameState {
-    // TODO: improve validation
-    // action.target must be in range exactly === 1 away from the action.origin
-    validateAction(action, gameState)
+    const params = { action, gameState }
+    const canConquerZone = [
+        isZoneAtDistance({ ...params, distance: 1 }),
+        isActionByCurrentPlayer({ ...params }),
+        isZoneValidOrigin({ ...params }),
+        isZoneValidTarget({ ...params }),
+    ].every(Boolean)
+
+    if (!canConquerZone) return gameState
 
     const zones = gameState.zones.map((zone) => conquerZone(zone, action))
 
@@ -256,9 +285,15 @@ export function conquerBySacrifice(
     gameState: GameState,
     action: Action,
 ): GameState {
-    // TODO: improve validation
-    // action.target must be in range exactly === 2 away from the action.origin
-    validateAction(action, gameState)
+    const params = { action, gameState }
+    const canConquerZone = [
+        isZoneAtDistance({ ...params, distance: 2 }),
+        isActionByCurrentPlayer({ ...params }),
+        isZoneValidOrigin({ ...params }),
+        isZoneValidTarget({ ...params }),
+    ].every(Boolean)
+
+    if (!canConquerZone) return gameState
 
     const zones = gameState.zones.map((zone) => {
         if (zone === action.origin) {
