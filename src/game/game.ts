@@ -195,19 +195,19 @@ const isActionByCurrentPlayer: ValidatorFn = ({ action, gameState }) => {
     return true
 }
 
-const isZoneAtDistance = ({
+const isZoneWithinDistance = ({
     action,
     distance,
 }: ValidatorParams & { distance: number }) => {
     if (
         !distanceBetween(action.origin, action.target).every(
-            (actual) => actual === distance,
+            (actual) => actual <= distance,
         )
     ) {
         console.error(
             `Zones ${coords(action.origin)} and ${coords(
                 action.target,
-            )} are not at distance ${distance}`,
+            )} are not within distance ${distance}`,
         )
         return false
     }
@@ -219,15 +219,22 @@ const distanceBetween = (zoneA: Zone, zoneB: Zone) => [
     Math.abs(zoneA.y - zoneB.y),
 ]
 
-// TODO: on successful turn, update the gameState.currentPlayer
-
 const coords = (zone: Zone) => [zone.x, zone.y]
+
+export const getNextPlayer = (gameState: GameState) =>
+    gameState.players[
+        (1 +
+            gameState.players.findIndex(
+                (player) => player === gameState.currentPlayer,
+            )) %
+            gameState.players.length
+    ]
 
 export function conquer(gameState: GameState, action: Action): GameState {
     const params = { action, gameState }
     const canConquerZone = [
-        isZoneAtDistance({ ...params, distance: 1 }),
         isActionByCurrentPlayer({ ...params }),
+        isZoneWithinDistance({ ...params, distance: 1 }),
         isZoneValidOrigin({ ...params }),
         isZoneValidTarget({ ...params }),
     ].every(Boolean)
@@ -238,6 +245,7 @@ export function conquer(gameState: GameState, action: Action): GameState {
 
     return {
         ...gameState,
+        currentPlayer: getNextPlayer(gameState),
         turn: gameState.turn + 1,
         zones,
     }
@@ -287,8 +295,8 @@ export function conquerBySacrifice(
 ): GameState {
     const params = { action, gameState }
     const canConquerZone = [
-        isZoneAtDistance({ ...params, distance: 2 }),
         isActionByCurrentPlayer({ ...params }),
+        isZoneWithinDistance({ ...params, distance: 2 }),
         isZoneValidOrigin({ ...params }),
         isZoneValidTarget({ ...params }),
     ].every(Boolean)
@@ -307,6 +315,7 @@ export function conquerBySacrifice(
 
     return {
         ...gameState,
+        currentPlayer: getNextPlayer(gameState),
         turn: gameState.turn + 1,
         zones,
     }

@@ -1,5 +1,7 @@
 // Test with `deno run src/game/test.ts`
 
+import { cyan, yellow } from "https://deno.land/std@0.113.0/fmt/colors.ts"
+
 import {
     loadMap,
     MAPS,
@@ -14,24 +16,20 @@ import {
 
 const scores = (gameState: GameState) => {
     log(
-        "Scores",
+        cyan("Scores"),
         gameState.players
-            .map((p: Player) => `${p.id}: ${getScore(p, gameState)}`)
-            .join("\n"),
+            .map((p: Player) =>
+                gameState.currentPlayer === p
+                    ? yellow(`${getScore(p, gameState)}`)
+                    : `${getScore(p, gameState)}`,
+            )
+            .join("  |  "),
     )
     return gameState
 }
 
 const log = (title = "", message = "") =>
-    console.log(
-        `${
-            title
-                ? `${"-".repeat(title.length + 1)}\n${title}:\n${"-".repeat(
-                      title.length + 1,
-                  )}\n`
-                : ""
-        }${message}\n`,
-    )
+    console.log(`${title ? `${title}: ` : ""}${message}`)
 
 type Coordinates = [number, number]
 
@@ -67,6 +65,9 @@ function main() {
     pipe(
         scores,
         sacrifice("player1", [1, 1], [3, 3]),
+        scores,
+        take("player2", [8, 8], [6, 6]),
+        sacrifice("player2", [8, 8], [6, 6]),
         scores,
         take("player1", [3, 3], [2, 3]),
         scores,
