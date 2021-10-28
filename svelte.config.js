@@ -1,4 +1,5 @@
 import preprocess from "svelte-preprocess"
+import { resolve } from "path"
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -12,6 +13,14 @@ const config = {
     // TODO: Add static adapter and build step
 
     kit: {
+        vite: {
+            resolve: {
+                alias: {
+                    $components: resolve("src/components"),
+                    $game: resolve("src/game"),
+                },
+            },
+        },
         // hydrate the <div id="svelte"> element in src/app.html
         target: "#svelte",
     },

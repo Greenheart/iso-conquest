@@ -51,7 +51,7 @@ type ZoneType = ValueOf<typeof ZoneTileMap>
 type Tile = keyof typeof TileMap
 type PlayerTile = keyof typeof PlayerTileMap
 
-interface Map {
+export interface Map {
     description: string
     tiles: string
 }
