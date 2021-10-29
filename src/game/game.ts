@@ -194,16 +194,12 @@ const isActionByCurrentPlayer: ValidatorFn = ({ action, gameState }) => {
     }
     return true
 }
-
+// TODO: combine with new distance function
 const isZoneWithinDistance = ({
     action,
     distance,
 }: ValidatorParams & { distance: number }) => {
-    if (
-        !distanceBetween(action.origin, action.target).every(
-            (actual) => actual <= distance,
-        )
-    ) {
+    if (!isWithinDistance(distance, action.origin, action.target)) {
         console.error(
             `Zones ${coords(action.origin)} and ${coords(
                 action.target,
@@ -213,6 +209,9 @@ const isZoneWithinDistance = ({
     }
     return true
 }
+
+export const isWithinDistance = (distance: number, zoneA: Zone, zoneB: Zone) =>
+    distanceBetween(zoneA, zoneB).every((actual) => actual <= distance)
 
 const distanceBetween = (zoneA: Zone, zoneB: Zone) => [
     Math.abs(zoneA.x - zoneB.x),
@@ -281,6 +280,51 @@ function isNeighbor(origin: Zone, candidate: Zone): boolean {
         Math.abs(candidate.y - origin.y) <= 1
     )
 }
+
+export const isSame = (a: Zone, b: Zone) => a.x === b.x && a.y === b.y
+
+const getDistance = (a: Zone, b: Zone) =>
+    Math.round(Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2))
+
+/**
+ * Prepare to get adjacent zones. Caching and additional state to optimize future executions
+ * @param min Min coordinate val
+ * @param max Max coordinate val
+ * @param allZones Cache of all zones for quick lookups
+ * @returns The curried getAdjacent(center, distance) function
+ */
+export const getAdjacent =
+    (min: number, max: number, allZones: Record<string, Zone>) =>
+    /**
+     * Get adjacent zones at a given distance from center
+     * @param center Zone to start from
+     * @param distance distance from center
+     * @returns Array of Zones
+     */
+    (center: Zone, distance: number) => {
+        const adjacent: Zone[] = []
+
+        for (let y = center.y - distance; y <= center.y + distance; y++) {
+            if (y < min || y > max) continue
+            for (let x = center.x - distance; x <= center.x + distance; x++) {
+                if (x < min || x > max) continue
+                if (center.x === x && center.y === y) continue
+                const zone = allZones[`${x}:${y}`]
+
+                if (getDistance(center, zone) >= distance) {
+                    adjacent.push(zone)
+                }
+            }
+        }
+
+        return adjacent
+    }
+
+export const getZoneLookup = (zones: Zone[]) =>
+    zones.reduce((lookup: Record<string, Zone>, zone) => {
+        lookup[`${zone.x}:${zone.y}`] = zone
+        return lookup
+    }, {})
 
 export function getScore(player: Player, gameState: GameState) {
     return gameState.zones.reduce(

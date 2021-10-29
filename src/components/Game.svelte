@@ -1,13 +1,29 @@
 <script lang="ts" context="module">
-    import { loadMap, newGame, Map } from "$game/game"
+    import {
+        loadMap,
+        newGame,
+        Map,
+        getAdjacent,
+        getZoneLookup,
+        Zone as ZoneType,
+    } from "$game/game"
+
+    import Zone from "./Zone.svelte"
 </script>
 
 <script lang="ts">
-    import { gameState } from "$lib/stores"
-    import Zone from "./Zone.svelte"
+    import { gameState, getAdjacentZones } from "$lib/stores"
 
     export let map: Map
     $gameState = newGame(loadMap(map))
+    const allZones = getZoneLookup($gameState.zones)
+
+    // Initalize and cache config for the zone fetcher
+    $getAdjacentZones = getAdjacent(
+        $gameState.zones[0].x,
+        ($gameState.zones.at(-1) as ZoneType).x,
+        allZones,
+    )
 </script>
 
 <!-- TODO: render every zone -->
