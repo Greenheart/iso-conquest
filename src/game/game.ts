@@ -194,16 +194,21 @@ const isActionByCurrentPlayer: ValidatorFn = ({ action, gameState }) => {
     }
     return true
 }
-// TODO: combine with new distance function
-const isZoneWithinDistance = ({
+
+const isZoneAtDistance = ({
     action,
     distance,
 }: ValidatorParams & { distance: number }) => {
-    if (!isWithinDistance(distance, action.origin, action.target)) {
+    if (
+        !isAtDistance(action.origin, action.target, distance) &&
+        !distanceBetween(action.origin, action.target).every(
+            (actual) => actual === distance,
+        )
+    ) {
         console.error(
             `Zones ${coords(action.origin)} and ${coords(
                 action.target,
-            )} are not within distance ${distance}`,
+            )} are not at distance ${distance}`,
         )
         return false
     }
@@ -233,7 +238,7 @@ export function conquer(gameState: GameState, action: Action): GameState {
     const params = { action, gameState }
     const canConquerZone = [
         isActionByCurrentPlayer({ ...params }),
-        isZoneWithinDistance({ ...params, distance: 1 }),
+        isZoneAtDistance({ ...params, distance: 1 }),
         isZoneValidOrigin({ ...params }),
         isZoneValidTarget({ ...params }),
     ].every(Boolean)
@@ -285,6 +290,11 @@ export const isSame = (a: Zone, b: Zone) => a.x === b.x && a.y === b.y
 
 const getDistance = (a: Zone, b: Zone) =>
     Math.round(Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2))
+
+const isAtDistance = (a: Zone, b: Zone, distance: number) => {
+    const actual = getDistance(a, b)
+    return actual > distance - 1 && actual < distance + 1
+}
 
 /**
  * Prepare to get adjacent zones. Caching and additional state to optimize future executions
@@ -340,7 +350,8 @@ export function conquerBySacrifice(
     const params = { action, gameState }
     const canConquerZone = [
         isActionByCurrentPlayer({ ...params }),
-        isZoneWithinDistance({ ...params, distance: 2 }),
+        // TODO: replace with isZoneAtDistance(...params, distance: 2) to ensure it's at exactly distance 2
+        isZoneAtDistance({ ...params, distance: 2 }),
         isZoneValidOrigin({ ...params }),
         isZoneValidTarget({ ...params }),
     ].every(Boolean)

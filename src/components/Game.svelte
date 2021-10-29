@@ -31,6 +31,8 @@
 <!-- TODO: show player scores -->
 <!-- TODO: Highlight the current player -->
 
+<!-- TODO: implement endgame conditions -->
+
 <div class="my-16" />
 
 <div

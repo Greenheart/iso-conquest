@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-    import { Zone, isSame, conquer } from "$game/game"
+    import { Zone, isSame, conquer, conquerBySacrifice } from "$game/game"
 </script>
 
 <script lang="ts">
@@ -34,17 +34,24 @@
             $selectedZone = zone
             $conquerable = $getAdjacentZones(zone, 1)
             $conquerableBySacrifice = $getAdjacentZones(zone, 2)
-        } else if (isConquerable) {
+            return
+        }
+
+        if (isConquerable) {
             $gameState = conquer($gameState, {
                 player: $gameState.currentPlayer,
                 origin: $selectedZone as Zone,
                 target: zone,
             })
-
-            reset()
-        } else {
-            reset()
+        } else if (isConquerableBySacrifice) {
+            $gameState = conquerBySacrifice($gameState, {
+                player: $gameState.currentPlayer,
+                origin: $selectedZone as Zone,
+                target: zone,
+            })
         }
+
+        reset()
     }
 </script>
 
