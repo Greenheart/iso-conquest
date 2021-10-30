@@ -14,6 +14,9 @@
 <script lang="ts">
     import { gameState, getAdjacentZones } from "$lib/stores"
 
+    // TODO: map players to in game colors, to show their zones
+    // TODO: use these colors when displaying scores
+
     export let map: Map
     $gameState = newGame(loadMap(map))
     const allZones = getZoneLookup($gameState.zones)
