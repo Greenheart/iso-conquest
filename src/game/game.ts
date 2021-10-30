@@ -29,7 +29,7 @@ export interface GameState {
     boundaries: [number, number]
 }
 
-const ZoneScore: Record<ZoneType, number> = {
+const ZoneValue: Record<ZoneType, number> = {
     default: 1,
     bonus: 5,
 }
@@ -53,6 +53,7 @@ type ValueOf<T> = T[keyof T]
 type ZoneType = ValueOf<typeof ZoneTileMap>
 type Tile = keyof typeof TileMap
 type PlayerTile = keyof typeof PlayerTileMap
+type ZoneTile = keyof typeof ZoneTileMap
 
 export interface Map {
     description: string
@@ -108,7 +109,7 @@ export const MAPS = {
     // This allows players to start with bonus zones, by using a number for player number and character(s) for zone types
     tieOrNoAction: {
         description:
-            "Test that the correct winner and endgame stats are displayed.",
+            "Test that the correct winner and endgame stats are displayed. Also testing a new parsing format.",
         tiles: `
             1 1 2 2 2 2 2 _
             1 1 1 1 2 2 2 2
@@ -122,24 +123,46 @@ export const MAPS = {
     },
 }
 
-const parseTiles = (str: string) => str.trim().split(/\n\s+/)
+const parseMap = (map: string) => map.trim().split(/\n\s+/)
 
-const getPlayerForTile = (players: Player[], tile: Tile) =>
-    players.find((player) => player.id === PlayerTileMap[tile as PlayerTile])
+const getPlayerFromTile = (players: Player[], tile: PlayerTile) =>
+    players.find((player) => player.id === PlayerTileMap[tile]) as Player
+
+const parseTile = (rawTile: string) => {
+    const match = rawTile.match(/(\d{0,})(\D{0,})$/)
+    if (!match) {
+        throw new Error("Unable to parse raw tile" + rawTile)
+    }
+    return [
+        match[1] ? match[1] : undefined,
+        match[2] ? match[2] : undefined,
+    ] as [PlayerTile | undefined, ZoneTile | undefined]
+}
 
 const loadZone = (
-    tile: Tile,
+    rawTile: string,
     x: number,
     y: number,
     players: Player[],
 ): Zone => {
-    if (!(tile in TileMap)) {
-        throw new Error("Unknown Tile type:" + tile)
+    const [playerTile, zoneTile] = parseTile(rawTile)
+
+    if (playerTile && !(playerTile in PlayerTileMap)) {
+        throw new Error("Unknown PlayerTile:" + playerTile)
     }
 
-    const owner = getPlayerForTile(players, tile)
-    const type = owner ? "default" : (TileMap[tile] as ZoneType)
-    const value = ZoneScore[type]
+    if (zoneTile && !(zoneTile in ZoneTileMap)) {
+        throw new Error("Unknown ZoneTile:" + zoneTile)
+    }
+
+    const owner = playerTile
+        ? getPlayerFromTile(players, playerTile)
+        : undefined
+    const type =
+        (owner && zoneTile === "_") || zoneTile === undefined
+            ? "default"
+            : ZoneTileMap[zoneTile]
+    const value = ZoneValue[type]
 
     const zone = {
         x,
@@ -153,12 +176,12 @@ const loadZone = (
 }
 
 export function loadZones(map: Map, players: Player[]) {
-    return parseTiles(map.tiles).flatMap((row, y) => {
+    return parseMap(map.tiles).flatMap((row, y) => {
         ++y
-        return row.split(" ").map((tile, x: number) => {
+        return row.split(" ").map((rawTile, x: number) => {
             // Increment by one to get coords starting at 1, 1
             ++x
-            return loadZone(tile as Tile, x, y, players)
+            return loadZone(rawTile, x, y, players)
         })
     })
 }
