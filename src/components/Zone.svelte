@@ -9,9 +9,12 @@
         conquerable,
         conquerableBySacrifice,
         getAdjacentZones,
+        playerColors,
     } from "$lib/stores"
 
     export let zone: Zone
+
+    $: isOwnZone = zone.owner === $gameState.currentPlayer
 
     $: isConquerable =
         $selectedZone &&
@@ -23,6 +26,13 @@
         $selectedZone !== zone &&
         $conquerableBySacrifice.some((z) => isSame(z, zone))
 
+    function getBgColor() {
+        if (zone.owner && $playerColors) return $playerColors[zone.owner.id]
+        if (isConquerable) return "bg-teal-500"
+        if (isConquerableBySacrifice) return "bg-teal-700"
+        return "bg-teal-900"
+    }
+
     function reset() {
         $selectedZone = undefined
         $conquerable = []
@@ -30,7 +40,7 @@
     }
 
     function handleClick() {
-        if (zone.owner === $gameState.currentPlayer) {
+        if (isOwnZone) {
             $selectedZone = zone
             $conquerable = $getAdjacentZones(zone, 1)
             $conquerableBySacrifice = $getAdjacentZones(zone, 2)
@@ -60,11 +70,15 @@
 
 <div
     class:shadow-xl={zone.type !== "default"}
-    class="grid place-items-center bg-teal-900 border-2 border-transparent hover:border-emerald-500"
-    class:bg-teal-200={$selectedZone === zone}
-    class:bg-teal-500={isConquerable}
-    class:bg-teal-700={isConquerableBySacrifice}
+    class={"grid place-items-center border-2 border-transparent" +
+        ` ${getBgColor()}` +
+        `${
+            isConquerable ||
+            isConquerableBySacrifice ||
+            isOwnZone ||
+            $selectedZone === zone
+                ? " hover:border-white"
+                : ""
+        }`}
     on:click={handleClick}
->
-    {zone.owner ? zone.owner.id : ""}
-</div>
+/>
