@@ -104,15 +104,12 @@ export const MAPS = {
     // IDEA: minify level strings in a build step (remove indentation and trim leading + ending whitespace)
     // This would save 12 * GRID_SIZE * NUMBER_OF_MAPS = 12 * 8 * 4 = 384 bytes which won't be any problem until there are more maps.
     // This would however be interesting if some kind of single player campaign is developed.
-
-    // IDEA: support multiple characters for each zone, by splitting on rows and spaces.
-    // This allows players to start with bonus zones, by using a number for player number and character(s) for zone types
     tieOrNoAction: {
         description:
             "Test that the correct winner and endgame stats are displayed. Also testing a new parsing format.",
         tiles: `
-            1 1 2 2 2 2 2 _
-            1 1 1 1 2 2 2 2
+            1 1 1 2 2 2 2 2
+            _ 1 1 1 2 2 2 2
             1 1 1b 1 2 2b 2 2
             1 1 1 1 2 2 1 1
             2 1 _ 1 2 2 2 2
@@ -120,6 +117,7 @@ export const MAPS = {
             1 1 1 1 1 1 2 2
             1 2 2 2 1 1 2 2
         `,
+        // IDEA: Explain the game rules in a help modal (i). Explain how to win, and possible ways to lose.
     },
 }
 
@@ -412,7 +410,6 @@ const getWinners = (gameState: GameState) =>
     }, [])
 
 export const getEndGame = (gameState: GameState): EndGame | undefined => {
-    // TODO: verify that tie games finish correctly
     const isSomePlayerEliminated = gameState.players.some(
         (player) => !getPlayerZones(gameState, player).length,
     )
@@ -427,8 +424,41 @@ export const getEndGame = (gameState: GameState): EndGame | undefined => {
 
     // IDEA: maybe return a list of all player scores + stats instead? Winners are simply the player(s) with the highest score
     // This would make it easier to display final stats
+    // IDEA: maybe replace `reason` with using it as a key in a return object instead
+    /*
+        {
+            // Winners
+            [EndGameReason.Winner]: PlayerStats[],
+            // and for all the losers, who gets added one by one as they are removed from the game
+            [EndGameReason.Elimination]: PlayerStats[],
+            [EndGameReason.NoNeutral]: PlayerStats[],
+            [EndGameReason.NoNeutral]: PlayerStats[],
+        }
+
+        Basically, Record<EndGameReason, PlayerStats[]> that maps all players that ended up with a given state.
+        This would work for any number of players participating
+
+        OR
+
+        return PlayerStats[] like before, but extend with more information
+        type PlayerStats = {
+            winner?: true
+            // How did this player win or lose?
+            reason: EndGameReason
+            score: number
+            // IDEA: keep when players lose, to for example get XP depending on how long you survived in a game
+            turnsPlayed: number
+        }
+
+        This format is very flexible and would make it easy to show a highscore table with stats for all players
+        Also feels simpler to understand and explain
+        Probably better simpler implementation since it doesn't use as complex data structures
+
+    */
 
     // TODO: if one player run out of moves, they lose - not the player with the most scores.
+    // IDEA: Maybe change this so that the player who locked away zones that are unreachable by others actually earn them for the final result.
+    // Then calculate endgame scores like usual. This would remove the opportunity for unexpected comebacks that turn the game around. Potentially this could be an option depending on the game mode.
 
     if (isSomePlayerEliminated) {
         return {
