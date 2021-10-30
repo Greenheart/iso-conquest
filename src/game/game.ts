@@ -322,9 +322,15 @@ export const getScore = (player: Player, gameState: GameState) =>
         0,
     )
 
-type PlayerStats = Player & {
+export type PlayerStats = Player & {
     score: number
 }
+
+export const getPlayerStats = (gameState: GameState): PlayerStats[] =>
+    gameState.players.map((player) => ({
+        ...player,
+        score: getScore(player, gameState),
+    }))
 
 export enum EndGameReason {
     Elimination = "elimination",

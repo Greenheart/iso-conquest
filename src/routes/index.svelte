@@ -3,4 +3,4 @@
     import { MAPS } from "$game/game"
 </script>
 
-<Game map={MAPS["debug"]} />
+<Game map={MAPS["bonus"]} />

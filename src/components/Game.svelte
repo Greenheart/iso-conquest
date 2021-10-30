@@ -1,9 +1,10 @@
 <script lang="ts" context="module">
-    import { loadMap, newGame, Map } from "$game/game"
+    import { loadMap, newGame, Map, getPlayerStats } from "$game/game"
 
     import Zone from "./Zone.svelte"
     import Header from "./Header.svelte"
     import Modal from "./Modal.svelte"
+    import Scores from "./Scores.svelte"
 </script>
 
 <script lang="ts">
@@ -31,10 +32,11 @@
 
 {#if $gameState}
     <Header {startNewGame} />
+    <Scores playerStats={getPlayerStats($gameState)} />
 
-    <div class="mt-16 grid place-items-center">
+    <div class="grid place-items-center">
         <div
-            class="grid grid-cols-8 grid-rows-8 aspect-square max-w-6xl w-[90vw] mx-auto select-none"
+            class="grid grid-cols-8 grid-rows-8 aspect-square max-w-6xl w-[90vw] mx-auto select-none text-white"
             class:pointer-events-none={$gameState.endGame}
             style="contain: strict"
         >
