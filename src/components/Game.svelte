@@ -33,7 +33,7 @@
 
     <div class="grid place-items-center">
         <div
-            class="grid grid-cols-8 grid-rows-8 aspect-square max-w-6xl w-full mx-auto select-none text-white"
+            class="grid grid-cols-8 grid-rows-8 aspect-square max-w-5xl w-full mx-auto select-none text-white"
             class:pointer-events-none={$gameState.endGame}
             style="contain: strict"
         >
