@@ -86,7 +86,6 @@ export const MAPS = {
             2 _ _ _ _ _ _ 2
         `,
     },
-
     debug: {
         description:
             "Test that the correct winner and endgame stats are displayed.",
@@ -100,16 +99,26 @@ export const MAPS = {
             1 1 1 1 1 _ 1 1
             2 1 1 1 1 1 _ 2
         `,
-        tilesOld: [
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [2, 1, 1, 1, 1, 1, 0, 2],
-        ],
+    },
+    // IDEA: minify level strings in a build step (remove indentation and trim leading + ending whitespace)
+    // This would save 12 * GRID_SIZE * NUMBER_OF_MAPS = 12 * 8 * 4 = 384 bytes which won't be any problem until there are more maps.
+    // This would however be interesting if some kind of single player campaign is developed.
+
+    // IDEA: support multiple characters for each zone, by splitting on rows and spaces.
+    // This allows players to start with bonus zones, by using a number for player number and character(s) for zone types
+    tieOrNoAction: {
+        description:
+            "Test that the correct winner and endgame stats are displayed.",
+        tiles: `
+            1 1 2 2 2 2 2 _
+            1 1 1 1 2 2 2 2
+            1 1 1b 1 2 2b 2 2
+            1 1 1 1 2 2 1 1
+            2 1 _ 1 2 2 2 2
+            2 1 1b 1 1 2b 2 2
+            1 1 1 1 1 1 2 2
+            1 2 2 2 1 1 2 2
+        `,
     },
 }
 
@@ -394,6 +403,8 @@ export const getEndGame = (gameState: GameState): EndGame | undefined => {
     // IDEA: maybe return a list of all player scores + stats instead? Winners are simply the player(s) with the highest score
     // This would make it easier to display final stats
 
+    // TODO: if one player run out of moves, they lose - not the player with the most scores.
+
     if (isSomePlayerEliminated) {
         return {
             winners: getWinners(gameState),
@@ -403,9 +414,10 @@ export const getEndGame = (gameState: GameState): EndGame | undefined => {
         const winners = getWinners(gameState)
         return {
             winners,
-            reason: winners.length
-                ? EndGameReason.Tie
-                : EndGameReason.NoNeutral,
+            reason:
+                winners.length > 1
+                    ? EndGameReason.Tie
+                    : EndGameReason.NoNeutral,
         }
     } else if (isSomePlayerWithoutActions) {
         return {

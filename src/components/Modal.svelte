@@ -6,6 +6,7 @@
 <script lang="ts">
     export let title: string
     export let actions: ButtonProps[]
+    // IDEA: Optionally enable closing with ESC or by clicking outside. Control with prop
 </script>
 
 <Modal class="bg-stone-700 p-8 max-w-md w-full">

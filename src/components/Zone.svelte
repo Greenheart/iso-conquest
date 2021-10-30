@@ -34,6 +34,7 @@
 
     // IDEA: Maybe cache all adjacent zones for each zone to make runtime checks faster
     // Will especially be useful when adding minimax AI
+    // IDEA: Maybe enable minimax as a cheat, to help players learn the game and see the best moves.
 
     function getBgColor() {
         if (zone.owner && $playerColors) return $playerColors[zone.owner.id]
@@ -78,13 +79,14 @@
     }
 </script>
 
+<!-- IDEA: render selected zone as "lifted", with scaling animation, and shadow -->
 <div
     class={"grid place-items-center border-2 border-transparent relative" +
         ` ${getBgColor()}` +
         `${
             isConquerable ||
             isConquerableBySacrifice ||
-            // (isOwnZone && getConquerableNeighbors($gameState, zone).length) ||
+            (isOwnZone && getConquerableNeighbors($gameState, zone).length) ||
             $selectedZone === zone
                 ? " hover:border-white"
                 : ""
