@@ -1,4 +1,4 @@
-export interface Player {
+export type Player = {
     id: string
 }
 
@@ -24,6 +24,8 @@ export interface GameState {
     zones: Zone[]
     players: Player[]
     currentPlayer: Player
+    endGame?: EndGame
+    getAdjacentZones: ReturnType<typeof getAdjacent>
 }
 
 const ZoneScore: Record<ZoneType, number> = {
@@ -71,7 +73,7 @@ export const MAPS = {
         `,
     },
     bonus: {
-        description: "Introducing bonus areas that give extra score.",
+        description: "Introducing bonus zones that give extra score.",
         tiles: `
             1 _ _ _ _ _ _ 1
             _ _ _ _ _ _ _ _
@@ -82,6 +84,31 @@ export const MAPS = {
             _ _ _ _ _ _ _ _
             2 _ _ _ _ _ _ 2
         `,
+    },
+
+    debug: {
+        description:
+            "Test that the correct winner and endgame stats are displayed.",
+        tiles: `
+            1 1 1 1 1 1 1 1
+            1 1 1 1 1 1 1 1
+            1 1 1 1 1 1 1 1
+            1 1 1 1 1 1 1 1
+            1 1 1 1 1 1 1 1
+            1 1 1 1 1 1 1 1
+            1 1 1 1 1 _ 1 1
+            2 1 1 1 1 1 _ 2
+        `,
+        tilesOld: [
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [2, 1, 1, 1, 1, 1, 0, 2],
+        ],
     },
 }
 
@@ -165,6 +192,12 @@ export function newGame({
         zones,
         players,
         currentPlayer: players[0],
+        // Initialize and cache config for the zone fetcher
+        getAdjacentZones: getAdjacent(
+            zones[0].x,
+            (zones.at(-1) as Zone).y,
+            getZoneLookup(zones),
+        ),
     }
 }
 
@@ -216,6 +249,7 @@ const isZoneAtDistance = ({
 const coords = (zone: Zone) => [zone.x, zone.y]
 
 export const getNextPlayer = (gameState: GameState) =>
+    // TODO: update to account for remaining players
     gameState.players[
         (1 +
             gameState.players.findIndex(
@@ -288,7 +322,113 @@ export const getScore = (player: Player, gameState: GameState) =>
         0,
     )
 
-export function conquer(gameState: GameState, action: Action): GameState {
+type PlayerStats = Player & {
+    score: number
+}
+
+export enum EndGameReason {
+    Elimination = "elimination",
+    NoNeutral = "no-neutral",
+    NoActions = "no-actions",
+}
+
+interface EndGame {
+    winners: PlayerStats[]
+    reason: EndGameReason
+}
+
+export const getNeighbors = (gameState: GameState, zone: Zone) => [
+    ...gameState.getAdjacentZones(zone, 1),
+    ...gameState.getAdjacentZones(zone, 2),
+]
+
+export const getPlayerZones = (gameState: GameState, player: Player) =>
+    gameState.zones.filter((zone) => zone.owner === player)
+
+export const keepNeutral = (zones: Zone[]) =>
+    zones.filter((zone: Zone) => !zone.owner)
+
+export const getConquerableNeighbors = (gameState: GameState, zone: Zone) =>
+    keepNeutral(getNeighbors(gameState, zone))
+
+export const hasAvailableActions = (gameState: GameState, player: Player) =>
+    getPlayerZones(gameState, player).some(
+        (zone) => getConquerableNeighbors(gameState, zone).length,
+    )
+
+const getWinners = (gameState: GameState) =>
+    gameState.players.reduce((winners: PlayerStats[], player: Player) => {
+        const score = getScore(player, gameState)
+        if (!winners.length || score > winners[0].score)
+            return [{ ...player, score }]
+        if (score === winners[0].score)
+            return [...winners, { ...player, score }]
+        return winners
+    }, [])
+
+export const getEndGame = (gameState: GameState): EndGame | undefined => {
+    // TODO: Adapt to work for any number of players. For example fetch all eliminated players instead of testing with players.some()
+    /*
+        if some player has 0 zones
+            this player lost or should be eliminated from the game
+        if there are no neutral zones left
+            the winner is the player with the highest score
+            or potentially a draw between several players
+        if there are only one remaining player left
+            this player won
+
+        if some player can't make any move
+            they lose despite their score.
+            this is harsh, but makes it possible to make sick comebacks.
+    */
+
+    const isSomePlayerEliminated = gameState.players.some(
+        (player) => !getPlayerZones(gameState, player).length,
+    )
+
+    const isEveryZoneTaken = gameState.zones.every((zone) => zone.owner)
+
+    const isSomePlayerWithoutActions = gameState.players.some(
+        (player) => !hasAvailableActions(gameState, player),
+    )
+
+    // IDEA: maybe return a list of all player scores + stats instead? Winners are simply the player(s) with the highest score
+    // This would make it easier to display final stats
+
+    if (isSomePlayerEliminated) {
+        console.log(EndGameReason.Elimination, isSomePlayerEliminated)
+        return {
+            winners: getWinners(gameState),
+            reason: EndGameReason.Elimination,
+        }
+    } else if (isEveryZoneTaken) {
+        console.log(EndGameReason.NoNeutral, isEveryZoneTaken)
+        return {
+            winners: getWinners(gameState),
+            reason: EndGameReason.NoNeutral,
+        }
+    } else if (isSomePlayerWithoutActions) {
+        console.log(EndGameReason.NoActions, isSomePlayerWithoutActions)
+        return {
+            winners: getWinners(gameState),
+            reason: EndGameReason.NoActions,
+        }
+    }
+}
+
+const getNextGameState = (gameState: GameState, zones: Zone[]) => {
+    const next: GameState = {
+        ...gameState,
+        zones,
+        currentPlayer: getNextPlayer(gameState),
+        turn: gameState.turn + 1,
+    }
+    next.endGame = getEndGame(next)
+
+    return next
+}
+
+export function conquer(gameState: GameState, action: Action) {
     const params = { action, gameState }
     const canConquerZone = [
         isActionByCurrentPlayer({ ...params }),
@@ -301,18 +441,10 @@ export function conquer(gameState: GameState, action: Action): GameState {
 
     const zones = gameState.zones.map((zone) => conquerZone(zone, action))
 
-    return {
-        ...gameState,
-        currentPlayer: getNextPlayer(gameState),
-        turn: gameState.turn + 1,
-        zones,
-    }
+    return getNextGameState(gameState, zones)
 }
 
-export function conquerBySacrifice(
-    gameState: GameState,
-    action: Action,
-): GameState {
+export function conquerBySacrifice(gameState: GameState, action: Action) {
     const params = { action, gameState }
     const canConquerZone = [
         isActionByCurrentPlayer({ ...params }),
@@ -333,12 +465,7 @@ export function conquerBySacrifice(
         return conquerZone(zone, action)
     })
 
-    return {
-        ...gameState,
-        currentPlayer: getNextPlayer(gameState),
-        turn: gameState.turn + 1,
-        zones,
-    }
+    return getNextGameState(gameState, zones)
 }
 
 function conquerZone(zone: Zone, action: Action) {

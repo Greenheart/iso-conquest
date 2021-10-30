@@ -1,5 +1,11 @@
 <script lang="ts" context="module">
-    import { Zone, isSame, conquer, conquerBySacrifice } from "$game/game"
+    import {
+        Zone,
+        isSame,
+        conquer,
+        conquerBySacrifice,
+        getConquerableNeighbors,
+    } from "$game/game"
 </script>
 
 <script lang="ts">
@@ -8,7 +14,6 @@
         selectedZone,
         conquerable,
         conquerableBySacrifice,
-        getAdjacentZones,
         playerColors,
     } from "$lib/stores"
 
@@ -33,7 +38,7 @@
         if (zone.owner && $playerColors) return $playerColors[zone.owner.id]
         if (isConquerable) return "bg-teal-500"
         if (isConquerableBySacrifice) return "bg-teal-700"
-        return "bg-teal-900"
+        return "bg-teal-800"
     }
 
     function reset() {
@@ -43,12 +48,14 @@
     }
 
     function handleClick() {
-        if (isOwnZone) {
+        if (isOwnZone && getConquerableNeighbors($gameState, zone).length) {
             $selectedZone = zone
-            $conquerable = $getAdjacentZones(zone, 1).filter((z) => !z.owner)
-            $conquerableBySacrifice = $getAdjacentZones(zone, 2).filter(
-                (z) => !z.owner,
-            )
+            $conquerable = $gameState
+                .getAdjacentZones(zone, 1)
+                .filter((z) => !z.owner)
+            $conquerableBySacrifice = $gameState
+                .getAdjacentZones(zone, 2)
+                .filter((z) => !z.owner)
             return
         }
 
@@ -74,8 +81,7 @@
         `${
             isConquerable ||
             isConquerableBySacrifice ||
-            isOwnZone ||
-            // TODO: and it should have conquerable neighbors
+            (isOwnZone && getConquerableNeighbors($gameState, zone).length) ||
             $selectedZone === zone
                 ? " hover:border-white"
                 : ""
