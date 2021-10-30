@@ -25,10 +25,7 @@
     }
 </script>
 
-<!-- TODO: show player scores -->
-<!-- TODO: Highlight the current player -->
-
-<!-- TODO: if endGame is set, show toplist with scores for players, and a restart button -->
+<!-- TODO: if endGame, show toplist with scores for players -->
 
 {#if $gameState}
     <Header {startNewGame} />
@@ -36,7 +33,7 @@
 
     <div class="grid place-items-center">
         <div
-            class="grid grid-cols-8 grid-rows-8 aspect-square max-w-6xl w-[90vw] mx-auto select-none text-white"
+            class="grid grid-cols-8 grid-rows-8 aspect-square max-w-6xl w-full mx-auto select-none text-white"
             class:pointer-events-none={$gameState.endGame}
             style="contain: strict"
         >
