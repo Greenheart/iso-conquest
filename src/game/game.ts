@@ -420,7 +420,9 @@ export const getEndGame = (gameState: GameState): EndGame | undefined => {
     const isEveryZoneTaken = gameState.zones.every((zone) => zone.owner)
 
     const isSomePlayerWithoutActions = gameState.players.some(
-        (player) => !hasAvailableActions(gameState, player),
+        (player) =>
+            gameState.currentPlayer === player &&
+            !hasAvailableActions(gameState, player),
     )
 
     // IDEA: maybe return a list of all player scores + stats instead? Winners are simply the player(s) with the highest score
