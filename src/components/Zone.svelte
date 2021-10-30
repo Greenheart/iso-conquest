@@ -55,6 +55,9 @@
     }
 </script>
 
+<!-- TODO: make only hoverable when you can select the zone, otherwise let the zone be -->
+<!-- See original game for UI ideas -->
+
 <div
     class:shadow-xl={zone.type !== "default"}
     class="grid place-items-center bg-teal-900 border-2 border-transparent hover:border-emerald-500"

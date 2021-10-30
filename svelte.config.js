@@ -18,6 +18,7 @@ const config = {
                 alias: {
                     $components: resolve("src/components"),
                     $game: resolve("src/game"),
+                    $lib: resolve("src/lib"),
                 },
             },
         },

@@ -26,12 +26,11 @@
     )
 </script>
 
-<!-- TODO: render every zone -->
-<!-- TODO: clicking a zone should make it clear that it's selected -->
 <!-- TODO: show player scores -->
 <!-- TODO: Highlight the current player -->
 
 <!-- TODO: implement endgame conditions -->
+<!-- TODO: make it possible to restart -->
 
 <div class="my-16" />
 
