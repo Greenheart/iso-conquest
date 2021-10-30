@@ -30,7 +30,7 @@
 <!-- TODO: Highlight the current player -->
 
 <!-- TODO: implement endgame conditions -->
-<!-- TODO: make it possible to restart -->
+<!-- TODO: make it possible to restart - probably by resetting the map -->
 
 <div class="my-16" />
 
