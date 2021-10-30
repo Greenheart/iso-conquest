@@ -5,6 +5,7 @@
         conquer,
         conquerBySacrifice,
         getConquerableNeighbors,
+        getAdjacentZones,
     } from "$game/game"
 </script>
 
@@ -47,18 +48,20 @@
         $conquerableBySacrifice = []
     }
 
-    // BUG: sometimes it's not possible to conquer zones in the corners of the map.
+    // BUG: No player can conquer zones in the corners of the map.
     // BUG: isSelectable gets wrong result
 
     function handleClick() {
         if (isOwnZone && getConquerableNeighbors($gameState, zone).length) {
             $selectedZone = zone
-            $conquerable = $gameState
-                .getAdjacentZones(zone, 1)
-                .filter((z) => !z.owner)
-            $conquerableBySacrifice = $gameState
-                .getAdjacentZones(zone, 2)
-                .filter((z) => !z.owner)
+            $conquerable = getAdjacentZones($gameState, zone, 1).filter(
+                (z) => !z.owner,
+            )
+            $conquerableBySacrifice = getAdjacentZones(
+                $gameState,
+                zone,
+                2,
+            ).filter((z) => !z.owner)
             return
         }
 
@@ -84,7 +87,7 @@
         `${
             isConquerable ||
             isConquerableBySacrifice ||
-            (isOwnZone && getConquerableNeighbors($gameState, zone).length) ||
+            // (isOwnZone && getConquerableNeighbors($gameState, zone).length) ||
             $selectedZone === zone
                 ? " hover:border-white"
                 : ""

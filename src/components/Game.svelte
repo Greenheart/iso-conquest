@@ -8,12 +8,21 @@
 </script>
 
 <script lang="ts">
-    import { gameState, playerColors } from "$lib/stores"
+    import {
+        gameState,
+        playerColors,
+        selectedZone,
+        conquerable,
+        conquerableBySacrifice,
+    } from "$lib/stores"
 
     export let map: Map
 
     const startNewGame = () => {
         $gameState = newGame(loadMap(map))
+        $selectedZone = undefined
+        $conquerable = []
+        $conquerableBySacrifice = []
     }
 
     startNewGame()

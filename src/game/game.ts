@@ -25,7 +25,8 @@ export interface GameState {
     players: Player[]
     currentPlayer: Player
     endGame?: EndGame
-    getAdjacentZones: ReturnType<typeof getAdjacent>
+    zoneLookup: Record<string, Zone>
+    boundaries: [number, number]
 }
 
 const ZoneScore: Record<ZoneType, number> = {
@@ -192,14 +193,18 @@ export function newGame({
         zones,
         players,
         currentPlayer: players[0],
-        // Initialize and cache config for the zone fetcher
-        getAdjacentZones: getAdjacent(
-            zones[0].x,
-            (zones.at(-1) as Zone).y,
-            getZoneLookup(zones),
-        ),
+        zoneLookup: getZoneLookup(zones),
+        boundaries: getBoundaries(zones),
     }
 }
+
+/**
+ * NOTE: This only works for square gridmaps
+ */
+const getBoundaries = (zones: Zone[]): [number, number] => [
+    zones[0].x,
+    (zones.at(-1) as Zone).x,
+]
 
 type ValidatorParams = { action: Action; gameState: GameState }
 type ValidatorFn = (params: ValidatorParams) => boolean
@@ -283,36 +288,37 @@ const isAtDistance = (a: Zone, b: Zone, distance: number) => {
  * @param allZones Cache of all zones for quick lookups
  * @returns The curried getAdjacent(center, distance) function
  */
-export const getAdjacent =
-    (min: number, max: number, allZones: Record<string, Zone>) =>
-    /**
-     * Get adjacent zones at a given distance from center
-     * @param center Zone to start from
-     * @param distance distance from center
-     * @returns Array of Zones
-     */
-    (center: Zone, distance: number) => {
-        const adjacent: Zone[] = []
+export const getAdjacentZones = (
+    gameState: GameState,
+    center: Zone,
+    distance: number,
+) => {
+    const adjacent: Zone[] = []
+    const [min, max] = gameState.boundaries
 
-        for (let y = center.y - distance; y <= center.y + distance; y++) {
-            if (y < min || y > max) continue
-            for (let x = center.x - distance; x <= center.x + distance; x++) {
-                if (x < min || x > max) continue
-                if (center.x === x && center.y === y) continue
-                const zone = allZones[`${x}:${y}`]
+    for (let y = center.y - distance; y <= center.y + distance; y++) {
+        if (y < min || y > max) continue
+        for (let x = center.x - distance; x <= center.x + distance; x++) {
+            if (x < min || x > max) continue
 
-                if (getDistance(center, zone) >= distance) {
-                    adjacent.push(zone)
-                }
+            if (center.x === x && center.y === y) continue
+            const zone = gameState.zoneLookup[x + "" + y]
+
+            if (getDistance(center, zone) >= distance) {
+                adjacent.push(zone)
             }
         }
-
-        return adjacent
     }
+
+    // NOTE: Seems like the corner zones never change owner, even if the player tries conquer by sacrifice.
+    // Probably is caused by the fact that allZones in this curried function is referencing the initial state which doesn't change.
+
+    return adjacent
+}
 
 export const getZoneLookup = (zones: Zone[]) =>
     zones.reduce((lookup: Record<string, Zone>, zone) => {
-        lookup[`${zone.x}:${zone.y}`] = zone
+        lookup[zone.x + "" + zone.y] = zone
         return lookup
     }, {})
 
@@ -344,8 +350,8 @@ interface EndGame {
 }
 
 export const getNeighbors = (gameState: GameState, zone: Zone) => [
-    ...gameState.getAdjacentZones(zone, 1),
-    ...gameState.getAdjacentZones(zone, 2),
+    ...getAdjacentZones(gameState, zone, 1),
+    ...getAdjacentZones(gameState, zone, 2),
 ]
 
 export const getPlayerZones = (gameState: GameState, player: Player) =>
@@ -425,6 +431,7 @@ export const getEndGame = (gameState: GameState): EndGame | undefined => {
 const getNextGameState = (gameState: GameState, zones: Zone[]) => {
     const next: GameState = {
         ...gameState,
+        zoneLookup: getZoneLookup(zones),
         zones,
         currentPlayer: getNextPlayer(gameState),
         turn: gameState.turn + 1,
