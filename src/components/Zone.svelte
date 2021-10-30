@@ -48,9 +48,6 @@
         $conquerableBySacrifice = []
     }
 
-    // BUG: No player can conquer zones in the corners of the map.
-    // BUG: isSelectable gets wrong result
-
     function handleClick() {
         if (isOwnZone && getConquerableNeighbors($gameState, zone).length) {
             $selectedZone = zone

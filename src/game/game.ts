@@ -254,7 +254,7 @@ const isZoneAtDistance = ({
 const coords = (zone: Zone) => [zone.x, zone.y]
 
 export const getNextPlayer = (gameState: GameState) =>
-    // TODO: update to account for remaining players
+    // TODO: update to account for remaining players => filter out eliminated ones
     gameState.players[
         (1 +
             gameState.players.findIndex(
@@ -342,6 +342,7 @@ export enum EndGameReason {
     Elimination = "elimination",
     NoNeutral = "no-neutral",
     NoActions = "no-actions",
+    Tie = "tie",
 }
 
 interface EndGame {
@@ -379,21 +380,7 @@ const getWinners = (gameState: GameState) =>
     }, [])
 
 export const getEndGame = (gameState: GameState): EndGame | undefined => {
-    // TODO: Adapt to work for any number of players. For example fetch all eliminated players instead of testing with players.some()
-    /*
-        if some player has 0 zones
-            this player lost or should be eliminated from the game
-        if there are no neutral zones left
-            the winner is the player with the highest score
-            or potentially a draw between several players
-        if there are only one remaining player left
-            this player won
-
-        if some player can't make any move
-            they lose despite their score.
-            this is harsh, but makes it possible to make sick comebacks.
-    */
-
+    // TODO: verify that tie games finish correctly
     const isSomePlayerEliminated = gameState.players.some(
         (player) => !getPlayerZones(gameState, player).length,
     )
@@ -408,19 +395,19 @@ export const getEndGame = (gameState: GameState): EndGame | undefined => {
     // This would make it easier to display final stats
 
     if (isSomePlayerEliminated) {
-        console.log(EndGameReason.Elimination, isSomePlayerEliminated)
         return {
             winners: getWinners(gameState),
             reason: EndGameReason.Elimination,
         }
     } else if (isEveryZoneTaken) {
-        console.log(EndGameReason.NoNeutral, isEveryZoneTaken)
+        const winners = getWinners(gameState)
         return {
-            winners: getWinners(gameState),
-            reason: EndGameReason.NoNeutral,
+            winners,
+            reason: winners.length
+                ? EndGameReason.Tie
+                : EndGameReason.NoNeutral,
         }
     } else if (isSomePlayerWithoutActions) {
-        console.log(EndGameReason.NoActions, isSomePlayerWithoutActions)
         return {
             winners: getWinners(gameState),
             reason: EndGameReason.NoActions,
