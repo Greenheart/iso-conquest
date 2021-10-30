@@ -196,32 +196,22 @@ const isActionByCurrentPlayer: ValidatorFn = ({ action, gameState }) => {
 }
 
 const isZoneAtDistance = ({
-    action,
+    action: { origin, target },
     distance,
 }: ValidatorParams & { distance: number }) => {
     if (
-        !isAtDistance(action.origin, action.target, distance) &&
-        !distanceBetween(action.origin, action.target).every(
-            (actual) => actual === distance,
-        )
+        !isAtDistance(origin, target, distance) &&
+        Math.abs(origin.x - target.x) !== Math.abs(origin.y - target.y)
     ) {
         console.error(
-            `Zones ${coords(action.origin)} and ${coords(
-                action.target,
+            `Zones ${coords(origin)} and ${coords(
+                target,
             )} are not at distance ${distance}`,
         )
         return false
     }
     return true
 }
-
-export const isWithinDistance = (distance: number, zoneA: Zone, zoneB: Zone) =>
-    distanceBetween(zoneA, zoneB).every((actual) => actual <= distance)
-
-const distanceBetween = (zoneA: Zone, zoneB: Zone) => [
-    Math.abs(zoneA.x - zoneB.x),
-    Math.abs(zoneA.y - zoneB.y),
-]
 
 const coords = (zone: Zone) => [zone.x, zone.y]
 
@@ -233,50 +223,6 @@ export const getNextPlayer = (gameState: GameState) =>
             )) %
             gameState.players.length
     ]
-
-export function conquer(gameState: GameState, action: Action): GameState {
-    const params = { action, gameState }
-    const canConquerZone = [
-        isActionByCurrentPlayer({ ...params }),
-        isZoneAtDistance({ ...params, distance: 1 }),
-        isZoneValidOrigin({ ...params }),
-        isZoneValidTarget({ ...params }),
-    ].every(Boolean)
-
-    if (!canConquerZone) return gameState
-
-    const zones = gameState.zones.map((zone) => conquerZone(zone, action))
-
-    return {
-        ...gameState,
-        currentPlayer: getNextPlayer(gameState),
-        turn: gameState.turn + 1,
-        zones,
-    }
-}
-
-// TODO: rename to something
-function conquerZone(zone: Zone, action: Action) {
-    if (zone === action.origin) {
-        return zone
-    } else if (zone === action.target) {
-        return {
-            ...zone,
-            owner: action.player,
-        }
-    } else if (isNeighbor(action.target, zone)) {
-        if (zone.owner && zone.owner !== action.player) {
-            return {
-                ...zone,
-                owner: action.player,
-            }
-        } else {
-            return zone
-        }
-    } else {
-        return zone
-    }
-}
 
 function isNeighbor(origin: Zone, candidate: Zone): boolean {
     return (
@@ -336,11 +282,31 @@ export const getZoneLookup = (zones: Zone[]) =>
         return lookup
     }, {})
 
-export function getScore(player: Player, gameState: GameState) {
-    return gameState.zones.reduce(
+export const getScore = (player: Player, gameState: GameState) =>
+    gameState.zones.reduce(
         (score, zone) => (zone.owner === player ? score + zone.value : score),
         0,
     )
+
+export function conquer(gameState: GameState, action: Action): GameState {
+    const params = { action, gameState }
+    const canConquerZone = [
+        isActionByCurrentPlayer({ ...params }),
+        isZoneAtDistance({ ...params, distance: 1 }),
+        isZoneValidOrigin({ ...params }),
+        isZoneValidTarget({ ...params }),
+    ].every(Boolean)
+
+    if (!canConquerZone) return gameState
+
+    const zones = gameState.zones.map((zone) => conquerZone(zone, action))
+
+    return {
+        ...gameState,
+        currentPlayer: getNextPlayer(gameState),
+        turn: gameState.turn + 1,
+        zones,
+    }
 }
 
 export function conquerBySacrifice(
@@ -350,7 +316,6 @@ export function conquerBySacrifice(
     const params = { action, gameState }
     const canConquerZone = [
         isActionByCurrentPlayer({ ...params }),
-        // TODO: replace with isZoneAtDistance(...params, distance: 2) to ensure it's at exactly distance 2
         isZoneAtDistance({ ...params, distance: 2 }),
         isZoneValidOrigin({ ...params }),
         isZoneValidTarget({ ...params }),
@@ -373,5 +338,27 @@ export function conquerBySacrifice(
         currentPlayer: getNextPlayer(gameState),
         turn: gameState.turn + 1,
         zones,
+    }
+}
+
+function conquerZone(zone: Zone, action: Action) {
+    if (zone === action.origin) {
+        return zone
+    } else if (zone === action.target) {
+        return {
+            ...zone,
+            owner: action.player,
+        }
+    } else if (isNeighbor(action.target, zone)) {
+        if (zone.owner && zone.owner !== action.player) {
+            return {
+                ...zone,
+                owner: action.player,
+            }
+        } else {
+            return zone
+        }
+    } else {
+        return zone
     }
 }
