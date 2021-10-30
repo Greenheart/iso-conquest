@@ -1,12 +1,43 @@
+<script lang="ts" context="module">
+    import Modal from "$components/Modal.svelte"
+</script>
+
 <script lang="ts">
     export let startNewGame: () => void
+    let showConfirm = false
 </script>
+
+{#if showConfirm}
+    <Modal
+        title="Are you sure you want to restart?"
+        actions={[
+            {
+                onClick: () => {
+                    startNewGame()
+                    showConfirm = false
+                },
+                label: "Restart",
+                variant: "danger",
+            },
+            {
+                onClick: () => {
+                    showConfirm = false
+                },
+                label: "Cancel",
+                variant: "secondary",
+                autofocus: true,
+            },
+        ]}
+    />
+{/if}
 
 <header class="shadow-lg flex justify-between items-center p-4 bg-stone-800">
     <svg
-        on:click={startNewGame}
+        on:click={() => {
+            showConfirm = true
+        }}
         xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6"
+        class="h-6 w-6 cursor-pointer"
         fill="none"
         viewBox="0 0 24 24"
         stroke="#fff"

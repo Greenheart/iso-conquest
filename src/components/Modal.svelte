@@ -1,15 +1,11 @@
 <script lang="ts" context="module">
     import Modal from "$components/BaseModal.svelte"
-
-    interface ModalAction {
-        onClick: () => void
-        label: string
-    }
+    import Button, { ButtonProps } from "$components/Button.svelte"
 </script>
 
 <script lang="ts">
     export let title: string
-    export let actions: ModalAction[]
+    export let actions: ButtonProps[]
 </script>
 
 <Modal class="bg-stone-700 p-8 max-w-md w-full">
@@ -19,14 +15,9 @@
     <div class="my-8">
         <slot />
     </div>
-    <div slot="footer" class="flex justify-center flex-col">
-        <!-- svelte-ignore a11y-autofocus -->
-        {#each actions as { onClick, label }}
-            <button
-                class="px-12 py-4 bg-emerald-500 text-white hover:transform-gpu hover:scale-105 duration-100 text-xl font-semibold"
-                autofocus
-                on:click={onClick}>{label}</button
-            >
+    <div slot="footer" class="flex justify-center flex-col space-y-2">
+        {#each actions as { onClick, variant, label, autofocus }}
+            <Button {label} {onClick} {variant} {autofocus} />
         {/each}
     </div>
 </Modal>
