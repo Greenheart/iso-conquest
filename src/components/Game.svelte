@@ -54,7 +54,13 @@
         {#if $gameState.endGame}
             <Modal
                 title="Game Over!"
-                actions={[{ onClick: startNewGame, label: "New Game" }]}
+                actions={[
+                    {
+                        onClick: startNewGame,
+                        label: "New Game",
+                        autofocus: true,
+                    },
+                ]}
             >
                 <pre>
                     {JSON.stringify($gameState.endGame, null, 2)}
