@@ -38,18 +38,20 @@ const move =
     (playerId: Player["id"], from: Coordinates, to: Coordinates) =>
     (gameState: GameState) => {
         log(action.name, `${playerId} moving from ${from} to ${to}`)
-        return action(gameState, {
+        const nextState = action(gameState, {
             playerId,
             origin: zone(gameState, ...from),
             target: zone(gameState, ...to),
         })
+        scores(nextState)
+        return nextState
     }
 
 const take = move(conquer)
 const sacrifice = move(conquerBySacrifice)
 
 const zone = (gameState: GameState, x: number, y: number) =>
-    gameState.zones.find((z) => z.x === x && z.y === y) as Zone
+    gameState.zoneLookup[x + "" + y]
 
 const pipe =
     (...fns: Array<(gameState: GameState) => GameState>) =>
@@ -65,12 +67,9 @@ function main() {
     pipe(
         scores,
         sacrifice("player1", [1, 1], [3, 3]),
-        scores,
         take("player2", [8, 8], [6, 6]),
         sacrifice("player2", [8, 8], [6, 6]),
-        scores,
         take("player1", [3, 3], [2, 3]),
-        scores,
     )(initialState)
 }
 
