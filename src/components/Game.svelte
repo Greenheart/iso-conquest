@@ -52,6 +52,8 @@
     - number of zones lost to opponents
     - games won
     - games played
+    - average score
+    - total score
     - endGame stats from all played games
 -->
 

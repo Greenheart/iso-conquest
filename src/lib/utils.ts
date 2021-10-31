@@ -5,7 +5,7 @@ type PlayerColor = {
     active: string
 }
 
-// NOTE: This didn't work as well as hoped. Might remove it later.
+// NOTE: These colors didn't work as well as hoped. Might remove it later.
 const playerColors: Record<PlayerId, { default: string; active: string }> = {
     player1: {
         default: "bg-sky-900",

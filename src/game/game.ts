@@ -463,20 +463,29 @@ export const haveAvailableActions = (gameState: GameState, player: Player) =>
     )
 
 const getWinners = (gameState: GameState) =>
-    gameState.players.reduce(
-        (
-            winners: Pick<PlayerStats, keyof Player | "score">[],
-            player: Player,
-        ) => {
-            const score = getScore(player, gameState)
-            if (!winners.length || score > winners[0].score)
-                return [{ ...player, score }]
-            if (score === winners[0].score)
-                return [...winners, { ...player, score }]
-            return winners
-        },
-        [],
-    )
+    gameState.players.reduce((winners: PlayerStats[], player: Player) => {
+        const score = getScore(player, gameState)
+        if (winners.length && score < winners[0].score) return winners
+
+        const newWinner = {
+            ...player,
+            score,
+            winner: true,
+            turnsPlayed: gameState.turn,
+            reason: EndGameReason.NoNeutral,
+        }
+
+        if (!winners.length || score > winners[0].score) {
+            return [newWinner]
+        } else if (score === winners[0].score) {
+            return [...winners, newWinner].map((winner) => ({
+                ...winner,
+                reason: EndGameReason.Tie,
+            }))
+        }
+
+        return winners
+    }, [])
 
 export const getRemainingPlayers = (gameState: GameState) =>
     gameState.zones.reduce((players: Player[], zone) => {
@@ -516,19 +525,20 @@ export const updatePlayers = (
         )
         .filter((p) => !eliminatedPlayers.some(({ id }) => p.id === id))
 
-    console.log(playersWithoutActions, remainingPlayers)
-
     const winners =
         isEveryZoneTaken || remainingPlayers.length === 1
-            ? getWinners(gameState).map((winner, _, winners) => ({
-                  ...winner,
-                  winner: true,
-                  turnsPlayed: gameState.turn,
-                  reason:
-                      winners.length > 1
-                          ? EndGameReason.Tie
-                          : EndGameReason.NoNeutral,
-              }))
+            ? getWinners({
+                  ...gameState,
+                  players: gameState.players.filter(
+                      (player) =>
+                          !(
+                              playersWithoutActions.some(
+                                  (p) => player.id === p.id,
+                              ) ||
+                              eliminatedPlayers.some((p) => player.id === p.id)
+                          ),
+                  ),
+              })
             : []
 
     return {
@@ -542,7 +552,7 @@ export const updatePlayers = (
             })),
             ...playersWithoutActions?.map<PlayerStats>((player) => ({
                 ...player,
-                score: getScore(player, gameState),
+                score: 0,
                 reason: EndGameReason.NoActions,
                 turnsPlayed: gameState.turn,
             })),
