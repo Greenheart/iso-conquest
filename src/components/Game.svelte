@@ -16,7 +16,6 @@
 <script lang="ts">
     import {
         gameState,
-        playerColors,
         selectedZone,
         conquerable,
         conquerableBySacrifice,
@@ -32,13 +31,6 @@
     }
 
     startNewGame()
-
-    // IDEA: make player colors pick from a set of pre-selected player colors, depending on how many players there are in the game
-    $playerColors = {
-        player1: "bg-sky-900",
-        player2: "bg-amber-900",
-        player3: "bg-yellow-500",
-    }
 
     $: showEndGame = isGameOver($gameState)
 </script>

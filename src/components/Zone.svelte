@@ -15,8 +15,8 @@
         selectedZone,
         conquerable,
         conquerableBySacrifice,
-        playerColors,
     } from "$lib/stores"
+    import { getPlayerColor } from "$lib/utils"
 
     export let zone: Zone
 
@@ -37,7 +37,7 @@
     // IDEA: Maybe enable minimax as a cheat, to help players learn the game and see the best moves.
 
     function getBgColor() {
-        if (zone.owner && $playerColors) return $playerColors[zone.owner]
+        if (zone.owner) return getPlayerColor(zone.owner)
         if (isConquerable) return "bg-teal-500"
         if (isConquerableBySacrifice) return "bg-teal-700"
         return "bg-teal-800"
