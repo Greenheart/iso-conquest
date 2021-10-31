@@ -19,7 +19,7 @@ const scores = (gameState: GameState) => {
         cyan("Scores"),
         gameState.players
             .map((p: Player) =>
-                gameState.currentPlayer === p
+                gameState.currentPlayer === p.id
                     ? yellow(`${getScore(p, gameState)}`)
                     : `${getScore(p, gameState)}`,
             )
@@ -39,7 +39,7 @@ const move =
     (gameState: GameState) => {
         log(action.name, `${playerId} moving from ${from} to ${to}`)
         return action(gameState, {
-            player: gameState.players.find((p) => p.id === playerId) as Player,
+            playerId,
             origin: zone(gameState, ...from),
             target: zone(gameState, ...to),
         })
