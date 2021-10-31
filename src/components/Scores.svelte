@@ -5,6 +5,7 @@
 <script lang="ts">
     import { scale } from "svelte/transition"
     import { playerColors, gameState } from "$lib/stores"
+    import { flip } from "svelte/animate"
     export let playerScores: PlayerScore[]
 
     const getSize = (score: number) =>
@@ -21,12 +22,13 @@
 <div
     class="flex justify-center space-x-10 items-center text-white font-medium text-2xl h-28"
 >
-    {#each playerScores as { id, score }}
+    {#each playerScores as { id, score } (id)}
         <p
             style={getSize(score) + getShadow(id)}
             class={$playerColors[id] +
                 " p-2 rounded-full w-12 h-12 place-items-center grid"}
             transition:scale
+            animate:flip={{ duration: 300 }}
         >
             {score}
         </p>

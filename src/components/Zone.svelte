@@ -5,7 +5,7 @@
         conquer,
         conquerBySacrifice,
         getConquerableNeighbors,
-        getAdjacentZones,
+        hasConquerableNeighbors,
     } from "$game/game"
 </script>
 
@@ -25,12 +25,12 @@
     $: isConquerable =
         $selectedZone &&
         $selectedZone !== zone &&
-        $conquerable.some((z) => isSame(z, zone))
+        $conquerable.some((z) => isSame(zone, z))
 
     $: isConquerableBySacrifice =
         $selectedZone &&
         $selectedZone !== zone &&
-        $conquerableBySacrifice.some((z) => isSame(z, zone))
+        $conquerableBySacrifice.some((z) => isSame(zone, z))
 
     // IDEA: Maybe cache all adjacent zones for each zone to make runtime checks faster
     // Will especially be useful when adding minimax AI
@@ -43,13 +43,6 @@
         return "bg-teal-800"
     }
 
-    const getHoverColor = () =>
-        isConquerable ||
-        isConquerableBySacrifice ||
-        (isOwnZone && getConquerableNeighbors($gameState, zone).length)
-            ? "hover:border-white"
-            : ""
-
     function reset() {
         $selectedZone = undefined
         $conquerable = []
@@ -57,17 +50,17 @@
     }
 
     function handleClick() {
-        console.log(isOwnZone, zone.owner)
-        if (isOwnZone && getConquerableNeighbors($gameState, zone).length) {
+        const conquerableNeighbors = isOwnZone
+            ? getConquerableNeighbors($gameState, zone)
+            : undefined
+
+        if (
+            conquerableNeighbors &&
+            (conquerableNeighbors[1].length || conquerableNeighbors[2].length)
+        ) {
             $selectedZone = zone
-            $conquerable = getAdjacentZones($gameState, zone, 1).filter(
-                (z) => !z.owner,
-            )
-            $conquerableBySacrifice = getAdjacentZones(
-                $gameState,
-                zone,
-                2,
-            ).filter((z) => !z.owner)
+            $conquerable = conquerableNeighbors[1]
+            $conquerableBySacrifice = conquerableNeighbors[2]
             return
         }
 
@@ -90,12 +83,18 @@
 <div
     class={"grid place-items-center border-2 border-transparent relative" +
         ` ${getBgColor()}` +
-        ` ${getHoverColor()}`}
+        ` ${
+            isConquerable ||
+            isConquerableBySacrifice ||
+            (isOwnZone && hasConquerableNeighbors($gameState, zone))
+                ? "hover:border-white"
+                : ""
+        }`}
     class:border-white={$selectedZone === zone}
     on:click={handleClick}
 >
     <p
-        class="absolute top-1/2 left-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2"
+        class="absolute top-1/2 left-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2 text-xl"
     >
         {zone.type !== "default" ? zone.value : ""}
     </p>

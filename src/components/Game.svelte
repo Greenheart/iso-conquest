@@ -45,6 +45,11 @@
 
 <!-- TODO: if endGame, show toplist with scores for players -->
 
+<!-- IDEA: Whener a new player is added to the endGame array, show a toaster that the player was eliminated -->
+<!-- IDEA: This toaster can later be used to show messages when players conquer many zones at once,
+    to make the game feel more engaging and alive by hyping their actions
+-->
+
 {#if $gameState}
     <Header {startNewGame} />
     <Scores playerScores={getPlayerScores($gameState)} />
