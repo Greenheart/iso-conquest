@@ -79,18 +79,17 @@
     }
 </script>
 
-<!-- IDEA: render selected zone as "lifted", with scaling animation, and shadow -->
 <div
     class={"grid place-items-center border-2 border-transparent relative" +
         ` ${getBgColor()}` +
         `${
             isConquerable ||
             isConquerableBySacrifice ||
-            (isOwnZone && getConquerableNeighbors($gameState, zone).length) ||
-            $selectedZone === zone
+            (isOwnZone && getConquerableNeighbors($gameState, zone).length)
                 ? " hover:border-white"
                 : ""
         }`}
+    class:border-white={$selectedZone === zone}
     on:click={handleClick}
 >
     <p
