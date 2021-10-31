@@ -131,6 +131,21 @@ export const MAPS = {
         `,
         // IDEA: Explain the game rules in a help modal (i). Explain how to win, and possible ways to lose.
     },
+    noActions: {
+        description:
+            "player2 should run out of moves and lose the game is player1 conquers [1,3]",
+        tiles: `
+            1 _ _ 1 1 2 3 3
+            _ _ 1 1 1 2 3 3
+            _ _ 1b 3 3 3b 3 3
+            _ _ 1 3 3 3 3 3
+            _ _ 1 3 3 3 3 3
+            _ _ 1b 1 1 3b 3 3
+            _ _ 3 3 3 3 3 _
+            _ _ _ _ _ _ _ _
+        `,
+        // IDEA: Explain the game rules in a help modal (i). Explain how to win, and possible ways to lose.
+    },
 }
 
 // IDEA: To enable saving and loading games, maybe save entire gameState.
@@ -437,20 +452,20 @@ const getWinners = (gameState: GameState) =>
         [],
     )
 
-export const getRemainingPlayerIds = (gameState: GameState) =>
-    gameState.zones.reduce((playerIds: string[], zone) => {
-        if (zone.owner && !playerIds.includes(zone.owner)) {
-            playerIds.push(zone.owner)
-        }
-        return playerIds
-    }, [])
+export const getRemainingPlayers = (gameState: GameState) =>
+    gameState.zones.reduce((players: Player[], zone) => {
+        const candidate = gameState.players.find((p) => p.id === zone.owner)
 
-export const getRemainingPlayers = (gameState: GameState) => {
-    const remainingPlayerIds = getRemainingPlayerIds(gameState)
-    return gameState.players.filter((player) =>
-        remainingPlayerIds.includes(player.id),
-    )
-}
+        if (
+            candidate &&
+            zone.owner &&
+            !players.some((player) => player.id === zone.owner) &&
+            hasAvailableActions(gameState, candidate)
+        ) {
+            players.push(candidate)
+        }
+        return players
+    }, [])
 
 export const updatePlayers = (
     gameState: GameState,
