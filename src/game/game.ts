@@ -50,7 +50,6 @@ const TileMap = {
 type ValueOf<T> = T[keyof T]
 export type PlayerId = ValueOf<typeof PlayerTileMap>
 type ZoneType = ValueOf<typeof ZoneTileMap>
-type Tile = keyof typeof TileMap
 type PlayerTile = keyof typeof PlayerTileMap
 type ZoneTile = keyof typeof ZoneTileMap
 
@@ -144,7 +143,6 @@ export const MAPS = {
             _ _ 3 3 3 3 3 _
             _ _ _ _ _ _ _ _
         `,
-        // IDEA: Explain the game rules in a help modal (i). Explain how to win, and possible ways to lose.
     },
     player1MissingInEndGameStats: {
         description:
@@ -156,10 +154,23 @@ export const MAPS = {
             1 1 1 1 1 3 3 3
             1 1 1 3 3 3 1 1
             3 3 3b 3 3 3b 3 1
-            3 3 3 1 3 3 3 1
+                3 3 3 1 3 3 3 1
             _ 3 3 1 3 3 3 3
         `,
-        // IDEA: Explain the game rules in a help modal (i). Explain how to win, and possible ways to lose.
+    },
+    player1notWinningBug: {
+        description:
+            "when player2 makes their final move and run out of available moves, they should lose the game.",
+        tiles: `
+            1 _ _ _ 1 1 1 2
+            _ _ 1 1 1 1 1 2
+            _ 1 1 1 1 1 2 2
+            1 1 1 1 1 1 2 2
+            1 1 1 1 2 2 2 2
+            1 1 1 2 2 2 2 2
+            1 2 2 2 2 2 2 2
+            2 2 2 2 2 2 2 _
+        `,
     },
 }
 
@@ -446,7 +457,7 @@ export const hasConquerableNeighbors = (gameState: GameState, zone: Zone) => {
     return keepNeutral(neighbors[1]).length || keepNeutral(neighbors[2]).length
 }
 
-export const hasAvailableActions = (gameState: GameState, player: Player) =>
+export const haveAvailableActions = (gameState: GameState, player: Player) =>
     getPlayerZones(gameState, player).some((zone) =>
         hasConquerableNeighbors(gameState, zone),
     )
@@ -472,9 +483,12 @@ export const getRemainingPlayers = (gameState: GameState) =>
         const candidate = gameState.players.find((p) => p.id === zone.owner)
 
         if (
-            candidate &&
             zone.owner &&
-            !players.some((player) => player.id === zone.owner)
+            !players.some((player) => player.id === zone.owner) &&
+            candidate &&
+            (gameState.currentPlayer === candidate.id
+                ? haveAvailableActions(gameState, candidate)
+                : true)
         ) {
             players.push(candidate)
         }
@@ -498,9 +512,11 @@ export const updatePlayers = (
         .filter(
             (player) =>
                 gameState.currentPlayer === player.id &&
-                !hasAvailableActions(gameState, player),
+                !haveAvailableActions(gameState, player),
         )
         .filter((p) => !eliminatedPlayers.some(({ id }) => p.id === id))
+
+    console.log(playersWithoutActions, remainingPlayers)
 
     const winners =
         isEveryZoneTaken || remainingPlayers.length === 1

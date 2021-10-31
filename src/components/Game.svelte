@@ -91,8 +91,8 @@
             <!-- IDEA: If player won: show "Winner!" -->
             <!-- IDEA: If player lost: show reason why, mapping the enum to a display string. -->
             <pre>
-                    {JSON.stringify($gameState.endGame, null, 2)}
-                </pre>
+                {JSON.stringify($gameState.endGame, null, 2)}
+            </pre>
         </Modal>
     {/if}
 {/if}
