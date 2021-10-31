@@ -1,5 +1,11 @@
 <script lang="ts" context="module">
-    import { loadMap, newGame, Map, getPlayerStats } from "$game/game"
+    import {
+        loadMap,
+        newGame,
+        Map,
+        getPlayerScores,
+        isGameOver,
+    } from "$game/game"
 
     import Zone from "./Zone.svelte"
     import Header from "./Header.svelte"
@@ -39,7 +45,7 @@
 
 {#if $gameState}
     <Header {startNewGame} />
-    <Scores playerStats={getPlayerStats($gameState)} />
+    <Scores playerScores={getPlayerScores($gameState)} />
 
     <div class="grid place-items-center">
         <div
@@ -52,7 +58,7 @@
             {/each}
         </div>
 
-        {#if $gameState.endGame}
+        {#if isGameOver($gameState)}
             <Modal
                 title="Game Over!"
                 actions={[

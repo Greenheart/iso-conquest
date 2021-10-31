@@ -24,7 +24,7 @@ export interface GameState {
     zones: Zone[]
     players: Player[]
     currentPlayer: Player
-    endGame?: EndGame
+    endGame: PlayerStats[]
     zoneLookup: Record<string, Zone>
     boundaries: [number, number]
 }
@@ -226,6 +226,7 @@ export function newGame({
         currentPlayer: players[0],
         zoneLookup: getZoneLookup(zones),
         boundaries: getBoundaries(zones),
+        endGame: [],
     }
 }
 
@@ -369,26 +370,29 @@ export const getScore = (player: Player, gameState: GameState) =>
         0,
     )
 
-export type PlayerStats = Player & {
-    score: number
-}
-
-export const getPlayerStats = (gameState: GameState): PlayerStats[] =>
+export const getPlayerScores = (gameState: GameState) =>
     gameState.players.map((player) => ({
         ...player,
         score: getScore(player, gameState),
     }))
+
+export type PlayerScore = Player & {
+    score: number
+}
+
+export type PlayerStats = Player & {
+    score: number
+    winner?: boolean
+    // The reason explains How this player won or lost
+    reason: EndGameReason
+    turnsPlayed: number
+}
 
 export enum EndGameReason {
     Elimination = "elimination",
     NoNeutral = "no-neutral",
     NoActions = "no-actions",
     Tie = "tie",
-}
-
-interface EndGame {
-    winners: PlayerStats[]
-    reason: EndGameReason
 }
 
 export const getNeighbors = (gameState: GameState, zone: Zone) => [
@@ -411,46 +415,40 @@ export const hasAvailableActions = (gameState: GameState, player: Player) =>
     )
 
 const getWinners = (gameState: GameState) =>
-    gameState.players.reduce((winners: PlayerStats[], player: Player) => {
-        const score = getScore(player, gameState)
-        if (!winners.length || score > winners[0].score)
-            return [{ ...player, score }]
-        if (score === winners[0].score)
-            return [...winners, { ...player, score }]
-        return winners
-    }, [])
+    gameState.players.reduce(
+        (
+            winners: Pick<PlayerStats, keyof Player | "score">[],
+            player: Player,
+        ) => {
+            const score = getScore(player, gameState)
+            if (!winners.length || score > winners[0].score)
+                return [{ ...player, score }]
+            if (score === winners[0].score)
+                return [...winners, { ...player, score }]
+            return winners
+        },
+        [],
+    )
 
-export const getEndGame = (gameState: GameState): EndGame | undefined => {
-    const isSomePlayerEliminated = gameState.players.some(
+// TODO: need to remove players who have lost from the main players array
+export const getEndGame = (gameState: GameState): PlayerStats[] => {
+    const isEveryZoneTaken = gameState.zones.every((zone) => zone.owner)
+
+    const eliminatedPlayers = gameState.players.filter(
         (player) => !getPlayerZones(gameState, player).length,
     )
 
-    const isEveryZoneTaken = gameState.zones.every((zone) => zone.owner)
-
-    const isSomePlayerWithoutActions = gameState.players.some(
+    // If one player run out of moves, they lose - not the player with the most scores.
+    // IDEA: Maybe change this so that the player who locked away zones that are unreachable by others actually earn them for the final result.
+    // Then calculate endgame scores like usual. This would remove the opportunity for unexpected comebacks that turn the game around. Potentially this could be an option depending on the game mode.
+    const playersWithoutActions = gameState.players.filter(
         (player) =>
             gameState.currentPlayer === player &&
             !hasAvailableActions(gameState, player),
     )
 
     // IDEA: maybe return a list of all player scores + stats instead? Winners are simply the player(s) with the highest score
-    // This would make it easier to display final stats
-    // IDEA: maybe replace `reason` with using it as a key in a return object instead
     /*
-        {
-            // Winners
-            [EndGameReason.Winner]: PlayerStats[],
-            // and for all the losers, who gets added one by one as they are removed from the game
-            [EndGameReason.Elimination]: PlayerStats[],
-            [EndGameReason.NoNeutral]: PlayerStats[],
-            [EndGameReason.NoNeutral]: PlayerStats[],
-        }
-
-        Basically, Record<EndGameReason, PlayerStats[]> that maps all players that ended up with a given state.
-        This would work for any number of players participating
-
-        OR
-
         return PlayerStats[] like before, but extend with more information
         type PlayerStats = {
             winner?: true
@@ -470,30 +468,51 @@ export const getEndGame = (gameState: GameState): EndGame | undefined => {
 
     */
 
-    if (isSomePlayerEliminated) {
-        return {
-            winners: getWinners(gameState),
+    /*
+    
+    The new endGame state is a list of all players who have been eliminated
+    These players need to be filtered out from the main players array too
+    
+    */
+
+    const winners = !isEveryZoneTaken
+        ? []
+        : getWinners(gameState).map((winner, _, winners) => ({
+              ...winner,
+              winner: true,
+              turnsPlayed: gameState.turn,
+              reason:
+                  winners.length > 1
+                      ? EndGameReason.Tie
+                      : EndGameReason.NoNeutral,
+          }))
+
+    return [
+        ...winners,
+        ...(eliminatedPlayers ?? []).map<PlayerStats>((player) => ({
+            ...player,
+            score: getScore(player, gameState),
             reason: EndGameReason.Elimination,
-        }
-    } else if (isEveryZoneTaken) {
-        const winners = getWinners(gameState)
-        return {
-            winners,
-            reason:
-                winners.length > 1
-                    ? EndGameReason.Tie
-                    : EndGameReason.NoNeutral,
-        }
-    } else if (isSomePlayerWithoutActions) {
-        // If one player run out of moves, they lose - not the player with the most scores.
-        // IDEA: Maybe change this so that the player who locked away zones that are unreachable by others actually earn them for the final result.
-        // Then calculate endgame scores like usual. This would remove the opportunity for unexpected comebacks that turn the game around. Potentially this could be an option depending on the game mode.
-        return {
-            winners: getWinners(gameState),
+            turnsPlayed: gameState.turn,
+        })),
+        ...(playersWithoutActions ?? []).map<PlayerStats>((player) => ({
+            ...player,
+            score: getScore(player, gameState),
             reason: EndGameReason.NoActions,
-        }
-    }
+            turnsPlayed: gameState.turn,
+        })),
+        ...gameState.endGame,
+    ]
 }
+
+export const isGameOver = (gameState: GameState) =>
+    gameState.players.length === 0
+
+// If players have an endgame state, they should be removed from the remaining players.
+const getRemainingPlayers = (gameState: GameState) =>
+    gameState.players.filter(
+        (player) => !gameState.endGame.some(({ id }) => id === player.id),
+    )
 
 const getNextGameState = (gameState: GameState, zones: Zone[]) => {
     const next: GameState = {
@@ -504,6 +523,13 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
         turn: gameState.turn + 1,
     }
     next.endGame = getEndGame(next)
+    next.players = getRemainingPlayers(next)
+    // set the players by filtering out those who are in the endGame array
+    // if all players have been removed, the game is over
+    // IDEA: Instead of relying on direct references in the state, maybe replace zone.owner to reference player.id instead of player directly.
+    // This would require an extra lookup step, but would make state more self-sufficient, not relying on the JS runtime references
+    // NOTE: this would affect Zone.owner, GameState.currentPlayer and Action.player
+    // By adding a playerLookup, the lookup performance could be improved - but it's likely not worth it due to only having a few players per game
 
     return next
 }

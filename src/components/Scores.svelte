@@ -1,16 +1,16 @@
 <script lang="ts" context="module">
-    import type { PlayerStats } from "$game/game"
+    import type { PlayerScore } from "$game/game"
 </script>
 
 <script lang="ts">
     import { scale } from "svelte/transition"
     import { playerColors, gameState } from "$lib/stores"
-    export let playerStats: PlayerStats[]
+    export let playerScores: PlayerScore[]
 
     const getSize = (score: number) =>
         `transform: scale(${(100 + score) / 100});`
 
-    const getShadow = (id: PlayerStats["id"]) =>
+    const getShadow = (id: PlayerScore["id"]) =>
         $gameState.currentPlayer.id === id
             ? " box-shadow: 0 0 40px 2px #ffffff50;"
             : ""
@@ -21,7 +21,7 @@
 <div
     class="flex justify-center space-x-10 items-center text-white font-medium text-2xl h-28"
 >
-    {#each playerStats as { id, score }}
+    {#each playerScores as { id, score }}
         <p
             style={getSize(score) + getShadow(id)}
             class={$playerColors[id] +
