@@ -93,7 +93,7 @@
     on:click={handleClick}
 >
     <p
-        class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        class="absolute top-1/2 left-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2"
     >
         {zone.type !== "default" ? zone.value : ""}
     </p>

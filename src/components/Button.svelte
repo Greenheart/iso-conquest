@@ -23,7 +23,7 @@
 <!-- svelte-ignore a11y-autofocus -->
 <button
     {autofocus}
-    class={"px-12 py-4 hover:transform-gpu hover:scale-105 duration-100 text-xl font-semibold " +
+    class={"px-12 py-4 transform-gpu hover:scale-105 duration-100 text-xl font-semibold " +
         variants[variant ?? "primary"]}
     on:click={onClick}
 >

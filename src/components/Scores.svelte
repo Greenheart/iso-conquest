@@ -18,7 +18,7 @@
 
 <!-- IDEA: add transition when score increases to make it stand out -->
 <div
-    class="flex justify-center space-x-8 items-center text-white font-medium text-2xl h-28"
+    class="flex justify-center space-x-10 items-center text-white font-medium text-2xl h-28"
 >
     <!-- IDEA: center scores -->
     {#each playerStats as { id, score }}
