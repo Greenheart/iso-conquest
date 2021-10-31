@@ -37,6 +37,7 @@ const ZoneValue: Record<ZoneType, number> = {
 const PlayerTileMap = {
     "1": "player1",
     "2": "player2",
+    "3": "player3",
 } as const
 
 const ZoneTileMap = {
@@ -79,10 +80,10 @@ export const MAPS = {
         tiles: `
             1 _ _ _ _ _ _ 1
             _ _ _ _ _ _ _ _
-            _ _ b _ _ b _ _
+            _ _ 3b _ _ 3b _ _
             _ _ _ _ _ _ _ _
             _ _ _ _ _ _ _ _
-            _ _ b _ _ b _ _
+            _ _ 3b _ _ 3b _ _
             _ _ _ _ _ _ _ _
             2 _ _ _ _ _ _ 2
         `,

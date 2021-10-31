@@ -17,10 +17,10 @@
 </script>
 
 <!-- IDEA: add transition when score increases to make it stand out -->
+<!-- TODO: the shadow is not clear enough as indicator which turn it is. Need a better style. -->
 <div
     class="flex justify-center space-x-10 items-center text-white font-medium text-2xl h-28"
 >
-    <!-- IDEA: center scores -->
     {#each playerStats as { id, score }}
         <p
             style={getSize(score) + getShadow(id)}

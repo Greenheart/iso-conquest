@@ -3,4 +3,6 @@
     import { MAPS } from "$game/game"
 </script>
 
-<Game map={MAPS["tieOrNoAction"]} />
+<!-- TODO: Create basic menu to select what map to play -->
+
+<Game map={MAPS["bonus"]} />

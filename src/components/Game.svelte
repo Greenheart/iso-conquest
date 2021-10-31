@@ -31,6 +31,7 @@
     $playerColors = {
         player1: "bg-sky-900",
         player2: "bg-amber-900",
+        player3: "bg-yellow-500",
     }
 </script>
 
