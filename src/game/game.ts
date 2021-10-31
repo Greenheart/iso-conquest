@@ -301,26 +301,6 @@ const isZoneAtDistance = ({
 const coords = (zone: Zone) => [zone.x, zone.y]
 
 export const getNextPlayer = (gameState: GameState) => {
-    // TODO: update to account for remaining players => filter out eliminated ones
-    // Not the best (or even a complete) solution though
-    // const remainingPlayers = gameState.players.filter(
-    //     (player) =>
-    //         !gameState.endGame.some(({ id }: PlayerStats) => player.id === id),
-    // )
-    // return remainingPlayers[
-    //     (1 +
-    //         remainingPlayers.findIndex(
-    //             (player) => player === gameState.currentPlayer,
-    //         )) %
-    //         remainingPlayers.length
-    // ]
-
-    // IDEA: Maybe move inactive players from gameState.players to gameState.endGame
-    // By only keeping the active players, we could simplify state updates in other places, and not have to take the elminated players into account.
-    // We would also automatically remove player scores and similar from the UI to only show the remaining players' scores
-    // IDEA: This approach would also enable us to add players mid-game.
-    // For example this could be a fun feature in single player campaign missions.
-    // If the player conquers a (?) zone, then that could for example trigger another AI player joining.
     return gameState.players[
         (1 +
             gameState.players.findIndex(
@@ -471,86 +451,6 @@ export const getRemainingPlayers = (gameState: GameState) => {
     )
 }
 
-export const getEndGame = (
-    gameState: GameState,
-    remainingPlayerIds: string[],
-): PlayerStats[] => {
-    const isEveryZoneTaken = gameState.zones.every((zone) => zone.owner)
-
-    const eliminatedPlayers = gameState.players.filter(
-        (player) => !getPlayerZones(gameState, player).length,
-    )
-
-    // If one player run out of moves, they lose - not the player with the most scores.
-    // IDEA: Maybe change this so that the player who locked away zones that are unreachable by others actually earn them for the final result.
-    // Then calculate endgame scores like usual. This would remove the opportunity for unexpected comebacks that turn the game around. Potentially this could be an option depending on the game mode.
-    const playersWithoutActions = gameState.players.filter(
-        (player) =>
-            gameState.currentPlayer === player.id &&
-            !hasAvailableActions(gameState, player),
-    )
-
-    // IDEA: maybe return a list of all player scores + stats instead? Winners are simply the player(s) with the highest score
-    /*
-        return PlayerStats[] like before, but extend with more information
-        type PlayerStats = {
-            winner?: true
-            // How did this player win or lose?
-            reason: EndGameReason
-            score: number
-            // IDEA: keep when players lose, to for example get XP depending on how long you survived in a game
-            turnsPlayed: number
-        }
-
-        This format is very flexible and would make it easy to show a highscore table with stats for all players
-        Also feels simpler to understand and explain
-        Probably better simpler implementation since it doesn't use as complex data structures
-
-        The main improvement however, would be to make easily add players to the endgame when they lose or win.
-        When the endGame array contains all players, the game is over. This keeps endgame checks simple still.
-
-    */
-
-    /*
-    
-    The new endGame state is a list of all players who have been eliminated
-    These players need to be filtered out from the main players array too
-    
-    */
-
-    const isOnePlayerLeft = remainingPlayerIds.length === 1
-
-    const winners =
-        isEveryZoneTaken || isOnePlayerLeft
-            ? getWinners(gameState).map((winner, _, winners) => ({
-                  ...winner,
-                  winner: true,
-                  turnsPlayed: gameState.turn,
-                  reason:
-                      winners.length > 1
-                          ? EndGameReason.Tie
-                          : EndGameReason.NoNeutral,
-              }))
-            : []
-
-    return [
-        ...winners,
-        ...(eliminatedPlayers ?? []).map<PlayerStats>((player) => ({
-            ...player,
-            score: getScore(player, gameState),
-            reason: EndGameReason.Elimination,
-            turnsPlayed: gameState.turn,
-        })),
-        ...(playersWithoutActions ?? []).map<PlayerStats>((player) => ({
-            ...player,
-            score: getScore(player, gameState),
-            reason: EndGameReason.NoActions,
-            turnsPlayed: gameState.turn,
-        })),
-        ...gameState.endGame,
-    ]
-}
-
 export const updatePlayers = (
     gameState: GameState,
     remainingPlayers: Player[],
@@ -571,34 +471,6 @@ export const updatePlayers = (
                 !hasAvailableActions(gameState, player),
         )
         .filter((p) => !eliminatedPlayers.some(({ id }) => p.id === id))
-
-    // IDEA: maybe return a list of all player scores + stats instead? Winners are simply the player(s) with the highest score
-    /*
-        return PlayerStats[] like before, but extend with more information
-        type PlayerStats = {
-            winner?: true
-            // How did this player win or lose?
-            reason: EndGameReason
-            score: number
-            // IDEA: keep when players lose, to for example get XP depending on how long you survived in a game
-            turnsPlayed: number
-        }
-
-        This format is very flexible and would make it easy to show a highscore table with stats for all players
-        Also feels simpler to understand and explain
-        Probably better simpler implementation since it doesn't use as complex data structures
-
-        The main improvement however, would be to make easily add players to the endgame when they lose or win.
-        When the endGame array contains all players, the game is over. This keeps endgame checks simple still.
-
-    */
-
-    /*
-    
-    The new endGame state is a list of all players who have been eliminated
-    These players need to be filtered out from the main players array too
-    
-    */
 
     const winners =
         isEveryZoneTaken || remainingPlayers.length === 1
@@ -642,9 +514,6 @@ export const updatePlayers = (
 export const isGameOver = (gameState: GameState) => gameState.players.length < 2
 
 const getNextGameState = (gameState: GameState, zones: Zone[]) => {
-    // TODO: Fix bug that the next player is not correctly set when there are 3 or more players, and one of them is removed from the game.
-    // Correct behavior is to fetch the next remaining player, possibly starting over from the beginning of the array.
-
     const next: GameState = {
         ...gameState,
         zoneLookup: getZoneLookup(zones),
@@ -655,46 +524,10 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
 
     const remainingPlayers = getRemainingPlayers(next)
 
-    // NOTE: These above ^ need access to the latest zones and zoneLookup to work properly
-
     const { players, endGame } = updatePlayers(next, remainingPlayers)
+    // TODO: verify that getNextPlayer works correctly.
     next.players = players
     next.endGame = endGame
-
-    console.log(remainingPlayers, next.players)
-
-    /*
-        1. Get all players who were eliminated this turn
-        2. Get the new endGame state
-        3. Get remaining players
-
-        const prevPlayer = gameState.currentPlayer
-
-        next.endGame = getEndGame(next)
-        
-        const eliminated = []
-        const remaining = []
-
-        for player of gameState.players
-            if next.endGame.some(({ id }) => player.id === id)
-                eliminated.push(player)
-            else
-                remaining.push(player)
-        
-        next.players = remaining
-        
-        // do this until the real next player is found
-        if (eliminated.some(p => p.id === next.currentPlayer)) {
-            next.currentPlayer
-        }
-    */
-
-    // set the players by filtering out those who are in the endGame array
-    // if all players have been removed, the game is over
-    // IDEA: Instead of relying on direct references in the state, maybe replace zone.owner to reference player.id instead of player directly.
-    // This would require an extra lookup step, but would make state more self-sufficient, not relying on the JS runtime references
-    // NOTE: this would affect Zone.owner, GameState.currentPlayer and Action.player
-    // By adding a playerLookup, the lookup performance could be improved - but it's likely not worth it due to only having a few players per game
 
     return next
 }
