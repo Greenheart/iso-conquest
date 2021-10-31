@@ -76,6 +76,10 @@
                     },
                 ]}
             >
+                <!-- IDEA: sort by turnsPlayed, and then sort by score -->
+                <!-- IDEA: Show color badge with score (relative size just like in-game scores, and animation when it enters) -->
+                <!-- IDEA: If player won: show "Winner!" -->
+                <!-- IDEA: If player lost: show reason why, mapping the enum to a display string. -->
                 <pre>
                     {JSON.stringify($gameState.endGame, null, 2)}
                 </pre>
