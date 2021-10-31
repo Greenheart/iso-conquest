@@ -518,13 +518,13 @@ export const updatePlayers = (
     return {
         endGame: [
             ...winners,
-            ...(eliminatedPlayers ?? []).map<PlayerStats>((player) => ({
+            ...eliminatedPlayers?.map<PlayerStats>((player) => ({
                 ...player,
                 score: getScore(player, gameState),
                 reason: EndGameReason.Elimination,
                 turnsPlayed: gameState.turn,
             })),
-            ...(playersWithoutActions ?? []).map<PlayerStats>((player) => ({
+            ...playersWithoutActions?.map<PlayerStats>((player) => ({
                 ...player,
                 score: getScore(player, gameState),
                 reason: EndGameReason.NoActions,
@@ -587,7 +587,8 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
                 next.currentPlayer = candidate
                 return next
             } else if (i === prevPlayers.length - 1) {
-                i = 0
+                // Set next index to -1 to compensate for i++
+                i = -1
             }
         }
     }
