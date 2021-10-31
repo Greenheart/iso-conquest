@@ -5,4 +5,4 @@
 
 <!-- TODO: Create basic menu to select what map to play -->
 
-<Game map={MAPS["player1MissingInEndGameStats"]} />
+<Game map={MAPS["scoresTest"]} />

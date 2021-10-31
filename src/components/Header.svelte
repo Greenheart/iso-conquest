@@ -32,7 +32,7 @@
 {/if}
 
 <header class="shadow-lg bg-stone-800">
-    <div class="max-w-5xl w-full flex justify-between items-center mx-auto p-4">
+    <div class="max-w-4xl w-full flex justify-between items-center mx-auto p-4">
         <svg
             on:click={() => {
                 showConfirm = true
