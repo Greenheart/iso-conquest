@@ -11,7 +11,7 @@
         `transform: scale(${(100 + score) / 100});`
 
     const getShadow = (id: PlayerScore["id"]) =>
-        $gameState.currentPlayer.id === id
+        $gameState.currentPlayer === id
             ? " box-shadow: 0 0 40px 2px #ffffff50;"
             : ""
 </script>

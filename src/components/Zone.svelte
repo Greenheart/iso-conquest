@@ -37,11 +37,18 @@
     // IDEA: Maybe enable minimax as a cheat, to help players learn the game and see the best moves.
 
     function getBgColor() {
-        if (zone.owner && $playerColors) return $playerColors[zone.owner.id]
+        if (zone.owner && $playerColors) return $playerColors[zone.owner]
         if (isConquerable) return "bg-teal-500"
         if (isConquerableBySacrifice) return "bg-teal-700"
         return "bg-teal-800"
     }
+
+    const getHoverColor = () =>
+        isConquerable ||
+        isConquerableBySacrifice ||
+        (isOwnZone && getConquerableNeighbors($gameState, zone).length)
+            ? "hover:border-white"
+            : ""
 
     function reset() {
         $selectedZone = undefined
@@ -50,6 +57,7 @@
     }
 
     function handleClick() {
+        console.log(isOwnZone, zone.owner)
         if (isOwnZone && getConquerableNeighbors($gameState, zone).length) {
             $selectedZone = zone
             $conquerable = getAdjacentZones($gameState, zone, 1).filter(
@@ -64,7 +72,7 @@
         }
 
         const action = {
-            player: $gameState.currentPlayer,
+            playerId: $gameState.currentPlayer,
             origin: $selectedZone as Zone,
             target: zone,
         }
@@ -82,13 +90,7 @@
 <div
     class={"grid place-items-center border-2 border-transparent relative" +
         ` ${getBgColor()}` +
-        `${
-            isConquerable ||
-            isConquerableBySacrifice ||
-            (isOwnZone && getConquerableNeighbors($gameState, zone).length)
-                ? " hover:border-white"
-                : ""
-        }`}
+        ` ${getHoverColor()}`}
     class:border-white={$selectedZone === zone}
     on:click={handleClick}
 >

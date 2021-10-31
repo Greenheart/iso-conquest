@@ -5,7 +5,7 @@ export type Player = {
 export interface Zone {
     x: number
     y: number
-    owner?: Player
+    owner?: Player["id"]
     value: number
     type: ZoneType
 }
@@ -14,7 +14,7 @@ export interface Zone {
 // By separating direct references from the core interfaces, we would make it possible to play over a network.
 // It would also make actions contain less data
 export interface Action {
-    player: Player
+    playerId: Player["id"]
     origin: Zone
     target: Zone
 }
@@ -23,7 +23,7 @@ export interface GameState {
     turn: number
     zones: Zone[]
     players: Player[]
-    currentPlayer: Player
+    currentPlayer: Player["id"]
     endGame: PlayerStats[]
     zoneLookup: Record<string, Zone>
     boundaries: [number, number]
@@ -155,7 +155,7 @@ const loadZone = (
     }
 
     const owner = playerTile
-        ? getPlayerFromTile(players, playerTile)
+        ? getPlayerFromTile(players, playerTile).id
         : undefined
     const type =
         (owner && zoneTile === "_") || zoneTile === undefined
@@ -223,7 +223,7 @@ export function newGame({
         turn: 1,
         zones,
         players,
-        currentPlayer: players[0],
+        currentPlayer: players[0].id,
         zoneLookup: getZoneLookup(zones),
         boundaries: getBoundaries(zones),
         endGame: [],
@@ -242,7 +242,7 @@ type ValidatorParams = { action: Action; gameState: GameState }
 type ValidatorFn = (params: ValidatorParams) => boolean
 
 const isZoneValidOrigin: ValidatorFn = ({ action }) => {
-    if (action.origin.owner !== action.player) {
+    if (action.origin.owner !== action.playerId) {
         console.error(`Zone ${coords(action.origin)} is not a valid origin`)
         return false
     }
@@ -258,8 +258,8 @@ const isZoneValidTarget: ValidatorFn = ({ action }) => {
 }
 
 const isActionByCurrentPlayer: ValidatorFn = ({ action, gameState }) => {
-    if (action.player !== gameState.currentPlayer) {
-        console.error(`${action.player.id} is not the current player`)
+    if (action.playerId !== gameState.currentPlayer) {
+        console.error(`${action.playerId} is not the current player`)
         return false
     }
     return true
@@ -309,7 +309,7 @@ export const getNextPlayer = (gameState: GameState) => {
     return gameState.players[
         (1 +
             gameState.players.findIndex(
-                (player) => player === gameState.currentPlayer,
+                (player) => player.id === gameState.currentPlayer,
             )) %
             gameState.players.length
     ]
@@ -366,7 +366,8 @@ export const getZoneLookup = (zones: Zone[]) =>
 
 export const getScore = (player: Player, gameState: GameState) =>
     gameState.zones.reduce(
-        (score, zone) => (zone.owner === player ? score + zone.value : score),
+        (score, zone) =>
+            zone.owner === player.id ? score + zone.value : score,
         0,
     )
 
@@ -401,7 +402,7 @@ export const getNeighbors = (gameState: GameState, zone: Zone) => [
 ]
 
 export const getPlayerZones = (gameState: GameState, player: Player) =>
-    gameState.zones.filter((zone) => zone.owner === player)
+    gameState.zones.filter((zone) => zone.owner === player.id)
 
 export const keepNeutral = (zones: Zone[]) =>
     zones.filter((zone: Zone) => !zone.owner)
@@ -443,7 +444,7 @@ export const getEndGame = (gameState: GameState): PlayerStats[] => {
     // Then calculate endgame scores like usual. This would remove the opportunity for unexpected comebacks that turn the game around. Potentially this could be an option depending on the game mode.
     const playersWithoutActions = gameState.players.filter(
         (player) =>
-            gameState.currentPlayer === player &&
+            gameState.currentPlayer === player.id &&
             !hasAvailableActions(gameState, player),
     )
 
@@ -519,7 +520,7 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
         ...gameState,
         zoneLookup: getZoneLookup(zones),
         zones,
-        currentPlayer: getNextPlayer(gameState),
+        currentPlayer: getNextPlayer(gameState).id,
         turn: gameState.turn + 1,
     }
     next.endGame = getEndGame(next)
@@ -580,13 +581,13 @@ function conquerZone(zone: Zone, action: Action) {
     } else if (zone === action.target) {
         return {
             ...zone,
-            owner: action.player,
+            owner: action.playerId,
         }
     } else if (isNeighbor(action.target, zone)) {
-        if (zone.owner && zone.owner !== action.player) {
+        if (zone.owner && zone.owner !== action.playerId) {
             return {
                 ...zone,
-                owner: action.player,
+                owner: action.playerId,
             }
         } else {
             return zone
