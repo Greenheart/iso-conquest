@@ -283,15 +283,35 @@ const isZoneAtDistance = ({
 
 const coords = (zone: Zone) => [zone.x, zone.y]
 
-export const getNextPlayer = (gameState: GameState) =>
+export const getNextPlayer = (gameState: GameState) => {
     // TODO: update to account for remaining players => filter out eliminated ones
-    gameState.players[
+    // Not the best (or even a complete) solution though
+    // const remainingPlayers = gameState.players.filter(
+    //     (player) =>
+    //         !gameState.endGame.some(({ id }: PlayerStats) => player.id === id),
+    // )
+    // return remainingPlayers[
+    //     (1 +
+    //         remainingPlayers.findIndex(
+    //             (player) => player === gameState.currentPlayer,
+    //         )) %
+    //         remainingPlayers.length
+    // ]
+
+    // IDEA: Maybe move inactive players from gameState.players to gameState.endGame
+    // By only keeping the active players, we could simplify state updates in other places, and not have to take the elminated players into account.
+    // We would also automatically remove player scores and similar from the UI to only show the remaining players' scores
+    // IDEA: This approach would also enable us to add players mid-game.
+    // For example this could be a fun feature in single player campaign missions.
+    // If the player conquers a (?) zone, then that could for example trigger another AI player joining.
+    return gameState.players[
         (1 +
             gameState.players.findIndex(
                 (player) => player === gameState.currentPlayer,
             )) %
             gameState.players.length
     ]
+}
 
 function isNeighbor(origin: Zone, candidate: Zone): boolean {
     return (
@@ -311,13 +331,6 @@ const isAtDistance = (a: Zone, b: Zone, distance: number) => {
     return actual > distance - 1 && actual < distance + 1
 }
 
-/**
- * Prepare to get adjacent zones. Caching and additional state to optimize future executions
- * @param min Min coordinate val
- * @param max Max coordinate val
- * @param allZones Cache of all zones for quick lookups
- * @returns The curried getAdjacent(center, distance) function
- */
 export const getAdjacentZones = (
     gameState: GameState,
     center: Zone,
@@ -339,9 +352,6 @@ export const getAdjacentZones = (
             }
         }
     }
-
-    // NOTE: Seems like the corner zones never change owner, even if the player tries conquer by sacrifice.
-    // Probably is caused by the fact that allZones in this curried function is referencing the initial state which doesn't change.
 
     return adjacent
 }
@@ -454,11 +464,10 @@ export const getEndGame = (gameState: GameState): EndGame | undefined => {
         Also feels simpler to understand and explain
         Probably better simpler implementation since it doesn't use as complex data structures
 
-    */
+        The main improvement however, would be to make easily add players to the endgame when they lose or win.
+        When the endGame array contains all players, the game is over. This keeps endgame checks simple still.
 
-    // TODO: if one player run out of moves, they lose - not the player with the most scores.
-    // IDEA: Maybe change this so that the player who locked away zones that are unreachable by others actually earn them for the final result.
-    // Then calculate endgame scores like usual. This would remove the opportunity for unexpected comebacks that turn the game around. Potentially this could be an option depending on the game mode.
+    */
 
     if (isSomePlayerEliminated) {
         return {
@@ -475,6 +484,9 @@ export const getEndGame = (gameState: GameState): EndGame | undefined => {
                     : EndGameReason.NoNeutral,
         }
     } else if (isSomePlayerWithoutActions) {
+        // If one player run out of moves, they lose - not the player with the most scores.
+        // IDEA: Maybe change this so that the player who locked away zones that are unreachable by others actually earn them for the final result.
+        // Then calculate endgame scores like usual. This would remove the opportunity for unexpected comebacks that turn the game around. Potentially this could be an option depending on the game mode.
         return {
             winners: getWinners(gameState),
             reason: EndGameReason.NoActions,
