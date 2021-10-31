@@ -530,6 +530,46 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
     next.players = players
     next.endGame = endGame
 
+    /*
+
+    if next.players.length < gameState.players.length
+        next.currentPlayer need to be updated
+        prevPlayer = gameState.currentPlayer (the previous player who just took their turn)
+        find the index of prevPlayer and use it as starting position for looping
+        then loop through the gameState.players (state from last turn)
+            for (let i = 1 + index of prevPlayer in gameState.players; i < gameState.players; i++) {
+                find the first player after prevPlayer that
+                if gameState.players[i] is still in next.players
+                    next.currentPlayer = gameState.players[i].id
+                else if (i === last player) {
+                    i = 0
+                    reset looping from the start to maybe find next player there
+                }
+            }
+    */
+
+    if (
+        next.players.length > 1 &&
+        next.players.length < gameState.players.length
+    ) {
+        const prevPlayers = gameState.players
+        const prevIndex = prevPlayers.findIndex(
+            (p) => p.id === gameState.currentPlayer,
+        )
+        for (let i = prevIndex + 1; i < prevPlayers.length; i++) {
+            const candidate = prevPlayers[i].id
+            if (
+                candidate !== gameState.currentPlayer &&
+                next.players.some((p) => p.id === candidate)
+            ) {
+                next.currentPlayer = candidate
+                return next
+            } else if (i === prevPlayers.length - 1) {
+                i = 0
+            }
+        }
+    }
+
     return next
 }
 
