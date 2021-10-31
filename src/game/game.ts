@@ -172,6 +172,20 @@ export const MAPS = {
             2 2 2 2 2 2 2 _
         `,
     },
+    bothWinnersShouldBePresent: {
+        description:
+            "when all zones have been taken, both remaining players should be visible in endgame stats",
+        tiles: `
+            1 _ 2 _ 2 2 1 2
+            1 1 _ 2 2 2 1 2
+            1 1 2 2 2 2 2 2
+            1 1 1 1 2 2 2 2
+            1 1 1 1 2 2 2 2
+            1 1 1 2 2 2 2 2
+            1 2 2 2 2 2 2 2
+            2 2 2 2 2 2 2 2
+        `,
+    },
 }
 
 // IDEA: To enable saving and loading games, maybe save entire gameState.
@@ -506,44 +520,51 @@ export const getRemainingPlayers = (gameState: GameState) =>
 
 export const updatePlayers = (
     gameState: GameState,
-    remainingPlayers: Player[],
 ): Pick<GameState, "players" | "endGame"> => {
+    const remainingPlayers = getRemainingPlayers(gameState)
     const isEveryZoneTaken = gameState.zones.every((zone) => zone.owner)
 
     const eliminatedPlayers = gameState.players.filter(
         (player) => !getPlayerZones(gameState, player).length,
     )
 
-    // If one player run out of moves, they lose - not the player with the most scores.
-    // IDEA: Maybe change this so that the player who locked away zones that are unreachable by others actually earn them for the final result.
-    // Then calculate endgame scores like usual. This would remove the opportunity for unexpected comebacks that turn the game around. Potentially this could be an option depending on the game mode.
-    const playersWithoutActions = gameState.players
-        .filter(
-            (player) =>
-                gameState.currentPlayer === player.id &&
-                !haveAvailableActions(gameState, player),
-        )
-        .filter((p) => !eliminatedPlayers.some(({ id }) => p.id === id))
+    // Players lose if they don't have available actions when it's their
+    const playersWithoutActions = isEveryZoneTaken
+        ? []
+        : gameState.players.filter(
+              (player) =>
+                  gameState.currentPlayer === player.id &&
+                  !haveAvailableActions(gameState, player) &&
+                  !eliminatedPlayers.some(({ id }) => player.id === id),
+          )
+
+    const potentialWinners = gameState.players.filter(
+        (player) =>
+            !(
+                playersWithoutActions.some(({ id }) => player.id === id) ||
+                eliminatedPlayers.some(({ id }) => player.id === id)
+            ),
+    )
 
     const winners =
         isEveryZoneTaken || remainingPlayers.length === 1
             ? getWinners({
                   ...gameState,
-                  players: gameState.players.filter(
-                      (player) =>
-                          !(
-                              playersWithoutActions.some(
-                                  (p) => player.id === p.id,
-                              ) ||
-                              eliminatedPlayers.some((p) => player.id === p.id)
-                          ),
-                  ),
+                  players: potentialWinners,
               })
             : []
 
     return {
         endGame: [
             ...winners,
+            ...(isEveryZoneTaken ? potentialWinners : [])
+                .filter((player) => !winners.some(({ id }) => player.id === id))
+                .map<PlayerStats>((player) => ({
+                    ...player,
+                    score: getScore(player, gameState),
+                    reason: EndGameReason.NoNeutral,
+                    turnsPlayed: gameState.turn,
+                })),
             ...eliminatedPlayers?.map<PlayerStats>((player) => ({
                 ...player,
                 score: getScore(player, gameState),
@@ -558,14 +579,7 @@ export const updatePlayers = (
             })),
             ...gameState.endGame,
         ],
-        players: isEveryZoneTaken
-            ? []
-            : gameState.players.reduce<Player[]>((players, player) => {
-                  if (remainingPlayers.some(({ id }) => player.id === id)) {
-                      players.push(player)
-                  }
-                  return players
-              }, []),
+        players: isEveryZoneTaken ? [] : remainingPlayers,
     }
 }
 
@@ -580,8 +594,7 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
         turn: gameState.turn + 1,
     }
 
-    const remainingPlayers = getRemainingPlayers(next)
-    const { players, endGame } = updatePlayers(next, remainingPlayers)
+    const { players, endGame } = updatePlayers(next)
     next.players = players
     next.endGame = endGame
 
