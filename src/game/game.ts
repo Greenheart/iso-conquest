@@ -564,11 +564,13 @@ export const updatePlayers = (
     // If one player run out of moves, they lose - not the player with the most scores.
     // IDEA: Maybe change this so that the player who locked away zones that are unreachable by others actually earn them for the final result.
     // Then calculate endgame scores like usual. This would remove the opportunity for unexpected comebacks that turn the game around. Potentially this could be an option depending on the game mode.
-    const playersWithoutActions = gameState.players.filter(
-        (player) =>
-            gameState.currentPlayer === player.id &&
-            !hasAvailableActions(gameState, player),
-    )
+    const playersWithoutActions = gameState.players
+        .filter(
+            (player) =>
+                gameState.currentPlayer === player.id &&
+                !hasAvailableActions(gameState, player),
+        )
+        .filter((p) => !eliminatedPlayers.some(({ id }) => p.id === id))
 
     // IDEA: maybe return a list of all player scores + stats instead? Winners are simply the player(s) with the highest score
     /*
