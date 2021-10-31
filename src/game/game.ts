@@ -146,6 +146,21 @@ export const MAPS = {
         `,
         // IDEA: Explain the game rules in a help modal (i). Explain how to win, and possible ways to lose.
     },
+    player1MissingInEndGameStats: {
+        description:
+            "when player1 makes the last move, they should be added to the endGame results",
+        tiles: `
+            3 3 3 1 3 3 1 1
+            3 3 3 1 1 3 3 3
+            _ 1 1b 1 1 3b 3 3
+            1 1 1 1 1 3 3 3
+            1 1 1 3 3 3 1 1
+            3 3 3b 3 3 3b 3 1
+            3 3 3 1 3 3 3 1
+            _ 3 3 1 3 3 3 3
+        `,
+        // IDEA: Explain the game rules in a help modal (i). Explain how to win, and possible ways to lose.
+    },
 }
 
 // IDEA: To enable saving and loading games, maybe save entire gameState.
@@ -459,8 +474,7 @@ export const getRemainingPlayers = (gameState: GameState) =>
         if (
             candidate &&
             zone.owner &&
-            !players.some((player) => player.id === zone.owner) &&
-            hasAvailableActions(gameState, candidate)
+            !players.some((player) => player.id === zone.owner)
         ) {
             players.push(candidate)
         }
@@ -518,12 +532,14 @@ export const updatePlayers = (
             })),
             ...gameState.endGame,
         ],
-        players: gameState.players.reduce<Player[]>((players, player) => {
-            if (remainingPlayers.some(({ id }) => player.id === id)) {
-                players.push(player)
-            }
-            return players
-        }, []),
+        players: isEveryZoneTaken
+            ? []
+            : gameState.players.reduce<Player[]>((players, player) => {
+                  if (remainingPlayers.some(({ id }) => player.id === id)) {
+                      players.push(player)
+                  }
+                  return players
+              }, []),
     }
 }
 
@@ -539,10 +555,20 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
     }
 
     const remainingPlayers = getRemainingPlayers(next)
-
     const { players, endGame } = updatePlayers(next, remainingPlayers)
     next.players = players
     next.endGame = endGame
+
+    for (const { id, reason } of endGame) {
+        if (
+            reason === EndGameReason.NoActions &&
+            keepNeutral(next.zones).length
+        ) {
+            next.zones = zones.map((zone) =>
+                zone.owner === id ? { ...zone, owner: undefined } : zone,
+            )
+        }
+    }
 
     if (
         next.players.length > 1 &&
