@@ -1,12 +1,12 @@
 <script lang="ts" context="module">
     import type { PlayerScore } from "$game/game"
+    import { getPlayerColor } from "$lib/utils"
 </script>
 
 <script lang="ts">
     import { scale } from "svelte/transition"
-    import { playerColors, gameState } from "$lib/stores"
+    import { gameState } from "$lib/stores"
     import { flip } from "svelte/animate"
-    import { getPlayerColor } from "$lib/utils"
     export let playerScores: PlayerScore[]
 
     const getSize = (score: number) =>
@@ -18,8 +18,8 @@
             : ""
 </script>
 
-<!-- IDEA: add transition when score increases to make it stand out -->
-<!-- TODO: the shadow is not clear enough as indicator which turn it is. Need a better style. -->
+<!-- IDEA: add transition when score increases to make it stand out.
+    Maybe it's possible to trigger a short animation that makes it look like it's bouncing up and down (increasing and decreasing in size) -->
 <div
     class="flex justify-center space-x-10 items-center text-white font-medium text-2xl h-28"
 >

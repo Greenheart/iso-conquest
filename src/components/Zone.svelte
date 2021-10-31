@@ -7,6 +7,7 @@
         getConquerableNeighbors,
         hasConquerableNeighbors,
     } from "$game/game"
+    import { getPlayerColor } from "$lib/utils"
 </script>
 
 <script lang="ts">
@@ -16,7 +17,6 @@
         conquerable,
         conquerableBySacrifice,
     } from "$lib/stores"
-    import { getPlayerColor } from "$lib/utils"
 
     export let zone: Zone
 
@@ -91,11 +91,15 @@
                 : ""
         }`}
     class:border-white={$selectedZone === zone}
-    on:click={handleClick}
+    on:click|trusted={handleClick}
 >
     <p
         class="absolute top-1/2 left-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2 text-xl"
     >
-        {zone.type !== "default" ? zone.value : ""}
+        {zone.type !== "default"
+            ? zone.value
+            : isOwnZone && hasConquerableNeighbors($gameState, zone)
+            ? "o"
+            : ""}
     </p>
 </div>
