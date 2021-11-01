@@ -7,10 +7,10 @@
         isGameOver,
     } from "$game/game"
 
-    import Zone from "./Zone.svelte"
-    import Header from "./Header.svelte"
-    import Modal from "./Modal.svelte"
-    import Scores from "./Scores.svelte"
+    import Zone from "$components/Zone.svelte"
+    import Header from "$components/Header.svelte"
+    import Modal from "$components/Modal.svelte"
+    import Scores from "$components/Scores.svelte"
 </script>
 
 <script lang="ts">
@@ -68,7 +68,7 @@
     <Header {startNewGame} />
     <Scores playerScores={getPlayerScores($gameState)} />
     <div
-        class="grid grid-cols-8 grid-rows-8 max-w-4xl w-full max-h-[calc(100vh-176px)] aspect-square mx-auto select-none text-white"
+        class="grid grid-cols-8 grid-rows-8 max-w-4xl w-full max-h-[calc(100vh-176px)] aspect-square mx-auto select-none text-white bg-white"
         class:pointer-events-none={showEndGame}
         style="contain: strict"
     >

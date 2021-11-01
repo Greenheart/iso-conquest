@@ -43,6 +43,13 @@
         return "bg-teal-800"
     }
 
+    function getBorderColor() {
+        if (zone.owner) return getPlayerColor(zone.owner, "border")
+        if (isConquerable) return "border-teal-500"
+        if (isConquerableBySacrifice) return "border-teal-700"
+        return "border-teal-800"
+    }
+
     function reset() {
         $selectedZone = undefined
         $conquerable = []
@@ -80,26 +87,40 @@
     }
 </script>
 
+<!-- TODO: fix bug where zones that just got neutralized after their owner had no available actions prevented other players from taking them in the turn right after neutralization -->
+<!-- Debugged and verified that the previous owner still owns the zones, as if they didn't lose access to them.
+    However, they are removed from the players array and don't have either scores or are shown with zone color. -->
+
+<!-- IDEA: use rounded corneres to highlight selectable zones -->
+<!-- IDEA: wrap entire zone in an additional div that will add the rounded corners if needed. -->
+
+<!-- IDEA: wrap entire zone in an additional div that always exists in the bg and has a white bg.
+    Hovering or selecting zones just updates the border-radius for the current zone. Would allow for animated transitions too -->
 <div
-    class={"grid place-items-center border-2 border-transparent relative" +
-        ` ${getBgColor()}` +
+    class={"grid place-items-center relative border" +
+        ` ${getBgColor()} ${getBorderColor()} ${
+            isOwnZone && hasConquerableNeighbors($gameState, zone)
+                ? "rounded-xl cursor-pointer "
+                : ""
+        }` +
         ` ${
             isConquerable ||
             isConquerableBySacrifice ||
             (isOwnZone && hasConquerableNeighbors($gameState, zone))
-                ? "hover:border-white"
+                ? "hover:border-black hover:rounded-xl border cursor-pointer"
                 : ""
         }`}
     class:border-white={$selectedZone === zone}
     on:click|trusted={handleClick}
 >
+    <!-- {#if isOwnZone && hasConquerableNeighbors($gameState, zone)}
+        <div class="bg-white w-full h-full box-content">
+            <div class={"rounded-xl w-full h-full " + getBgColor()} />
+        </div>
+    {/if} -->
     <p
         class="absolute top-1/2 left-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2 text-xl"
     >
-        {zone.type !== "default"
-            ? zone.value
-            : isOwnZone && hasConquerableNeighbors($gameState, zone)
-            ? "o"
-            : ""}
+        {zone.type !== "default" ? zone.value : ""}
     </p>
 </div>
