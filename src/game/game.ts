@@ -186,6 +186,20 @@ export const MAPS = {
             2 2 2 2 2 2 2 2
         `,
     },
+    neutralization: {
+        description:
+            "player3 should lose ownership ower their zones when they have no available actions",
+        tiles: `
+            1 _ _ 1 1 3 2 2
+            _ _ _ 1 1 1 1 2
+            _ _ _ 1 1 1 2 2
+            _ _ 1 2 1 1 1 2
+            _ 1 1 1 2 2 1 2
+            _ 1 1 2 2 2 1 3
+            1 2 2 3 3 2 2 1
+            1 2 _ 3 3 1 2 1
+        `,
+    },
 }
 
 // IDEA: To enable saving and loading games, maybe save entire gameState.

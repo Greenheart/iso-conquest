@@ -8,6 +8,7 @@
         hasConquerableNeighbors,
     } from "$game/game"
     import { getPlayerColor } from "$lib/utils"
+    import { dev } from "$app/env"
 </script>
 
 <script lang="ts">
@@ -16,6 +17,7 @@
         selectedZone,
         conquerable,
         conquerableBySacrifice,
+        gameStateHistory,
     } from "$lib/stores"
 
     export let zone: Zone
@@ -78,18 +80,26 @@
         }
 
         if (isConquerable) {
-            $gameState = conquer($gameState, action)
+            if (dev) {
+                const next = conquer($gameState, action)
+                $gameStateHistory = [...$gameStateHistory, [action, next]]
+                $gameState = next
+            } else {
+                $gameState = conquer($gameState, action)
+            }
         } else if (isConquerableBySacrifice) {
-            $gameState = conquerBySacrifice($gameState, action)
+            if (dev) {
+                const next = conquerBySacrifice($gameState, action)
+                $gameStateHistory = [...$gameStateHistory, [action, next]]
+                $gameState = next
+            } else {
+                $gameState = conquerBySacrifice($gameState, action)
+            }
         }
 
         if ($selectedZone) reset()
     }
 </script>
-
-<!-- TODO: fix bug where zones that just got neutralized after their owner had no available actions prevented other players from taking them in the turn right after neutralization -->
-<!-- Debugged and verified that the previous owner still owns the zones, as if they didn't lose access to them.
-    However, they are removed from the players array and don't have either scores or are shown with zone color. -->
 
 <!-- IDEA: use rounded corneres to highlight selectable zones -->
 <!-- IDEA: wrap entire zone in an additional div that will add the rounded corners if needed. -->

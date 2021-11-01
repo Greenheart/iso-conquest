@@ -1,8 +1,10 @@
 <script lang="ts" context="module">
     import Modal from "$components/Modal.svelte"
+    import { dev } from "$app/env"
 </script>
 
 <script lang="ts">
+    import { gameStateHistory } from "$lib/stores"
     export let startNewGame: () => void
     let showConfirm = false
 </script>
@@ -33,23 +35,45 @@
 
 <header class="shadow-lg bg-stone-800">
     <div class="max-w-4xl w-full flex justify-between items-center mx-auto p-4">
-        <svg
-            on:click={() => {
-                showConfirm = true
-            }}
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6 cursor-pointer"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="#fff"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-        </svg>
+        <div class="flex items-center space-x-2">
+            <svg
+                on:click={() => {
+                    showConfirm = true
+                }}
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 cursor-pointer"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#fff"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+            </svg>
+            {#if dev}
+                <svg
+                    on:click={() => {
+                        console.log("🐞", $gameStateHistory)
+                    }}
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 cursor-pointer"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="#fff"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                </svg>
+            {/if}
+        </div>
+
         <h1 class="font-semibold text-4xl -mt-2">Iso Conquest</h1>
         <a href="https://github.com/Greenheart/iso-conquest" target="_blank">
             <svg
