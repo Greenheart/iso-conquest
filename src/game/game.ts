@@ -370,15 +370,14 @@ const isZoneAtDistance = ({
 
 const coords = (zone: Zone) => [zone.x, zone.y]
 
-export const getNextPlayer = (gameState: GameState) => {
-    return gameState.players[
+export const getNextPlayer = (gameState: GameState) =>
+    gameState.players[
         (1 +
             gameState.players.findIndex(
                 (player) => player.id === gameState.currentPlayer,
             )) %
             gameState.players.length
     ]
-}
 
 function isNeighbor(origin: Zone, candidate: Zone): boolean {
     return (
@@ -516,18 +515,14 @@ const getWinners = (gameState: GameState) =>
     }, [])
 
 export const getRemainingPlayers = (gameState: GameState) =>
-    gameState.zones.reduce((players: Player[], zone) => {
-        const candidate = gameState.players.find((p) => p.id === zone.owner)
-
+    gameState.players.reduce((players: Player[], player) => {
         if (
-            zone.owner &&
-            !players.some((player) => player.id === zone.owner) &&
-            candidate &&
-            (gameState.currentPlayer === candidate.id
-                ? haveAvailableActions(gameState, candidate)
-                : true)
+            gameState.zones.some((z) => z.owner === player.id) &&
+            gameState.currentPlayer
+                ? haveAvailableActions(gameState, player)
+                : true
         ) {
-            players.push(candidate)
+            players.push(player)
         }
         return players
     }, [])
@@ -568,7 +563,6 @@ export const updatePlayers = (
               })
             : []
 
-    // TODO: bug 2: ensure gameState.currentPlayer is updated correctly
     return {
         endGame: [
             ...winners,
@@ -633,7 +627,7 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
         const prevIndex = prevPlayers.findIndex(
             (p) => p.id === gameState.currentPlayer,
         )
-        for (let i = prevIndex + 1; i < prevPlayers.length; i++) {
+        for (let i = prevIndex; i < prevPlayers.length; i++) {
             const candidate = prevPlayers[i].id
             if (
                 candidate !== gameState.currentPlayer &&
