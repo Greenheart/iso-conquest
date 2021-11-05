@@ -514,11 +514,15 @@ const getWinners = (gameState: GameState) =>
         return winners
     }, [])
 
-export const getRemainingPlayers = (gameState: GameState) =>
+export const getRemainingPlayers = (
+    gameState: GameState,
+    isEveryZoneTaken: boolean,
+) =>
     gameState.players.reduce((players: Player[], player) => {
         if (
             gameState.zones.some((z) => z.owner === player.id) &&
-            gameState.currentPlayer
+            gameState.currentPlayer &&
+            !isEveryZoneTaken
                 ? haveAvailableActions(gameState, player)
                 : true
         ) {
@@ -530,8 +534,8 @@ export const getRemainingPlayers = (gameState: GameState) =>
 export const updatePlayers = (
     gameState: GameState,
 ): Pick<GameState, "players" | "endGame"> => {
-    const remainingPlayers = getRemainingPlayers(gameState)
     const isEveryZoneTaken = gameState.zones.every((zone) => zone.owner)
+    const remainingPlayers = getRemainingPlayers(gameState, isEveryZoneTaken)
 
     const eliminatedPlayers = gameState.players.filter(
         (player) => !getPlayerZones(gameState, player).length,
