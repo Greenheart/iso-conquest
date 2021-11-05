@@ -101,11 +101,6 @@
     }
 </script>
 
-<!-- IDEA: use rounded corneres to highlight selectable zones -->
-<!-- IDEA: wrap entire zone in an additional div that will add the rounded corners if needed. -->
-
-<!-- IDEA: wrap entire zone in an additional div that always exists in the bg and has a white bg.
-    Hovering or selecting zones just updates the border-radius for the current zone. Would allow for animated transitions too -->
 <div
     class={"grid place-items-center relative border" +
         ` ${getBgColor()} ${getBorderColor()} ${
@@ -117,17 +112,12 @@
             isConquerable ||
             isConquerableBySacrifice ||
             (isOwnZone && hasConquerableNeighbors($gameState, zone))
-                ? "hover:border-white hover:rounded-xl border cursor-pointer"
+                ? "hover:border-white hover:rounded-xl cursor-pointer"
                 : ""
         }`}
     class:border-white={$selectedZone === zone}
     on:click|trusted={handleClick}
 >
-    <!-- {#if isOwnZone && hasConquerableNeighbors($gameState, zone)}
-        <div class="bg-white w-full h-full box-content">
-            <div class={"rounded-xl w-full h-full " + getBgColor()} />
-        </div>
-    {/if} -->
     <p
         class="absolute top-1/2 left-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2 text-xl"
     >

@@ -542,7 +542,7 @@ export const updatePlayers = (
         (player) => !getPlayerZones(gameState, player).length,
     )
 
-    // Players lose if they don't have available actions when it's their
+    // Players lose if they don't have available actions when it's their turn.
     const playersWithoutActions = isEveryZoneTaken
         ? []
         : gameState.players.filter(
@@ -568,6 +568,7 @@ export const updatePlayers = (
               })
             : []
 
+    // TODO: bug 2: ensure gameState.currentPlayer is updated correctly
     return {
         endGame: [
             ...winners,
@@ -620,6 +621,7 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
             next.zones = zones.map((zone) =>
                 zone.owner === id ? { ...zone, owner: undefined } : zone,
             )
+            next.zoneLookup = getZoneLookup(next.zones)
         }
     }
 
