@@ -112,7 +112,7 @@
             isConquerable ||
             isConquerableBySacrifice ||
             (isOwnZone && hasConquerableNeighbors($gameState, zone))
-                ? "hover:border-white hover:rounded-xl cursor-pointer"
+                ? "hover:border-white hover:rounded-xl"
                 : ""
         }`}
     class:border-white={$selectedZone === zone}
