@@ -1,6 +1,8 @@
 {
     "name": "iso-conquest",
     "version": "2.0.0",
+    "description": "A minimalistic turn based strategy game with PvP and experimental AI",
+    "private": true,
     "scripts": {
         "dev": "svelte-kit dev",
         "build": "svelte-kit build",
@@ -12,6 +14,7 @@
     },
     "devDependencies": {
         "@sveltejs/kit": "1.0.0-next.191",
+        "@sveltejs/adapter-static": "^1.0.0-next.21",
         "autoprefixer": "^10.3.7",
         "cssnano": "^5.0.9",
         "postcss": "^8.3.9",
