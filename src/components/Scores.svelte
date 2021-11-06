@@ -23,8 +23,6 @@
 <div
     class="flex justify-center space-x-10 items-center text-white font-medium text-2xl h-28"
 >
-    <!-- TODO: updatePlayers() causes gameState.players to change order, which cause the scores to show up differently -->
-    <!-- TODO: More seriously, the players get to take turns in completely different order depending on what updatePlayers() returns. It needs to return the same state for a given input at all times -->
     {#each playerScores as { id, score } (id)}
         <p
             style={getSize(score) + getShadow(id)}

@@ -2,7 +2,6 @@
 
 class Game {
     constructor(config) {
-        // IDEA: possibly show level selection in menu
         const level = Map.levels['bonus']
         this.ui = this.getDOMReferences()
         this.players = this.getPlayers(level, config.mode, config.difficulty)
@@ -41,17 +40,15 @@ class Game {
     }
 
     updateActivePlayer() {
-        const previousPlayerInfo = this.ui.playerInfo[
-            'player' + this.activePlayer.id
-        ]
+        const previousPlayerInfo =
+            this.ui.playerInfo['player' + this.activePlayer.id]
         previousPlayerInfo.classList.remove('active-player')
 
         Area.removeAllAreaSelections(this)
 
         this.activePlayer = this.players[this.turn % this.players.length]
-        const activePlayerInfo = this.ui.playerInfo[
-            'player' + this.activePlayer.id
-        ]
+        const activePlayerInfo =
+            this.ui.playerInfo['player' + this.activePlayer.id]
         activePlayerInfo.classList.add('active-player')
     }
 
@@ -123,7 +120,6 @@ class Game {
             ],
         }
 
-        // TODO: improve headings and messages - talk to `you` if players.some(player => player.isAI)
         if (this.winner === 'tie') {
             content.heading = 'The game was a tie!'
             content.message = 'Perhaps you should be more aggressive?'
