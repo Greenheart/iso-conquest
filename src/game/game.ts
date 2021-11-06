@@ -521,7 +521,7 @@ export const getRemainingPlayers = (
     gameState.players.reduce((players: Player[], player) => {
         if (
             gameState.zones.some((z) => z.owner === player.id) &&
-            gameState.currentPlayer &&
+            gameState.currentPlayer === player.id &&
             !isEveryZoneTaken
                 ? haveAvailableActions(gameState, player)
                 : true
