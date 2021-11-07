@@ -1,6 +1,5 @@
 <script lang="ts">
     import { scale } from "svelte/transition"
-    let modal: HTMLDivElement
 
     const classes = [
         $$props.class ?? "",
@@ -12,7 +11,7 @@
     class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-30 pointer-events-none z-40"
 />
 
-<div class={classes} role="dialog" aria-modal="true" bind:this={modal} in:scale>
+<div class={classes} role="dialog" aria-modal="true" in:scale>
     <slot name="header" />
     <slot />
     <slot name="footer" />
