@@ -23,9 +23,17 @@ const playerColors: Record<PlayerId, PlayerColor> = {
         border: "border-yellow-500",
         active: "bg-yellow-400",
     },
+    player4: {
+        default: "bg-violet-500",
+        border: "border-violet-500",
+        active: "bg-violet-400",
+    },
 }
 
 export const getPlayerColor = (
     id: PlayerId,
     variant: keyof PlayerColor = "default",
 ) => playerColors[id][variant]
+
+export const randomInt = (min: number, max: number) =>
+    Math.floor(Math.random() * (max - min + 1)) + min

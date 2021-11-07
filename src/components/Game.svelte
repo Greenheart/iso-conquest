@@ -6,6 +6,7 @@
         getPlayerScores,
         isGameOver,
     } from "$game/game"
+    import { makeMove } from "$game/ai/random"
     import { dev } from "$app/env"
 
     import Zone from "$components/Zone.svelte"
@@ -21,6 +22,8 @@
         conquerable,
         conquerableBySacrifice,
         gameStateHistory,
+        showEndGame,
+        isAITurn,
     } from "$lib/stores"
 
     export let map: Map
@@ -41,7 +44,40 @@
 
     startNewGame()
 
-    $: showEndGame = isGameOver($gameState)
+    const nextAITurn = () => {
+        console.log("ai turn")
+        let { action, next } = makeMove($gameState)
+
+        window.setTimeout(() => {
+            $selectedZone = action.origin
+
+            window.setTimeout(() => {
+                $gameStateHistory = [...$gameStateHistory, [action, next]]
+                $gameState = next
+                $selectedZone = undefined
+
+                if (
+                    $isAITurn &&
+                    !$showEndGame &&
+                    // TODO: find out why the AI player isn't removed from players.
+                    // It is added to endGame properly, but not removed from players
+                    $gameState.players.some(
+                        (p) => p.id === $gameState.currentPlayer,
+                    )
+                ) {
+                    // TODO: BUG: if player has zones left, they are not removed if an AI player caused them to run out of actions
+                    // seems like the endgame checks can't happen properly here.
+                    nextAITurn()
+                }
+            }, 350)
+        }, 350)
+    }
+    $: {
+        console.log("turn")
+        if ($isAITurn && !$showEndGame) {
+            nextAITurn()
+        }
+    }
 </script>
 
 <!-- TODO: if endGame, show toplist with scores for players -->
@@ -84,7 +120,7 @@
     />
     <div
         class="grid grid-cols-8 grid-rows-8 max-w-4xl w-full max-h-[calc(100vh-176px)] aspect-square mx-auto select-none text-white bg-white"
-        class:pointer-events-none={showEndGame}
+        class:pointer-events-none={$isAITurn || $showEndGame}
         style="contain: strict"
     >
         {#each $gameState.zones as zone (`${zone.x}${zone.y}`)}
@@ -92,7 +128,7 @@
         {/each}
     </div>
 
-    {#if showEndGame}
+    {#if $showEndGame}
         <Modal
             title="Game Over!"
             actions={[

@@ -115,7 +115,8 @@
                 ? "hover:border-white hover:rounded-xl"
                 : ""
         }`}
-    class:border-white={$selectedZone === zone}
+    class:!border-white={$selectedZone === zone}
+    class:!bg-white={$selectedZone === zone}
     on:click|trusted={handleClick}
 >
     <p

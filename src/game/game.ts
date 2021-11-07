@@ -1,5 +1,6 @@
 export type Player = {
     id: PlayerId
+    isAI: boolean
 }
 
 export interface Zone {
@@ -35,6 +36,7 @@ const PlayerTileMap = {
     "1": "player1",
     "2": "player2",
     "3": "player3",
+    "4": "player4",
 } as const
 
 const ZoneTileMap = {
@@ -200,6 +202,20 @@ export const MAPS = {
             1 2 _ 3 3 1 2 1
         `,
     },
+    neutralization4: {
+        description:
+            "4 players: player3 should lose ownership ower their zones when they have no available actions",
+        tiles: `
+            1 _ _ 1 1 3 2 2
+            _ _ _ 1 4 1 1 2
+            _ _ 4 4 4 1 2 2
+            _ _ 1 2 _ 4 1 2
+            _ 1 1 1 2 2 1 2
+            _ 1 1 2 2 2 1 3
+            1 2 2 3 3 2 2 1
+            1 2 _ 3 3 1 2 1
+        `,
+    },
 }
 
 // IDEA: To enable saving and loading games, maybe save entire gameState.
@@ -259,8 +275,8 @@ const loadZone = (
     return zone
 }
 
-export function loadZones(map: Map, players: Player[]) {
-    return parseMap(map.tiles).flatMap((row, y) => {
+export const loadZones = (map: Map, players: Player[]) =>
+    parseMap(map.tiles).flatMap((row, y) => {
         ++y
         return row.split(" ").map((rawTile, x: number) => {
             // Increment by one to get coords starting at 1, 1
@@ -268,27 +284,29 @@ export function loadZones(map: Map, players: Player[]) {
             return loadZone(rawTile, x, y, players)
         })
     })
-}
 
-export function loadPlayers(map: Map["tiles"]) {
-    return Object.keys(PlayerTileMap).reduce<Player[]>(
-        (players, playerTile) => {
-            return map.includes(playerTile)
-                ? [
-                      ...players,
-                      {
-                          id: PlayerTileMap[
-                              playerTile as keyof typeof PlayerTileMap
-                          ],
-                      },
-                  ]
-                : players
-        },
-        [],
-    )
-}
+export const loadPlayers = (map: Map["tiles"]) =>
+    Object.keys(PlayerTileMap).reduce<Player[]>((players, playerTile) => {
+        return map.includes(playerTile)
+            ? [
+                  ...players,
+                  {
+                      id: PlayerTileMap[
+                          playerTile as keyof typeof PlayerTileMap
+                      ],
+                      // TODO: Find a better way to initialize which players should be player controlled and which ones should be AI
+                      // IDEA: Maybe load the map first to see available players and slots, and then show some kind of "lobby" where players can pick their color
+                      // They can also pick which colors should be AI controlled, and their difficulty.
+                      // This player config could then be passed on to newGame() which would create the actual game.
+                      // With this solution, map strings won't have to communicate which players are AI-controlled (although they could)
+                      // Instead, players get much more control to change scenarios.
+                      isAI: playerTile !== "1",
+                  },
+              ]
+            : players
+    }, [])
 
-export function loadMap(map: Map) {
+export const loadMap = (map: Map) => {
     const players = loadPlayers(map.tiles)
     const zones = loadZones(map, players)
     return {
@@ -297,23 +315,21 @@ export function loadMap(map: Map) {
     }
 }
 
-export function newGame({
+export const newGame = ({
     players,
     zones,
 }: {
     players: Player[]
     zones: Zone[]
-}): GameState {
-    return {
-        turn: 1,
-        zones,
-        players,
-        currentPlayer: players[0].id,
-        zoneLookup: getZoneLookup(zones),
-        boundaries: getBoundaries(zones),
-        endGame: [],
-    }
-}
+}): GameState => ({
+    turn: 1,
+    zones,
+    players,
+    currentPlayer: players[0].id,
+    zoneLookup: getZoneLookup(zones),
+    boundaries: getBoundaries(zones),
+    endGame: [],
+})
 
 /**
  * NOTE: This only works for square gridmaps
@@ -350,7 +366,7 @@ const isActionByCurrentPlayer: ValidatorFn = ({ action, gameState }) => {
     return true
 }
 
-const isZoneAtDistance = ({
+export const isZoneAtDistance = ({
     action: { origin, target },
     distance,
 }: ValidatorParams & { distance: number }) => {
@@ -379,13 +395,10 @@ export const getNextPlayer = (gameState: GameState) =>
             gameState.players.length
     ]
 
-function isNeighbor(origin: Zone, candidate: Zone): boolean {
-    return (
-        origin !== candidate &&
-        Math.abs(candidate.x - origin.x) <= 1 &&
-        Math.abs(candidate.y - origin.y) <= 1
-    )
-}
+const isNeighbor = (origin: Zone, candidate: Zone): boolean =>
+    origin !== candidate &&
+    Math.abs(candidate.x - origin.x) <= 1 &&
+    Math.abs(candidate.y - origin.y) <= 1
 
 export const isSame = (a: Zone, b: Zone) => a.x === b.x && a.y === b.y
 
@@ -478,6 +491,40 @@ export const getConquerableNeighbors = (gameState: GameState, zone: Zone) => {
         2: keepNeutral(neighbors[2]),
     }
 }
+
+export const isAI = (gameState: GameState, playerId: Player["id"]) =>
+    gameState.players.some((p) => p.id === playerId && p.isAI)
+
+export const getAvailableActions = (gameState: GameState, player: Player) =>
+    // TODO: Either return an array with all actions separated by type in the data structure
+    // Or update the Action type to include the type of action = conquer | conquerBySacrifice
+    getPlayerZones(gameState, player).reduce<{
+        conquer: Action[]
+        conquerBySacrifice: Action[]
+    }>(
+        (actions, zone) => {
+            const neighbors = getConquerableNeighbors(gameState, zone)
+            actions.conquer.push(
+                ...neighbors[1].map<Action>((neighbor) => ({
+                    origin: zone,
+                    target: neighbor,
+                    playerId: player.id,
+                })),
+            )
+            actions.conquerBySacrifice.push(
+                ...neighbors[2].map<Action>((neighbor) => ({
+                    origin: zone,
+                    target: neighbor,
+                    playerId: player.id,
+                })),
+            )
+            return actions
+        },
+        {
+            conquer: [],
+            conquerBySacrifice: [],
+        },
+    )
 
 export const hasConquerableNeighbors = (gameState: GameState, zone: Zone) => {
     const neighbors = getNeighbors(gameState, zone)
@@ -608,6 +655,9 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
     }
 
     const { players, endGame } = updatePlayers(next)
+    if (endGame.length) {
+        console.log(players, endGame)
+    }
     next.players = players
     next.endGame = endGame
 
@@ -649,7 +699,7 @@ const getNextGameState = (gameState: GameState, zones: Zone[]) => {
     return next
 }
 
-export function conquer(gameState: GameState, action: Action) {
+export const conquer = (gameState: GameState, action: Action) => {
     const params = { action, gameState }
     const canConquerZone = [
         isActionByCurrentPlayer({ ...params }),
@@ -665,7 +715,7 @@ export function conquer(gameState: GameState, action: Action) {
     return getNextGameState(gameState, zones)
 }
 
-export function conquerBySacrifice(gameState: GameState, action: Action) {
+export const conquerBySacrifice = (gameState: GameState, action: Action) => {
     const params = { action, gameState }
     const canConquerZone = [
         isActionByCurrentPlayer({ ...params }),
@@ -689,7 +739,7 @@ export function conquerBySacrifice(gameState: GameState, action: Action) {
     return getNextGameState(gameState, zones)
 }
 
-function conquerZone(zone: Zone, action: Action) {
+const conquerZone = (zone: Zone, action: Action) => {
     if (zone === action.origin) {
         return zone
     } else if (zone === action.target) {

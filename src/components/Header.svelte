@@ -33,6 +33,8 @@
     />
 {/if}
 
+<!-- IDEA: Allow players to adjust AI speed between 200 ms to 2000 ms per step -->
+
 <header class="shadow-lg bg-stone-800">
     <div class="max-w-4xl w-full flex justify-between items-center mx-auto p-4">
         <div class="flex items-center space-x-2">
