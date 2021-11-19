@@ -156,7 +156,7 @@ export const MAPS = {
             1 1 1 1 1 3 3 3
             1 1 1 3 3 3 1 1
             3 3 3b 3 3 3b 3 1
-                3 3 3 1 3 3 3 1
+            3 3 3 1 3 3 3 1
             _ 3 3 1 3 3 3 3
         `,
     },
@@ -473,10 +473,11 @@ export enum EndGameReason {
     Tie = "tie",
 }
 
-export const getNeighbors = (gameState: GameState, zone: Zone) => ({
-    1: getAdjacentZones(gameState, zone, 1),
-    2: getAdjacentZones(gameState, zone, 2),
-})
+export const getNeighbors = (
+    gameState: GameState,
+    zone: Zone,
+    distance: number,
+) => getAdjacentZones(gameState, zone, distance)
 
 export const getPlayerZones = (gameState: GameState, player: Player) =>
     gameState.zones.filter((zone) => zone.owner === player.id)
@@ -484,13 +485,11 @@ export const getPlayerZones = (gameState: GameState, player: Player) =>
 export const keepNeutral = (zones: Zone[]) =>
     zones.filter((zone: Zone) => !zone.owner)
 
-export const getConquerableNeighbors = (gameState: GameState, zone: Zone) => {
-    const neighbors = getNeighbors(gameState, zone)
-    return {
-        1: keepNeutral(neighbors[1]),
-        2: keepNeutral(neighbors[2]),
-    }
-}
+export const getConquerableNeighbors = (
+    gameState: GameState,
+    zone: Zone,
+    distance: number,
+) => keepNeutral(getNeighbors(gameState, zone, distance))
 
 export const isAI = (gameState: GameState, playerId: Player["id"]) =>
     gameState.players.some((p) => p.id === playerId && p.isAI)
@@ -503,21 +502,24 @@ export const getAvailableActions = (gameState: GameState, player: Player) =>
         conquerBySacrifice: Action[]
     }>(
         (actions, zone) => {
-            const neighbors = getConquerableNeighbors(gameState, zone)
-            actions.conquer.push(
-                ...neighbors[1].map<Action>((neighbor) => ({
-                    origin: zone,
-                    target: neighbor,
-                    playerId: player.id,
-                })),
-            )
-            actions.conquerBySacrifice.push(
-                ...neighbors[2].map<Action>((neighbor) => ({
-                    origin: zone,
-                    target: neighbor,
-                    playerId: player.id,
-                })),
-            )
+            const distances = {
+                conquer: 1,
+                conquerBySacrifice: 2,
+            }
+
+            for (const [action, distance] of Object.entries(distances)) {
+                actions[action as keyof typeof actions].push(
+                    ...getConquerableNeighbors(
+                        gameState,
+                        zone,
+                        distance,
+                    ).map<Action>((neighbor) => ({
+                        origin: zone,
+                        target: neighbor,
+                        playerId: player.id,
+                    })),
+                )
+            }
             return actions
         },
         {
@@ -526,10 +528,9 @@ export const getAvailableActions = (gameState: GameState, player: Player) =>
         },
     )
 
-export const hasConquerableNeighbors = (gameState: GameState, zone: Zone) => {
-    const neighbors = getNeighbors(gameState, zone)
-    return keepNeutral(neighbors[1]).length || keepNeutral(neighbors[2]).length
-}
+export const hasConquerableNeighbors = (gameState: GameState, zone: Zone) =>
+    getConquerableNeighbors(gameState, zone, 1).length ||
+    getConquerableNeighbors(gameState, zone, 2).length
 
 export const haveAvailableActions = (gameState: GameState, player: Player) =>
     getPlayerZones(gameState, player).some((zone) =>
