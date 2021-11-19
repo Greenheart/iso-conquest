@@ -60,7 +60,10 @@
 
     function handleClick() {
         const conquerableNeighbors = isOwnZone
-            ? getConquerableNeighbors($gameState, zone)
+            ? {
+                  1: getConquerableNeighbors($gameState, zone, 1),
+                  2: getConquerableNeighbors($gameState, zone, 2),
+              }
             : undefined
 
         if (
