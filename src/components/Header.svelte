@@ -37,7 +37,7 @@
 
 <header class="shadow-lg bg-stone-800">
     <div class="max-w-4xl w-full flex justify-between items-center mx-auto p-4">
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2 text-white">
             <svg
                 on:click={() => {
                     showConfirm = true
@@ -46,7 +46,7 @@
                 class="h-6 w-6 cursor-pointer"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="#fff"
+                stroke="currentColor"
             >
                 <path
                     stroke-linecap="round"
@@ -64,7 +64,7 @@
                     class="h-6 w-6 cursor-pointer"
                     fill="none"
                     viewBox="0 0 24 24"
-                    stroke="#fff"
+                    stroke="currentColor"
                 >
                     <path
                         stroke-linecap="round"
