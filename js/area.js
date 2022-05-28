@@ -26,7 +26,7 @@ class Area {
 
     update() {
         if (
-            !this.game.activePlayer.isAI &&
+            // !this.game.activePlayer.isAI &&
             this.isOwnedBy(this.game.activePlayer) &&
             this.getNeutralNeighbors().length > 0
         ) {
@@ -133,7 +133,7 @@ class Area {
 
     static handleClick(event, game) {
         // Prevent the human player from cheating by interrupting the AI's turn.
-        if (game.activePlayer.isAI && event.isTrusted) return
+        // if (game.activePlayer.isAI && event.isTrusted) return
 
         const clickedArea = Area.findAreaForViewComponent(event.target, game)
 
@@ -144,9 +144,8 @@ class Area {
             const areasConquerable = clickedArea.adjacentAreas[1].filter(
                 Area.keepNeutral,
             )
-            const areasConquerableBySacrifice = clickedArea.adjacentAreas[2].filter(
-                Area.keepNeutral,
-            )
+            const areasConquerableBySacrifice =
+                clickedArea.adjacentAreas[2].filter(Area.keepNeutral)
             let conquerableClasses = ['conquerable']
             let conquerableBySacrificeClasses = ['conquerable-by-sacrifice']
 
@@ -214,9 +213,8 @@ class Area {
                 )
             })
 
-            const viewComponent = game.ui.areasContainer.querySelector(
-                '.area-active',
-            )
+            const viewComponent =
+                game.ui.areasContainer.querySelector('.area-active')
             if (viewComponent !== null) {
                 viewComponent.classList.remove('area-active')
                 const area = Area.findAreaForViewComponent(viewComponent, game)
@@ -237,9 +235,8 @@ class Area {
     }
 
     static highlightAdjacent(centerArea, adjacent, highlightClasses) {
-        Area.currentlyHighlightedAreas = Area.currentlyHighlightedAreas.concat(
-            adjacent,
-        )
+        Area.currentlyHighlightedAreas =
+            Area.currentlyHighlightedAreas.concat(adjacent)
         if (!centerArea.game.activePlayer.isAI) {
             highlightClasses.push('area-selectable')
         }

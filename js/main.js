@@ -8,7 +8,7 @@
     const menuContent = mainMenu.querySelector('.menu')
     const strategyTips = mainMenu.querySelector('.strategy-tips')
 
-    window.DEBUG = false
+    window.DEBUG = true
 
     for (const b of mainMenu.querySelectorAll('button.back')) {
         b.addEventListener('click', (e) => showMainMenu(e))

@@ -5,7 +5,7 @@ class Game {
         // IDEA: possibly show level selection in menu
         const level = Map.levels['bonus']
         this.ui = this.getDOMReferences()
-        this.players = this.getPlayers(level, config.mode, config.difficulty)
+        this.players = this.getPlayers(level)
         this.currentLevel = this.loadLevel(level)
         this.currentLevel.areas.forEach((a) => a.init())
         this.players.forEach((player) => player.init())
@@ -41,17 +41,15 @@ class Game {
     }
 
     updateActivePlayer() {
-        const previousPlayerInfo = this.ui.playerInfo[
-            'player' + this.activePlayer.id
-        ]
+        const previousPlayerInfo =
+            this.ui.playerInfo['player' + this.activePlayer.id]
         previousPlayerInfo.classList.remove('active-player')
 
         Area.removeAllAreaSelections(this)
 
         this.activePlayer = this.players[this.turn % this.players.length]
-        const activePlayerInfo = this.ui.playerInfo[
-            'player' + this.activePlayer.id
-        ]
+        const activePlayerInfo =
+            this.ui.playerInfo['player' + this.activePlayer.id]
         activePlayerInfo.classList.add('active-player')
     }
 
@@ -171,12 +169,13 @@ class Game {
         for (let playerId = 1; playerId <= level.playerCount; playerId++) {
             const config = { id: playerId, game: this }
 
-            if (playerId === level.playerCount && gameMode === 'PvAI') {
-                const Ai = difficulty === 'easy' ? EasyAi : IntermediateAi
-                players.push(new Ai(config))
-            } else {
-                players.push(new Player(config))
-            }
+            // if (playerId === level.playerCount && gameMode === 'PvAI') {
+            //     const Ai = difficulty === 'easy' ? EasyAi : IntermediateAi
+            //     players.push(new Ai(config))
+            // } else {
+            //     players.push(new Player(config))
+            // }
+            players.push(new IntermediateAi(config))
         }
 
         return players
