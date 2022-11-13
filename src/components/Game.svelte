@@ -1,18 +1,13 @@
 <script lang="ts" context="module">
-    import {
-        loadMap,
-        newGame,
-        Map,
-        getPlayerScores,
-        isGameOver,
-    } from "$game/game"
-    import { makeMove } from "$game/ai/random"
-    import { dev } from "$app/env"
+    import type { Map } from '$game/game'
+    import { loadMap, newGame, getPlayerScores, isGameOver } from '$game/game'
+    import { makeMove } from '$game/ai/random'
+    import { dev } from '$app/environment'
 
-    import Zone from "$components/Zone.svelte"
-    import Header from "$components/Header.svelte"
-    import Modal from "$components/Modal.svelte"
-    import Scores from "$components/Scores.svelte"
+    import Zone from '$components/Zone.svelte'
+    import Header from '$components/Header.svelte'
+    import Modal from '$components/Modal.svelte'
+    import Scores from '$components/Scores.svelte'
 </script>
 
 <script lang="ts">
@@ -24,7 +19,7 @@
         gameStateHistory,
         showEndGame,
         isAITurn,
-    } from "$lib/stores"
+    } from '$lib/stores'
 
     export let map: Map
 
@@ -45,7 +40,7 @@
     startNewGame()
 
     const nextAITurn = () => {
-        console.log("ai turn")
+        console.log('ai turn')
         let { action, next } = makeMove($gameState)
 
         window.setTimeout(() => {
@@ -73,7 +68,7 @@
         }, 350)
     }
     $: {
-        console.log("turn")
+        console.log('turn')
         if ($isAITurn && !$showEndGame) {
             nextAITurn()
         }
@@ -134,7 +129,7 @@
             actions={[
                 {
                     onClick: startNewGame,
-                    label: "New Game",
+                    label: 'New Game',
                     autofocus: true,
                 },
             ]}

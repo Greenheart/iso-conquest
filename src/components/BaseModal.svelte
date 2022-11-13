@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { scale } from "svelte/transition"
+    import { scale } from 'svelte/transition'
 
     const classes = [
-        $$props.class ?? "",
-        "absolute left-1/2 top-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2 shadow-2xl bg-stone-700 z-50",
-    ].join(" ")
+        $$props.class ?? '',
+        'absolute left-1/2 top-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2 shadow-2xl bg-stone-700 z-50',
+    ].join(' ')
 </script>
 
 <div

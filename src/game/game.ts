@@ -6,13 +6,13 @@ export type Player = {
 export interface Zone {
     x: number
     y: number
-    owner?: Player["id"]
+    owner?: Player['id']
     value: number
     type: ZoneType
 }
 
 export interface Action {
-    playerId: Player["id"]
+    playerId: Player['id']
     origin: Zone
     target: Zone
 }
@@ -21,7 +21,7 @@ export interface GameState {
     turn: number
     zones: Zone[]
     players: Player[]
-    currentPlayer: Player["id"]
+    currentPlayer: Player['id']
     endGame: PlayerStats[]
     zoneLookup: Record<string, Zone>
     boundaries: [number, number]
@@ -33,15 +33,15 @@ const ZoneValue: Record<ZoneType, number> = {
 }
 
 const PlayerTileMap = {
-    "1": "player1",
-    "2": "player2",
-    "3": "player3",
-    "4": "player4",
+    '1': 'player1',
+    '2': 'player2',
+    '3': 'player3',
+    '4': 'player4',
 } as const
 
 const ZoneTileMap = {
-    _: "default",
-    b: "bonus",
+    _: 'default',
+    b: 'bonus',
 } as const
 
 const TileMap = {
@@ -62,7 +62,7 @@ export interface Map {
 
 export const MAPS = {
     intro: {
-        description: "Initial level",
+        description: 'Initial level',
         tiles: `
             1 _ _ _ _ _ _ 1
             _ _ _ _ _ _ _ _
@@ -75,7 +75,7 @@ export const MAPS = {
         `,
     },
     bonus: {
-        description: "Introducing bonus zones that give extra score.",
+        description: 'Introducing bonus zones that give extra score.',
         tiles: `
             1 _ _ _ _ _ _ 1
             _ _ _ _ _ _ _ _
@@ -88,7 +88,7 @@ export const MAPS = {
         `,
     },
     scoresTest: {
-        description: "Testing animations + transitions for player scores",
+        description: 'Testing animations + transitions for player scores',
         tiles: `
             1 _ _ _ _ _ _ 1
             _ _ _ _ _ _ _ _
@@ -102,7 +102,7 @@ export const MAPS = {
     },
     debug: {
         description:
-            "Test that the correct winner and endgame stats are displayed.",
+            'Test that the correct winner and endgame stats are displayed.',
         tiles: `
             1 1 1 1 1 1 1 1
             1 1 1 1 1 1 1 1
@@ -119,7 +119,7 @@ export const MAPS = {
     // This would however be interesting if some kind of single player campaign is developed.
     tieOrNoAction: {
         description:
-            "Test that the correct winner and endgame stats are displayed. Also testing a new parsing format.",
+            'Test that the correct winner and endgame stats are displayed. Also testing a new parsing format.',
         tiles: `
             1 1 1 2 2 2 2 2
             _ 1 1 1 2 2 2 2
@@ -134,7 +134,7 @@ export const MAPS = {
     },
     noActions: {
         description:
-            "player2 should run out of moves and lose the game is player1 conquers [1,3]",
+            'player2 should run out of moves and lose the game is player1 conquers [1,3]',
         tiles: `
             1 _ _ 1 1 2 3 3
             _ _ 1 1 1 2 3 3
@@ -148,7 +148,7 @@ export const MAPS = {
     },
     player1MissingInEndGameStats: {
         description:
-            "when player1 makes the last move, they should be added to the endGame results",
+            'when player1 makes the last move, they should be added to the endGame results',
         tiles: `
             3 3 3 1 3 3 1 1
             3 3 3 1 1 3 3 3
@@ -162,7 +162,7 @@ export const MAPS = {
     },
     player1notWinningBug: {
         description:
-            "when player2 makes their final move and run out of available moves, they should lose the game.",
+            'when player2 makes their final move and run out of available moves, they should lose the game.',
         tiles: `
             1 _ _ _ 1 1 1 2
             _ _ 1 1 1 1 1 2
@@ -176,7 +176,7 @@ export const MAPS = {
     },
     bothWinnersShouldBePresent: {
         description:
-            "when all zones have been taken, both remaining players should be visible in endgame stats",
+            'when all zones have been taken, both remaining players should be visible in endgame stats',
         tiles: `
             1 _ 2 _ 2 2 1 2
             1 1 _ 2 2 2 1 2
@@ -190,7 +190,7 @@ export const MAPS = {
     },
     neutralization: {
         description:
-            "player3 should lose ownership ower their zones when they have no available actions",
+            'player3 should lose ownership ower their zones when they have no available actions',
         tiles: `
             1 _ _ 1 1 3 2 2
             _ _ _ 1 1 1 1 2
@@ -204,7 +204,7 @@ export const MAPS = {
     },
     neutralization4: {
         description:
-            "4 players: player3 should lose ownership ower their zones when they have no available actions",
+            '4 players: player3 should lose ownership ower their zones when they have no available actions',
         tiles: `
             1 _ _ 1 1 3 2 2
             _ _ _ 1 4 1 1 2
@@ -231,7 +231,7 @@ const getPlayerFromTile = (players: Player[], tile: PlayerTile) =>
 const parseTile = (rawTile: string) => {
     const match = rawTile.match(/(\d{0,})(\D{0,})$/)
     if (!match) {
-        throw new Error("Unable to parse raw tile" + rawTile)
+        throw new Error('Unable to parse raw tile' + rawTile)
     }
     return [
         match[1] ? match[1] : undefined,
@@ -248,19 +248,19 @@ const loadZone = (
     const [playerTile, zoneTile] = parseTile(rawTile)
 
     if (playerTile && !(playerTile in PlayerTileMap)) {
-        throw new Error("Unknown PlayerTile:" + playerTile)
+        throw new Error('Unknown PlayerTile:' + playerTile)
     }
 
     if (zoneTile && !(zoneTile in ZoneTileMap)) {
-        throw new Error("Unknown ZoneTile:" + zoneTile)
+        throw new Error('Unknown ZoneTile:' + zoneTile)
     }
 
     const owner = playerTile
         ? getPlayerFromTile(players, playerTile).id
         : undefined
     const type =
-        (owner && zoneTile === "_") || zoneTile === undefined
-            ? "default"
+        (owner && zoneTile === '_') || zoneTile === undefined
+            ? 'default'
             : ZoneTileMap[zoneTile]
     const value = ZoneValue[type]
 
@@ -278,14 +278,14 @@ const loadZone = (
 export const loadZones = (map: Map, players: Player[]) =>
     parseMap(map.tiles).flatMap((row, y) => {
         ++y
-        return row.split(" ").map((rawTile, x: number) => {
+        return row.split(' ').map((rawTile, x: number) => {
             // Increment by one to get coords starting at 1, 1
             ++x
             return loadZone(rawTile, x, y, players)
         })
     })
 
-export const loadPlayers = (map: Map["tiles"]) =>
+export const loadPlayers = (map: Map['tiles']) =>
     Object.keys(PlayerTileMap).reduce<Player[]>((players, playerTile) => {
         return map.includes(playerTile)
             ? [
@@ -300,7 +300,7 @@ export const loadPlayers = (map: Map["tiles"]) =>
                       // This player config could then be passed on to newGame() which would create the actual game.
                       // With this solution, map strings won't have to communicate which players are AI-controlled (although they could)
                       // Instead, players get much more control to change scenarios.
-                      isAI: playerTile !== "1",
+                      isAI: playerTile !== '1',
                   },
               ]
             : players
@@ -424,7 +424,7 @@ export const getAdjacentZones = (
             if (x < min || x > max) continue
 
             if (center.x === x && center.y === y) continue
-            const zone = gameState.zoneLookup[x + "" + y]
+            const zone = gameState.zoneLookup[x + '' + y]
 
             if (getDistance(center, zone) >= distance) {
                 adjacent.push(zone)
@@ -437,7 +437,7 @@ export const getAdjacentZones = (
 
 export const getZoneLookup = (zones: Zone[]) =>
     zones.reduce((lookup: Record<string, Zone>, zone) => {
-        lookup[zone.x + "" + zone.y] = zone
+        lookup[zone.x + '' + zone.y] = zone
         return lookup
     }, {})
 
@@ -467,10 +467,10 @@ export type PlayerStats = Player & {
 }
 
 export enum EndGameReason {
-    Elimination = "elimination",
-    NoNeutral = "no-neutral",
-    NoActions = "no-actions",
-    Tie = "tie",
+    Elimination = 'elimination',
+    NoNeutral = 'no-neutral',
+    NoActions = 'no-actions',
+    Tie = 'tie',
 }
 
 export const getNeighbors = (
@@ -491,7 +491,7 @@ export const getConquerableNeighbors = (
     distance: number,
 ) => keepNeutral(getNeighbors(gameState, zone, distance))
 
-export const isAI = (gameState: GameState, playerId: Player["id"]) =>
+export const isAI = (gameState: GameState, playerId: Player['id']) =>
     gameState.players.some((p) => p.id === playerId && p.isAI)
 
 export const getAvailableActions = (gameState: GameState, player: Player) =>
@@ -581,7 +581,7 @@ export const getRemainingPlayers = (
 
 export const updatePlayers = (
     gameState: GameState,
-): Pick<GameState, "players" | "endGame"> => {
+): Pick<GameState, 'players' | 'endGame'> => {
     const isEveryZoneTaken = gameState.zones.every((zone) => zone.owner)
     const remainingPlayers = getRemainingPlayers(gameState, isEveryZoneTaken)
 

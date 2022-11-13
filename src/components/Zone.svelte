@@ -1,14 +1,14 @@
 <script lang="ts" context="module">
+    import type { Zone } from '$game/game'
     import {
-        Zone,
         isSame,
         conquer,
         conquerBySacrifice,
         getConquerableNeighbors,
         hasConquerableNeighbors,
-    } from "$game/game"
-    import { getPlayerColor } from "$lib/utils"
-    import { dev } from "$app/env"
+    } from '$game/game'
+    import { getPlayerColor, onKeydown } from '$lib/utils'
+    import { dev } from '$app/environment'
 </script>
 
 <script lang="ts">
@@ -18,7 +18,7 @@
         conquerable,
         conquerableBySacrifice,
         gameStateHistory,
-    } from "$lib/stores"
+    } from '$lib/stores'
 
     export let zone: Zone
 
@@ -40,16 +40,16 @@
 
     function getBgColor() {
         if (zone.owner) return getPlayerColor(zone.owner)
-        if (isConquerable) return "bg-teal-500"
-        if (isConquerableBySacrifice) return "bg-teal-700"
-        return "bg-teal-800"
+        if (isConquerable) return 'bg-teal-500'
+        if (isConquerableBySacrifice) return 'bg-teal-700'
+        return 'bg-teal-800'
     }
 
     function getBorderColor() {
-        if (zone.owner) return getPlayerColor(zone.owner, "border")
-        if (isConquerable) return "border-teal-500"
-        if (isConquerableBySacrifice) return "border-teal-700"
-        return "border-teal-800"
+        if (zone.owner) return getPlayerColor(zone.owner, 'border')
+        if (isConquerable) return 'border-teal-500'
+        if (isConquerableBySacrifice) return 'border-teal-700'
+        return 'border-teal-800'
     }
 
     function reset() {
@@ -105,18 +105,19 @@
 </script>
 
 <div
-    class={"grid place-items-center relative border" +
+    on:keydown={onKeydown(handleClick)}
+    class={'grid place-items-center relative border' +
         ` ${getBgColor()} ${getBorderColor()} ${
             isOwnZone && hasConquerableNeighbors($gameState, zone)
-                ? "rounded-xl cursor-pointer "
-                : ""
+                ? 'rounded-xl cursor-pointer '
+                : ''
         }` +
         ` ${
             isConquerable ||
             isConquerableBySacrifice ||
             (isOwnZone && hasConquerableNeighbors($gameState, zone))
-                ? "hover:border-white hover:rounded-xl"
-                : ""
+                ? 'hover:border-white hover:rounded-xl'
+                : ''
         }`}
     class:!border-white={$selectedZone === zone}
     class:!bg-white={$selectedZone === zone}
@@ -125,6 +126,6 @@
     <p
         class="absolute top-1/2 left-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2 text-xl"
     >
-        {zone.type !== "default" ? zone.value : ""}
+        {zone.type !== 'default' ? zone.value : ''}
     </p>
 </div>

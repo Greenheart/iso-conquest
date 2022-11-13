@@ -1,12 +1,21 @@
 <script lang="ts" context="module">
-    import Modal from "$components/Modal.svelte"
-    import { dev } from "$app/env"
+    import Modal from '$components/Modal.svelte'
+    import { dev } from '$app/environment'
 </script>
 
 <script lang="ts">
-    import { gameStateHistory } from "$lib/stores"
+    import { gameStateHistory } from '$lib/stores'
+    import { onKeydown } from '$lib/utils'
     export let startNewGame: () => void
     let showConfirm = false
+
+    const openConfirm = () => {
+        showConfirm = true
+    }
+
+    const logHistory = () => {
+        console.log('🐞', $gameStateHistory)
+    }
 </script>
 
 {#if showConfirm}
@@ -18,15 +27,15 @@
                     startNewGame()
                     showConfirm = false
                 },
-                label: "Restart",
-                variant: "danger",
+                label: 'Restart',
+                variant: 'danger',
             },
             {
                 onClick: () => {
                     showConfirm = false
                 },
-                label: "Cancel",
-                variant: "secondary",
+                label: 'Cancel',
+                variant: 'secondary',
                 autofocus: true,
             },
         ]}
@@ -39,9 +48,8 @@
     <div class="max-w-4xl w-full flex justify-between items-center mx-auto p-4">
         <div class="flex items-center space-x-2 text-white">
             <svg
-                on:click={() => {
-                    showConfirm = true
-                }}
+                on:keydown={onKeydown(openConfirm)}
+                on:click={openConfirm}
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 cursor-pointer"
                 fill="none"
@@ -57,9 +65,8 @@
             </svg>
             {#if dev}
                 <svg
-                    on:click={() => {
-                        console.log("🐞", $gameStateHistory)
-                    }}
+                    on:click={logHistory}
+                    on:keydown={onKeydown(logHistory)}
                     xmlns="http://www.w3.org/2000/svg"
                     class="h-6 w-6 cursor-pointer"
                     fill="none"
@@ -77,7 +84,11 @@
         </div>
 
         <h1 class="font-semibold text-4xl -mt-2">Iso Conquest</h1>
-        <a href="https://github.com/Greenheart/iso-conquest" target="_blank">
+        <a
+            href="https://github.com/Greenheart/iso-conquest"
+            target="_blank"
+            rel="noreferrer"
+        >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"

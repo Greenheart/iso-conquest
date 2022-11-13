@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
-    import Modal from "$components/BaseModal.svelte"
-    import Button, { ButtonProps } from "$components/Button.svelte"
+    import Modal from '$components/BaseModal.svelte'
+    import Button from '$components/Button.svelte'
+    import type { ButtonProps } from '$components/Button.svelte'
 </script>
 
 <script lang="ts">
