@@ -5,19 +5,18 @@
     "private": true,
     "description": "A minimalistic turn based strategy game with PvP and experimental AI",
     "scripts": {
-        "prettify": "npx prettier \".\" --write",
+        "format": "npx prettier . --write",
         "start": "npx serve ."
     },
     "author": "Samuel Plumppu",
     "license": "ISC",
     "devDependencies": {
-        "prettier": "^2.7.1",
-        "serve": "^14.1.1"
+        "prettier": "^3.6.2",
+        "serve": "^14.2.4"
     },
     "prettier": {
         "tabWidth": 4,
         "semi": false,
-        "singleQuote": true,
-        "trailingComma": "all"
+        "singleQuote": true
     }
 }
