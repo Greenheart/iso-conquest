@@ -88,6 +88,7 @@
             href="https://github.com/Greenheart/iso-conquest"
             target="_blank"
             rel="noreferrer"
+            aria-label="Check out the source code"
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"

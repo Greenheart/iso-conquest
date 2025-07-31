@@ -9,7 +9,7 @@
 
 <div
     class="bg-opacity-30 pointer-events-none fixed top-0 left-0 z-40 h-full w-full bg-black"
-/>
+></div>
 
 <div class={classes} role="dialog" aria-modal="true" in:scale>
     <slot name="header" />

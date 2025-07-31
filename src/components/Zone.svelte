@@ -104,6 +104,7 @@
     }
 </script>
 
+<!-- TODO: Use cn() helper instead -->
 <div
     on:keydown={onKeydown(handleClick)}
     class={'relative grid place-items-center border' +
