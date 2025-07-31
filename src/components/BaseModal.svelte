@@ -8,7 +8,7 @@
 </script>
 
 <div
-    class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-30 pointer-events-none z-40"
+    class="bg-opacity-30 pointer-events-none fixed top-0 left-0 z-40 h-full w-full bg-black"
 />
 
 <div class={classes} role="dialog" aria-modal="true" in:scale>

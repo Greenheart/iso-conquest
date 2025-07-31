@@ -44,8 +44,8 @@
 
 <!-- IDEA: Allow players to adjust AI speed between 200 ms to 2000 ms per step -->
 
-<header class="shadow-lg bg-stone-800">
-    <div class="max-w-4xl w-full flex justify-between items-center mx-auto p-4">
+<header class="bg-stone-800 shadow-lg">
+    <div class="mx-auto flex w-full max-w-4xl items-center justify-between p-4">
         <div class="flex items-center space-x-2 text-white">
             <svg
                 on:keydown={onKeydown(openConfirm)}
@@ -83,7 +83,7 @@
             {/if}
         </div>
 
-        <h1 class="font-semibold text-4xl -mt-2">Iso Conquest</h1>
+        <h1 class="-mt-2 text-4xl font-semibold">Iso Conquest</h1>
         <a
             href="https://github.com/Greenheart/iso-conquest"
             target="_blank"
@@ -92,7 +92,7 @@
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
-                class="w-6 h-6"
+                class="h-6 w-6"
                 fill="#fff"
             >
                 <path

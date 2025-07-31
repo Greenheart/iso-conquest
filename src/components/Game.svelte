@@ -114,7 +114,7 @@
             : getPlayerScores($gameState)}
     />
     <div
-        class="grid grid-cols-8 grid-rows-8 max-w-4xl w-full max-h-[calc(100vh-176px)] aspect-square mx-auto select-none text-white bg-white"
+        class="mx-auto grid aspect-square max-h-[calc(100vh-176px)] w-full max-w-4xl grid-cols-8 grid-rows-8 bg-white text-white select-none"
         class:pointer-events-none={$isAITurn || $showEndGame}
         style="contain: strict"
     >

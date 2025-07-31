@@ -9,8 +9,8 @@
         "preview": "vite preview",
         "check": "svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-        "lint": "prettier --ignore-path .gitignore --check .",
-        "format": "prettier --ignore-path .gitignore --write ."
+        "lint": "prettier --check .",
+        "format": "prettier --write ."
     },
     "devDependencies": {
         "@sveltejs/kit": "^2.27.0",

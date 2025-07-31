@@ -1,7 +1,7 @@
-import { derived, writable } from "svelte/store"
+import { derived, writable } from 'svelte/store'
 
-import type { Action, GameState, Zone } from "$game/game"
-import { isAI, isGameOver } from "$game/game"
+import type { Action, GameState, Zone } from '$game/game'
+import { isAI, isGameOver } from '$game/game'
 
 export const gameState = writable<GameState>()
 export const gameStateHistory = writable<[Action | undefined, GameState][]>()

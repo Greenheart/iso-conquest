@@ -106,17 +106,17 @@
 
 <div
     on:keydown={onKeydown(handleClick)}
-    class={'grid place-items-center relative border' +
+    class={'relative grid place-items-center border' +
         ` ${getBgColor()} ${getBorderColor()} ${
             isOwnZone && hasConquerableNeighbors($gameState, zone)
-                ? 'rounded-xl cursor-pointer '
+                ? 'cursor-pointer rounded-xl '
                 : ''
         }` +
         ` ${
             isConquerable ||
             isConquerableBySacrifice ||
             (isOwnZone && hasConquerableNeighbors($gameState, zone))
-                ? 'hover:border-white hover:rounded-xl'
+                ? 'hover:rounded-xl hover:border-white'
                 : ''
         }`}
     class:!border-white={$selectedZone === zone}
@@ -124,7 +124,7 @@
     on:click|trusted={handleClick}
 >
     <p
-        class="absolute top-1/2 left-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2 text-xl"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform-gpu text-xl"
     >
         {zone.type !== 'default' ? zone.value : ''}
     </p>
