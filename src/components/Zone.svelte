@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     import type { Zone } from '$game/game'
     import {
         isSame,
@@ -12,6 +12,8 @@
 </script>
 
 <script lang="ts">
+    import { trusted } from 'svelte/legacy'
+
     import {
         gameState,
         selectedZone,
@@ -20,19 +22,25 @@
         gameStateHistory,
     } from '$lib/stores'
 
-    export let zone: Zone
+    interface Props {
+        zone: Zone
+    }
 
-    $: isOwnZone = zone.owner === $gameState.currentPlayer
+    let { zone }: Props = $props()
 
-    $: isConquerable =
+    let isOwnZone = $derived(zone.owner === $gameState.currentPlayer)
+
+    let isConquerable = $derived(
         $selectedZone &&
-        $selectedZone !== zone &&
-        $conquerable.some((z) => isSame(zone, z))
+            $selectedZone !== zone &&
+            $conquerable.some((z) => isSame(zone, z)),
+    )
 
-    $: isConquerableBySacrifice =
+    let isConquerableBySacrifice = $derived(
         $selectedZone &&
-        $selectedZone !== zone &&
-        $conquerableBySacrifice.some((z) => isSame(zone, z))
+            $selectedZone !== zone &&
+            $conquerableBySacrifice.some((z) => isSame(zone, z)),
+    )
 
     // IDEA: Maybe cache all adjacent zones for each zone to make runtime checks faster
     // Will especially be useful when adding minimax AI
@@ -106,7 +114,7 @@
 
 <!-- TODO: Use cn() helper instead -->
 <div
-    on:keydown={onKeydown(handleClick)}
+    onkeydown={onKeydown(handleClick)}
     class={'relative grid place-items-center border' +
         ` ${getBgColor()} ${getBorderColor()} ${
             isOwnZone && hasConquerableNeighbors($gameState, zone)
@@ -122,7 +130,7 @@
         }`}
     class:!border-white={$selectedZone === zone}
     class:!bg-white={$selectedZone === zone}
-    on:click|trusted={handleClick}
+    onclick={trusted(handleClick)}
 >
     <p
         class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform-gpu text-xl"

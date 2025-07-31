@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     import type { Map } from '$game/game'
     import { loadMap, newGame, getPlayerScores, isGameOver } from '$game/game'
     import { makeMove } from '$game/ai/random'
@@ -11,6 +11,8 @@
 </script>
 
 <script lang="ts">
+    import { run } from 'svelte/legacy'
+
     import {
         gameState,
         selectedZone,
@@ -21,7 +23,11 @@
         isAITurn,
     } from '$lib/stores'
 
-    export let map: Map
+    interface Props {
+        map: Map
+    }
+
+    let { map }: Props = $props()
 
     const startNewGame = () => {
         $selectedZone = undefined
@@ -67,12 +73,12 @@
             }, 350)
         }, 350)
     }
-    $: {
+    run(() => {
         console.log('turn')
         if ($isAITurn && !$showEndGame) {
             nextAITurn()
         }
-    }
+    })
 </script>
 
 <!-- TODO: if endGame, show toplist with scores for players -->
@@ -128,7 +134,7 @@
             title="Game Over!"
             actions={[
                 {
-                    onClick: startNewGame,
+                    onclick: startNewGame,
                     label: 'New Game',
                     autofocus: true,
                 },

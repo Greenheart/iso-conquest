@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     const variants = {
         primary: 'bg-emerald-500 text-white',
         secondary: 'bg-stone-400 text-black',
@@ -6,7 +6,7 @@
     }
 
     export type ButtonProps = {
-        onClick: () => void
+        onclick: () => void
         label: string
         variant?: keyof typeof variants
         autofocus?: boolean
@@ -14,18 +14,17 @@
 </script>
 
 <script lang="ts">
-    export let variant: ButtonProps['variant']
-    export let onClick: ButtonProps['onClick']
-    export let label: ButtonProps['label']
-    export let autofocus: ButtonProps['autofocus']
+    let { variant, onclick, label, autofocus }: ButtonProps = $props()
 </script>
 
-<!-- svelte-ignore a11y-autofocus -->
+<!-- svelte-ignore a11y_autofocus -->
 <button
     {autofocus}
-    class={'transform-gpu px-12 py-4 text-xl font-semibold duration-100 hover:scale-105 ' +
-        variants[variant ?? 'primary']}
-    on:click={onClick}
+    class={[
+        'transform-gpu px-12 py-4 text-xl font-semibold duration-100 hover:scale-105',
+        variants[variant ?? 'primary'],
+    ]}
+    {onclick}
 >
     {label}
 </button>

@@ -1,13 +1,18 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     import type { PlayerScore } from '$game/game'
     import { getPlayerColor } from '$lib/utils'
 </script>
 
 <script lang="ts">
     import { scale } from 'svelte/transition'
-    import { gameState } from '$lib/stores'
     import { flip } from 'svelte/animate'
-    export let playerScores: PlayerScore[]
+    import { gameState } from '$lib/stores'
+
+    interface Props {
+        playerScores: PlayerScore[]
+    }
+
+    let { playerScores }: Props = $props()
 
     const getSize = (score: number) =>
         `transform: scale(${(100 + score) / 100});`

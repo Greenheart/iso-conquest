@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
     import Modal from '$components/Modal.svelte'
     import { dev } from '$app/environment'
 </script>
@@ -6,8 +6,12 @@
 <script lang="ts">
     import { gameStateHistory } from '$lib/stores'
     import { onKeydown } from '$lib/utils'
-    export let startNewGame: () => void
-    let showConfirm = false
+    interface Props {
+        startNewGame: () => void
+    }
+
+    let { startNewGame }: Props = $props()
+    let showConfirm = $state(false)
 
     const openConfirm = () => {
         showConfirm = true
@@ -23,7 +27,7 @@
         title="Are you sure you want to restart?"
         actions={[
             {
-                onClick: () => {
+                onclick: () => {
                     startNewGame()
                     showConfirm = false
                 },
@@ -31,7 +35,7 @@
                 variant: 'danger',
             },
             {
-                onClick: () => {
+                onclick: () => {
                     showConfirm = false
                 },
                 label: 'Cancel',
@@ -48,8 +52,8 @@
     <div class="mx-auto flex w-full max-w-4xl items-center justify-between p-4">
         <div class="flex items-center space-x-2 text-white">
             <svg
-                on:keydown={onKeydown(openConfirm)}
-                on:click={openConfirm}
+                onkeydown={onKeydown(openConfirm)}
+                onclick={openConfirm}
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 cursor-pointer"
                 fill="none"
@@ -65,8 +69,8 @@
             </svg>
             {#if dev}
                 <svg
-                    on:click={logHistory}
-                    on:keydown={onKeydown(logHistory)}
+                    onclick={logHistory}
+                    onkeydown={onKeydown(logHistory)}
                     xmlns="http://www.w3.org/2000/svg"
                     class="h-6 w-6 cursor-pointer"
                     fill="none"
