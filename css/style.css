@@ -173,7 +173,9 @@ main {
     z-index: 3;
     position: relative;
     background-color: var(--light-gray);
-    transition: all 0.2s ease-in, background 0.27s ease-in;
+    transition:
+        all 0.2s ease-in,
+        background 0.27s ease-in;
     height: var(--tile-size);
     width: var(--tile-size);
     border: var(--tile-border-size) solid var(--gray);
@@ -187,7 +189,9 @@ main {
     border-width: calc(var(--tile-border-size) * 3);
     border-color: var(--dark-gray);
     transform: scale(1.05);
-    transition: background, transform 0.15s ease-in;
+    transition:
+        background,
+        transform 0.15s ease-in;
     box-shadow: -7px -7px var(--dark-gray);
     animation-name: grow-shrink;
     animation-duration: 0.6s;
@@ -316,7 +320,9 @@ button::-moz-focus-inner {
 .modal button {
     margin: 20px 0;
     padding: 10px 20px;
-    font: 30px 'Open Sans Condensed', sans-serif;
+    font:
+        30px 'Open Sans Condensed',
+        sans-serif;
     flex-basis: 200px;
     height: 70px;
 }
@@ -360,7 +366,9 @@ button::-moz-focus-inner {
 .main-menu .actions button {
     margin: 20px 30px;
     padding: 10px 20px;
-    font: 30px 'Open Sans Condensed', sans-serif;
+    font:
+        30px 'Open Sans Condensed',
+        sans-serif;
     flex-basis: 200px;
     height: 70px;
 }

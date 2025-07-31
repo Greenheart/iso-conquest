@@ -19,9 +19,8 @@ class Player {
 
     display() {
         const playerId = 'player' + this.id
-        this.game.ui.playerInfo[playerId].querySelector(
-            'p span',
-        ).innerText = this.score
+        this.game.ui.playerInfo[playerId].querySelector('p span').innerText =
+            this.score
 
         const bonusUI = this.game.ui.playerBonuses[playerId].children
 

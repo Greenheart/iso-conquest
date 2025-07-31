@@ -41,17 +41,15 @@ class Game {
     }
 
     updateActivePlayer() {
-        const previousPlayerInfo = this.ui.playerInfo[
-            'player' + this.activePlayer.id
-        ]
+        const previousPlayerInfo =
+            this.ui.playerInfo['player' + this.activePlayer.id]
         previousPlayerInfo.classList.remove('active-player')
 
         Area.removeAllAreaSelections(this)
 
         this.activePlayer = this.players[this.turn % this.players.length]
-        const activePlayerInfo = this.ui.playerInfo[
-            'player' + this.activePlayer.id
-        ]
+        const activePlayerInfo =
+            this.ui.playerInfo['player' + this.activePlayer.id]
         activePlayerInfo.classList.add('active-player')
     }
 
