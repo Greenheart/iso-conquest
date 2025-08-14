@@ -7,13 +7,11 @@
         getConquerableNeighbors,
         hasConquerableNeighbors,
     } from '$game/game'
-    import { getPlayerColor, onKeydown } from '$lib/utils'
+    import { cn, getPlayerColor } from '$lib/utils'
     import { dev } from '$app/environment'
 </script>
 
 <script lang="ts">
-    import { trusted } from 'svelte/legacy'
-
     import {
         gameState,
         selectedZone,
@@ -47,6 +45,7 @@
     // IDEA: Maybe enable minimax as a cheat, to help players learn the game and see the best moves.
 
     function getBgColor() {
+        if ($selectedZone === zone) return 'bg-white'
         if (zone.owner) return getPlayerColor(zone.owner)
         if (isConquerable) return 'bg-teal-500'
         if (isConquerableBySacrifice) return 'bg-teal-700'
@@ -54,6 +53,7 @@
     }
 
     function getBorderColor() {
+        if ($selectedZone === zone) return 'border-white'
         if (zone.owner) return getPlayerColor(zone.owner, 'border')
         if (isConquerable) return 'border-teal-500'
         if (isConquerableBySacrifice) return 'border-teal-700'
@@ -66,7 +66,8 @@
         $conquerableBySacrifice = []
     }
 
-    function handleClick() {
+    function handleClick(event: MouseEvent) {
+        if (!event.isTrusted) return false
         const conquerableNeighbors = isOwnZone
             ? {
                   1: getConquerableNeighbors($gameState, zone, 1),
@@ -112,29 +113,25 @@
     }
 </script>
 
-<!-- TODO: Use cn() helper instead -->
-<div
-    onkeydown={onKeydown(handleClick)}
-    class={'relative grid place-items-center border' +
-        ` ${getBgColor()} ${getBorderColor()} ${
-            isOwnZone && hasConquerableNeighbors($gameState, zone)
-                ? 'cursor-pointer rounded-xl '
-                : ''
-        }` +
-        ` ${
-            isConquerable ||
-            isConquerableBySacrifice ||
-            (isOwnZone && hasConquerableNeighbors($gameState, zone))
-                ? 'hover:rounded-xl hover:border-white'
-                : ''
-        }`}
-    class:!border-white={$selectedZone === zone}
-    class:!bg-white={$selectedZone === zone}
-    onclick={trusted(handleClick)}
+<button
+    class={cn([
+        'relative grid place-items-center border',
+        getBgColor(),
+        getBorderColor(),
+        isConquerable ||
+        isConquerableBySacrifice ||
+        (isOwnZone && hasConquerableNeighbors($gameState, zone))
+            ? 'hover:rounded-xl hover:border-white'
+            : '',
+        isOwnZone && hasConquerableNeighbors($gameState, zone)
+            ? 'cursor-pointer rounded-xl '
+            : '',
+    ])}
+    onclick={handleClick}
 >
     <p
         class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform-gpu text-xl"
     >
         {zone.type !== 'default' ? zone.value : ''}
     </p>
-</div>
+</button>
